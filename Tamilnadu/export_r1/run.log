@@ -1,0 +1,25 @@
+[VALIDATE closed loop, 336 h] action agreement 100.000 %  max|dTw| 4.26e-14  max|dTpcm| 5.68e-14  shields 699 vs 699  -> PASS
+Error 0x80070008 for hwnd 00000000006A024E on system call in file B:\matlab\src\uiw\events\win7spec.cpp, line 80
+[scenario] clear            done  SAC delivered(event)=26.64 kWh  B0=26.94 kWh  SAC viol=0
+[scenario] no_sunlight      done  SAC delivered(event)=1.43 kWh  B0=1.45 kWh  SAC viol=0
+[scenario] rain_cloud       done  SAC delivered(event)=2.22 kWh  B0=5.52 kWh  SAC viol=0
+[scenario] low_temperature  done  SAC delivered(event)=26.82 kWh  B0=26.89 kWh  SAC viol=0
+[scenario] heat_wave        done  SAC delivered(event)=28.71 kWh  B0=28.89 kWh  SAC viol=0
+[scenario] sensor_fault     done  SAC delivered(event)=20.70 kWh  B0=20.85 kWh  SAC viol=0
+         <strong>scenario</strong>          <strong>policy</strong>     <strong>delivered_kWh_event</strong>    <strong>unmet_kWh_event</strong>    <strong>shield_trips_event</strong>    <strong>hard_violations_all</strong>    <strong>Tw_min_event_C</strong>    <strong>Tw_max_C</strong>    <strong>Tpcm_max_C</strong>    <strong>pcm_melt_end_event</strong>    <strong>hours_water_ge45_event</strong>    <strong>failsafe_hours</strong>
+    <strong>___________________</strong>    <strong>_______</strong>    <strong>___________________</strong>    <strong>_______________</strong>    <strong>__________________</strong>    <strong>___________________</strong>    <strong>______________</strong>    <strong>________</strong>    <strong>__________</strong>    <strong>__________________</strong>    <strong>______________________</strong>    <strong>______________</strong>
+
+    {'clear'          }    {'SAC'}           26.64               6.8932                366                     0                 31.396         72.526       62.727              0                       39                     0      
+    {'clear'          }    {'B0' }           26.94                6.776                566                     0                 31.517         72.484       64.113              0                       39                     0      
+    {'no_sunlight'    }    {'SAC'}          1.4307               27.915                  0                     0                 24.126         72.526       62.727              0                        0                     0      
+    {'no_sunlight'    }    {'B0' }          1.4509               27.894                  0                     0                 24.126         72.484       64.113              0                        0                     0      
+    {'rain_cloud'     }    {'SAC'}          2.2169               27.141                  0                     0                 23.688         72.526       62.727              0                        0                     0      
+    {'rain_cloud'     }    {'B0' }          5.5175               23.828                  0                     0                 24.506         72.484       64.113              0                        0                     0      
+    {'low_temperature'}    {'SAC'}          26.823               15.835                118                     0                 21.736         72.228       62.464              0                       30                     0      
+    {'low_temperature'}    {'B0' }          26.893                15.77                116                     0                 22.003         72.524       63.898              0                       30                     0      
+    {'heat_wave'      }    {'SAC'}          28.709               5.6524                553                     0                 32.809         72.526       62.727              0                       40                     0      
+    {'heat_wave'      }    {'B0' }           28.89               5.5801                883                     0                 33.009         72.556       64.113              0                       40                     0      
+    {'sensor_fault'   }    {'SAC'}          20.696               11.863                247                     0                  24.46         72.526       63.642              0                       28                    14      
+    {'sensor_fault'   }    {'B0' }          20.853               11.754                416                     0                 24.571         72.484       64.113              0                       28                    17      
+
+ALL_DONE_MARKER
