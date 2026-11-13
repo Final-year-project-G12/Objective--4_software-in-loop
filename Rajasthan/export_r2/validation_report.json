@@ -1,0 +1,39 @@
+{
+  "A_open_loop": {
+    "max_abs_dT_top_C": 2.9842794901924208E-13,
+    "max_abs_dT_bottom_C": 2.0605739337042905E-13,
+    "max_abs_dT_mean_C": 1.4210854715202004E-13,
+    "max_abs_dT_pcm_C": 5.6843418860808015E-13,
+    "max_abs_df_melt": 1.0103029524088925E-14,
+    "max_abs_dE_del_Wh": 5.1727511163335294E-12,
+    "delivered_kWh_matlab": 970.32039837923173,
+    "delivered_kWh_python": 970.32039837923151,
+    "shields_matlab": 227778,
+    "shields_python": 227778,
+    "violations_matlab": 0,
+    "violations_python": 0,
+    "pass": true
+  },
+  "A_policy_on_python_obs": {
+    "action_agreement_pct": 100,
+    "max_rel_dQ": 1.3445157544203234E-5
+  },
+  "C_closed_loop": {
+    "action_agreement_pct": 100,
+    "max_abs_dT_top_C": 2.9842794901924208E-13,
+    "max_abs_dT_pcm_C": 5.6843418860808015E-13,
+    "max_abs_dobs": 2.6645352988050451E-16,
+    "delivered_kWh_matlab": 970.32039837923173,
+    "delivered_kWh_python": 970.32039837923151,
+    "shields_matlab": 227778,
+    "shields_python": 227778,
+    "violations_matlab": 0,
+    "pass": true
+  },
+  "overall_pass": true,
+  "regime": 2,
+  "year": 2023,
+  "hours": 8760,
+  "matlab": "26.2.0.3433840 (R2026b) Update 1",
+  "generated": "2026-11-13T08:12:50"
+}

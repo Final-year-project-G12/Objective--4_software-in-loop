@@ -1,0 +1,12 @@
+{
+  "regime": 2,
+  "hours": 336,
+  "action_agreement_pct": 100,
+  "max_abs_dTw_C": 1.1368683772161603E-13,
+  "max_abs_dTpcm_C": 1.4210854715202004E-13,
+  "delivered_kWh_matlab": 28.337219105799349,
+  "delivered_kWh_python": 28.337219105799331,
+  "shields_matlab": 602,
+  "shields_python": 602,
+  "pass": true
+}

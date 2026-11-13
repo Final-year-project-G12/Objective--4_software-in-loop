@@ -1,0 +1,44 @@
+{
+  "regime": 0,
+  "hours": 8760,
+  "engine": "python mirror of the .m files (not MATLAB)",
+  "A_open_loop_plant": {
+    "max_abs_dT_top_C": 0.0,
+    "max_abs_dT_bottom_C": 0.0,
+    "max_abs_dT_mean_C": 0.0,
+    "max_abs_dT_pcm_C": 0.0,
+    "max_abs_df_melt": 0.0,
+    "max_abs_dE_del_Wh": 0.0,
+    "delivered_kWh_twin": 954.982875090674,
+    "delivered_kWh_python": 954.982875090674,
+    "shields_twin": 115463,
+    "shields_python": 115463,
+    "violations_twin": 0,
+    "violations_python": 0,
+    "executed_action_agreement_pct": 100.0,
+    "pass": true
+  },
+  "A_policy_on_python_obs": {
+    "action_agreement_pct": 100.0,
+    "max_rel_dQ": 1.7062290920286654e-05
+  },
+  "C_closed_loop": {
+    "max_abs_dT_top_C": 0.0,
+    "max_abs_dT_bottom_C": 0.0,
+    "max_abs_dT_mean_C": 0.0,
+    "max_abs_dT_pcm_C": 0.0,
+    "max_abs_df_melt": 0.0,
+    "max_abs_dE_del_Wh": 0.0,
+    "delivered_kWh_twin": 954.982875090674,
+    "delivered_kWh_python": 954.982875090674,
+    "shields_twin": 115463,
+    "shields_python": 115463,
+    "violations_twin": 0,
+    "violations_python": 0,
+    "executed_action_agreement_pct": 100.0,
+    "action_agreement_pct": 100.0,
+    "max_abs_dobs": 8.88178432935015e-17,
+    "pass": true
+  },
+  "overall_pass": true
+}
