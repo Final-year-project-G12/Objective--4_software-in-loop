@@ -1,0 +1,42 @@
+{
+  "A_open_loop": {
+    "max_abs_dT_top_C": 1.9184653865522705E-13,
+    "max_abs_dT_bottom_C": 1.5631940186722204E-13,
+    "max_abs_dT_mean_C": 9.9475983006414026E-14,
+    "max_abs_dT_pcm_C": 1.3500311979441904E-13,
+    "max_abs_df_melt": 4.9404924595819466E-15,
+    "max_abs_dE_del50_Wh": 1.8189894035458565E-12,
+    "delivered50_kWh_matlab": 1212.2993382569375,
+    "delivered50_kWh_python": 1212.2993382569375,
+    "shield_h_matlab": 0.18055555555555555,
+    "shield_h_python": 0.18055555555555555,
+    "over_limit_h_matlab": 0,
+    "over_limit_h_python": 0,
+    "pass": true
+  },
+  "A_policy_on_python_obs": {
+    "action_agreement_pct": 100,
+    "max_abs_dmargin": 4.76837158203125E-6
+  },
+  "B_closed_loop_matlab": {
+    "action_agreement_pct": 100,
+    "max_abs_dT_top_C": 1.9184653865522705E-13,
+    "max_abs_dT_pcm_C": 1.3500311979441904E-13,
+    "delivered50_kWh_matlab": 1212.2993382569375,
+    "window_delivered50_kWh_matlab": 601.32074479576056,
+    "window_delivered50_kWh_python": 601.32074479576067,
+    "shield_h_matlab": 0.18055555555555555,
+    "over_limit_h_matlab": 0,
+    "pass": true
+  },
+  "C_simulink": {
+    "skipped": true
+  },
+  "regime": 2,
+  "year": 2010,
+  "hours": 8760,
+  "label": "SIMULATION-DERIVED - software-in-the-loop export - EXPLORATORY (O3 test year, post-lock)",
+  "matlab": "26.2.0.3433840 (R2026b) Update 1",
+  "generated": "2026-11-13T09:59:04",
+  "overall_pass": true
+}

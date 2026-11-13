@@ -1,0 +1,14 @@
+{
+  "regime": 1,
+  "year": 2010,
+  "hours": 336,
+  "action_agreement_pct": 100,
+  "max_abs_dTtop_C": 7.1054273576010019E-14,
+  "max_abs_dTpcm_C": 5.6843418860808015E-14,
+  "max_abs_df_melt": 1.9428902930940239E-15,
+  "delivered50_kWh_matlab": 29.030189993854137,
+  "delivered50_kWh_python": 29.03018999385414,
+  "shield_s_matlab": 0,
+  "shield_s_python": 0,
+  "pass": true
+}

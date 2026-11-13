@@ -1,0 +1,63 @@
+/*
+ * Trial License - for use to evaluate programs for possible purchase as
+ * an end-user only.
+ *
+ * _coder_controller_step_mex.c
+ *
+ * Code generation for function 'controller_step'
+ *
+ */
+
+/* Include files */
+#include "_coder_controller_step_mex.h"
+#include "_coder_controller_step_api.h"
+
+/* Function Definitions */
+void mexFunction(int32_T nlhs, mxArray *plhs[], int32_T nrhs,
+                 const mxArray *prhs[])
+{
+  mexAtExit(&controller_step_atexit);
+  controller_step_initialize();
+  unsafe_controller_step_mexFunction(nlhs, plhs, nrhs, prhs);
+  controller_step_terminate();
+}
+
+emlrtCTX mexFunctionCreateRootTLS(void)
+{
+  emlrtCreateRootTLSR2022a(&emlrtRootTLSGlobal, &emlrtContextGlobal, NULL, 1,
+                           NULL, "windows-1252", true);
+  return emlrtRootTLSGlobal;
+}
+
+void unsafe_controller_step_mexFunction(int32_T nlhs, mxArray *plhs[3],
+                                        int32_T nrhs, const mxArray *prhs[11])
+{
+  emlrtStack st = {
+      NULL, /* site */
+      NULL, /* tls */
+      NULL  /* prev */
+  };
+  const mxArray *outputs[3];
+  int32_T i;
+  st.tls = emlrtRootTLSGlobal;
+  /* Check for proper number of arguments. */
+  if (nrhs != 11) {
+    emlrtErrMsgIdAndTxt(&st, "EMLRT:runTime:WrongNumberOfInputs", 5, 12, 11, 4,
+                        15, "controller_step");
+  }
+  if (nlhs > 3) {
+    emlrtErrMsgIdAndTxt(&st, "EMLRT:runTime:TooManyOutputArguments", 3, 4, 15,
+                        "controller_step");
+  }
+  /* Call the function. */
+  controller_step_api(prhs, nlhs, outputs);
+  /* Copy over outputs to the caller. */
+  if (nlhs < 1) {
+    i = 1;
+  } else {
+    i = nlhs;
+  }
+  emlrtReturnArrays(i, &plhs[0], &outputs[0]);
+}
+
+/* End of code generation (_coder_controller_step_mex.c) */
