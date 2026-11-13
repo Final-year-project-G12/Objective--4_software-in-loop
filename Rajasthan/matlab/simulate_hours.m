@@ -27,8 +27,11 @@ clear safety_interlock               % reset the latched-fault memory
 names = {'Tw', 'Tbot', 'Tmean', 'Tpcm', 'f_melt', 'E_stored_kWh', 'E_rec45_kWh', ...
          'E_del_Wh', 'E_unmet_Wh', 'Q_coll_Wh', 'n_sw', 'n_sp', 'n_viol', 'shield_s', ...
          'Tw_max', 'Tpcm_max', 'a_policy', 'a_cmd', 'a_exec', 'interlock', ...
-         'draw_kg', 'GHI', 'T_amb', 'hod', 'sensors_ok'};
+         'draw_kg', 'GHI', 'T_amb', 'hod', 'sensors_ok', ...
+         'Q_load_Wh', 'Q_loss_Wh', 'E_del50_Wh', 'E_unmet50_Wh'};
 for k = 1:numel(names), L.(names{k}) = zeros(n, 1); end
+L.Tn = zeros(n, 10);                 % node water temperature at the END of each hour [C]
+L.hn = zeros(n, 10);                 % node PCM enthalpy at the END of each hour [J/kg]
 L.q = zeros(n, 3);
 L.obs = zeros(n, 17);
 
@@ -50,7 +53,7 @@ for t = 1:n
     obs = build_obs(Im, Tam, sm, draw, hod, hours_since_draw * 60, fwd, P);
     [ap, q] = dqn_policy(obs, tw.W1, tw.b1, tw.W2, tw.b2, tw.W3, tw.b3, policy_mode);
     [acmd, ils] = safety_interlock(ap, sm(1), sm(4), ok, P);
-    [T, h, y] = pcm_plant_hour(I, Ta, draw, acmd, T, h, P);
+    [T, h, y, xo] = pcm_plant_hour(I, Ta, draw, acmd, T, h, P);
     s = y(1:7);
     if y(11) > 1e-3                  % pcm_env.py: "hours_since_draw"
         hours_since_draw = 0;
@@ -65,6 +68,8 @@ for t = 1:n
     L.Tw_max(t) = y(16);  L.Tpcm_max(t) = y(17);  L.shield_s(t) = y(18);
     L.a_policy(t) = ap;  L.a_cmd(t) = acmd;  L.interlock(t) = ils;  L.q(t, :) = q(:)';
     L.obs(t, :) = obs(:)';
+    L.Q_load_Wh(t) = xo(1);  L.Q_loss_Wh(t) = xo(2);  L.E_del50_Wh(t) = xo(3);  L.E_unmet50_Wh(t) = xo(4);
+    L.Tn(t, :) = T(:)';  L.hn(t, :) = h(:)';
     L.draw_kg(t) = draw;  L.GHI(t) = I;  L.T_amb(t) = Ta;  L.hod(t) = hod;  L.sensors_ok(t) = ok;
 end
 end

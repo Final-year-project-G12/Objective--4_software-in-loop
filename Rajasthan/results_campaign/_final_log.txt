@@ -1,0 +1,145 @@
+[run] PCMfree_none_B0_f1.0                     year 5 s | E_del45 770.4 kWh (win 452.8) | tau45 51.9 h (1/12 censored) | guard 755.1 h | viol 0
+[run] PCM_B0_PureTemp60_B0_f1.0                year 14 s | E_del45 912.4 kWh (win 587.2) | tau45 61.2 h (7/12 censored) | guard 993.6 h | viol 0
+[run] PCM_DQN_PureTemp60_DQN_f1.0              year 13 s | E_del45 897.3 kWh (win 572.1) | tau45 61.0 h (6/12 censored) | guard 430.0 h | viol 0
+[run] PCM_B0_CrodaTherm60_B0_f1.0              year 12 s | E_del45 889.3 kWh (win 562.7) | tau45 62.4 h (7/12 censored) | guard 1406.0 h | viol 0
+[run] PCM_DQN_CrodaTherm60_DQN_f1.0            year 13 s | E_del45 885.6 kWh (win 559.0) | tau45 62.3 h (7/12 censored) | guard 723.8 h | viol 0
+[run] PCM_B0_nHeptacosaneC27_B0_f1.0           year 10 s | E_del45 888.3 kWh (win 562.7) | tau45 62.2 h (6/12 censored) | guard 1647.0 h | viol 0
+[run] PCM_DQN_nHeptacosaneC27_DQN_f1.0         year 12 s | E_del45 887.9 kWh (win 562.3) | tau45 62.0 h (6/12 censored) | guard 859.5 h | viol 0
+[run] PCMfree_none_B0_f0.7                     year 4 s | E_del45 777.3 kWh (win 457.3) | tau45 51.9 h (0/12 censored) | guard 748.7 h | viol 0
+[run] PCM_B0_PureTemp60_B0_f0.7                year 11 s | E_del45 908.9 kWh (win 581.6) | tau45 60.5 h (6/12 censored) | guard 938.7 h | viol 0
+[run] PCM_DQN_PureTemp60_DQN_f0.7              year 12 s | E_del45 893.6 kWh (win 566.4) | tau45 60.2 h (6/12 censored) | guard 417.2 h | viol 0
+[run] PCMfree_none_B0_f1.3                     year 4 s | E_del45 766.2 kWh (win 449.9) | tau45 51.5 h (0/12 censored) | guard 769.4 h | viol 0
+[run] PCM_B0_PureTemp60_B0_f1.3                year 13 s | E_del45 911.8 kWh (win 587.7) | tau45 61.4 h (7/12 censored) | guard 1031.9 h | viol 0
+[run] PCM_DQN_PureTemp60_DQN_f1.3              year 12 s | E_del45 898.8 kWh (win 574.7) | tau45 61.3 h (7/12 censored) | guard 437.3 h | viol 0
+[campaign] 13 runs -> campaign_results.csv
+    controller              pcm              o1_consensus_rank    o1_mc_top3_pct    tau_hold_45C_mean_h    E_del45_win_kWh    twin_rank_by_tau_hold    twin_rank_by_E_del_win    spearman_tau_vs_o1    spearman_Edel_vs_o1
+    __________    _______________________    _________________    ______________    ___________________    _______________    _____________________    ______________________    __________________    ___________________
+
+     {'B0' }      {'PureTemp 60'        }            1                 99.3               61.192               587.16                   3                        1                      -0.5                   0.5        
+     {'B0' }      {'CrodaTherm 60'      }            2                 93.6               62.443               562.71                   1                        3                      -0.5                   0.5        
+     {'B0' }      {'n-Heptacosane (C27)'}            3                 56.1               62.201               562.73                   2                        2                      -0.5                   0.5        
+     {'DQN'}      {'PureTemp 60'        }            1                 99.3               61.011               572.07                   3                        1                      -0.5                   0.5        
+     {'DQN'}      {'CrodaTherm 60'      }            2                 93.6               62.323               559.04                   1                        3                      -0.5                   0.5        
+     {'DQN'}      {'n-Heptacosane (C27)'}            3                 56.1               61.977               562.25                   2                        2                      -0.5                   0.5        
+
+  (three items per cluster: report the correlation with that caveat, not as a conclusion)
+[run] r0_PCMfree_none_B0_f1.0                  year 4 s | E_del45 819.9 kWh (win 480.8) | tau45 43.7 h (0/12 censored) | guard 605.1 h | viol 0
+[run] r0_PCM_B0_savEOM55_B0_f1.0               year 11 s | E_del45 955.0 kWh (win 610.1) | tau45 52.1 h (3/12 censored) | guard 797.6 h | viol 0
+[run] r0_PCM_DQN_savEOM55_DQN_f1.0             year 11 s | E_del45 955.0 kWh (win 610.1) | tau45 52.1 h (3/12 censored) | guard 797.6 h | viol 0
+[run] PCMfree_none_B0_f1.0                     year 3 s | E_del45 770.4 kWh (win 452.8) | tau45 51.9 h (1/12 censored) | guard 755.1 h | viol 0
+[run] PCM_B0_PureTemp60_B0_f1.0                year 12 s | E_del45 912.4 kWh (win 587.2) | tau45 61.2 h (7/12 censored) | guard 993.6 h | viol 0
+[run] PCM_DQN_PureTemp60_DQN_f1.0              year 12 s | E_del45 897.3 kWh (win 572.1) | tau45 61.0 h (6/12 censored) | guard 430.0 h | viol 0
+[run] r2_PCMfree_none_B0_f1.0                  year 3 s | E_del45 823.9 kWh (win 479.9) | tau45 46.7 h (1/12 censored) | guard 625.7 h | viol 0
+[run] r2_PCM_B0_PureTemp58_B0_f1.0             year 11 s | E_del45 970.3 kWh (win 619.6) | tau45 56.4 h (3/12 censored) | guard 1072.8 h | viol 0
+[run] r2_PCM_DQN_PureTemp58_DQN_f1.0           year 11 s | E_del45 970.3 kWh (win 619.6) | tau45 56.4 h (3/12 censored) | guard 1072.8 h | viol 0
+[campaign] 3 regimes -> campaign_regimes.csv
+          pcm          controller    freezing_shift_K    tau_hold_45C_mean_h    tau_hold_50C_mean_h    E_rec45_24h_kWh    E_rec45_48h_kWh    f_melt_24h    f_melt_36h
+    _______________    __________    ________________    ___________________    ___________________    _______________    _______________    __________    __________
+
+    {'PureTemp 60'}     {'B0' }             0                  61.192                 53.389               0.47909            0.20042         0.14124       0.050187 
+    {'PureTemp 60'}     {'B0' }             2                  61.218                 53.949               0.47959            0.20903         0.18223       0.088009 
+    {'PureTemp 60'}     {'DQN'}             0                  61.011                 50.912               0.43409             0.1637          0.1082       0.021725 
+    {'PureTemp 60'}     {'DQN'}             2                  61.123                 51.923               0.43467            0.17142         0.14895       0.054725 
+
+[seeds] DQN  delivered 8.40 +/- 0.02 kWh   shield 5.49 +/- 0.13 h   (mean +/- 95% CI, 20 seeds)
+[seeds] B0   delivered 8.60 +/- 0.02 kWh   shield 13.86 +/- 0.19 h   (mean +/- 95% CI, 20 seeds)
+[VALIDATE closed loop, 336 h] action agreement 100.000 %  max|dTw| 7.82e-14  max|dTpcm| 1.07e-13  shields 16 vs 16  -> PASS
+[scenario] clear            done  DQN delivered(event)=11.05 kWh  B0=11.28 kWh  DQN viol=0
+[scenario] no_sunlight      done  DQN delivered(event)=0.18 kWh  B0=0.18 kWh  DQN viol=0
+[scenario] rain_cloud       done  DQN delivered(event)=2.49 kWh  B0=2.49 kWh  DQN viol=0
+[scenario] low_temperature  done  DQN delivered(event)=10.78 kWh  B0=12.43 kWh  DQN viol=0
+[scenario] heat_wave        done  DQN delivered(event)=11.91 kWh  B0=12.55 kWh  DQN viol=0
+[scenario] sensor_fault     done  DQN delivered(event)=8.42 kWh  B0=8.61 kWh  DQN viol=0
+         scenario          policy     delivered_kWh_event    unmet_kWh_event    shield_trips_event    shield_hours_event    hard_violations_all    Tw_min_event_C    Tw_max_C    Tpcm_max_C    pcm_melt_end_event    hours_water_ge45_event    idle_or_bypass_hours_event    failsafe_hours
+    ___________________    _______    ___________________    _______________    __________________    __________________    ___________________    ______________    ________    __________    __________________    ______________________    __________________________    ______________
+
+    {'clear'          }    {'DQN'}           11.048              15.505                2020                 7.8194                   0                 25.714          72.08       62.104              0                       36                           8                       0      
+    {'clear'          }    {'B0' }            11.28              15.272                6121                 18.799                   0                 25.718         72.103       62.261              0                       36                           0                       0      
+    {'no_sunlight'    }    {'DQN'}          0.18444              26.427                   0                      0                   0                 25.654         72.086       62.104              0                        0                           0                       0      
+    {'no_sunlight'    }    {'B0' }          0.18446              26.426                   0                      0                   0                 25.654         72.103       62.243              0                        0                           0                       0      
+    {'rain_cloud'     }    {'DQN'}           2.4864              24.209                   0                      0                   0                 25.233         72.088       62.141              0                        0                           0                       0      
+    {'rain_cloud'     }    {'B0' }           2.4864              24.209                   0                      0                   0                 25.233         72.103       62.243              0                        0                           0                       0      
+    {'low_temperature'}    {'DQN'}           10.781              26.997                   0                      0                   0                 17.336         71.489       61.044              0                       32                           8                       0      
+    {'low_temperature'}    {'B0' }           12.431              25.343                2772                 10.576                   0                 17.357         72.095       62.263              0                       32                           0                       0      
+    {'heat_wave'      }    {'DQN'}           11.911              14.624                 481                 3.3403                   0                  25.91         72.081       62.107              0                       36                          12                       0      
+    {'heat_wave'      }    {'B0' }           12.555              13.981                6647                 23.035                   0                 25.915         72.104       62.272              0                       36                           0                       0      
+    {'sensor_fault'   }    {'DQN'}            8.422              18.143                1374                 5.5903                   0                 25.714          72.08       62.218              0                       27                           6                      15      
+    {'sensor_fault'   }    {'B0' }           8.6128              17.951                4537                 13.993                   0                 25.718         72.104       62.261              0                       27                           0                      15      
+
+ALL_DONE_MARKER
+[campaign] six edge cases -> scenario_summary_r1.csv
+CAMPAIGN_DONE_MARKER
+[run] PCMfree_none_B0_f1.0_cal                 year 3 s | E_del45 770.4 kWh (win 452.8) | tau45 51.9 h (1/12 censored) | guard 755.1 h | viol 0
+[run] PCM_B0_PureTemp60_B0_f1.0_cal            year 11 s | E_del45 912.4 kWh (win 587.2) | tau45 61.2 h (7/12 censored) | guard 999.0 h | viol 0
+[run] PCM_DQN_PureTemp60_DQN_f1.0_cal          year 13 s | E_del45 897.5 kWh (win 572.3) | tau45 61.1 h (6/12 censored) | guard 436.0 h | viol 0
+[run] PCM_B0_CrodaTherm60_B0_f1.0_cal          year 12 s | E_del45 889.1 kWh (win 562.5) | tau45 62.5 h (7/12 censored) | guard 1411.0 h | viol 0
+[run] PCM_DQN_CrodaTherm60_DQN_f1.0_cal        year 13 s | E_del45 885.5 kWh (win 559.0) | tau45 62.4 h (7/12 censored) | guard 730.1 h | viol 0
+[run] PCM_B0_nHeptacosaneC27_B0_f1.0_cal       year 11 s | E_del45 888.0 kWh (win 562.4) | tau45 62.0 h (6/12 censored) | guard 1652.9 h | viol 0
+[run] PCM_DQN_nHeptacosaneC27_DQN_f1.0_cal     year 11 s | E_del45 887.6 kWh (win 562.0) | tau45 62.0 h (6/12 censored) | guard 865.0 h | viol 0
+[run] PCMfree_none_B0_f0.7_cal                 year 3 s | E_del45 777.3 kWh (win 457.3) | tau45 51.9 h (0/12 censored) | guard 748.7 h | viol 0
+[run] PCM_B0_PureTemp60_B0_f0.7_cal            year 12 s | E_del45 909.1 kWh (win 581.9) | tau45 60.6 h (6/12 censored) | guard 943.3 h | viol 0
+[run] PCM_DQN_PureTemp60_DQN_f0.7_cal          year 12 s | E_del45 893.8 kWh (win 566.6) | tau45 60.3 h (6/12 censored) | guard 421.3 h | viol 0
+[run] PCMfree_none_B0_f1.3_cal                 year 3 s | E_del45 766.2 kWh (win 449.9) | tau45 51.5 h (0/12 censored) | guard 769.4 h | viol 0
+[run] PCM_B0_PureTemp60_B0_f1.3_cal            year 10 s | E_del45 911.8 kWh (win 587.7) | tau45 61.5 h (7/12 censored) | guard 1038.1 h | viol 0
+[run] PCM_DQN_PureTemp60_DQN_f1.3_cal          year 11 s | E_del45 899.0 kWh (win 574.9) | tau45 61.4 h (7/12 censored) | guard 443.2 h | viol 0
+[campaign] 13 runs -> campaign_results.csv
+    controller              pcm              o1_consensus_rank    o1_mc_top3_pct    tau_hold_45C_mean_h    E_del45_win_kWh    twin_rank_by_tau_hold    twin_rank_by_E_del_win    spearman_tau_vs_o1    spearman_Edel_vs_o1
+    __________    _______________________    _________________    ______________    ___________________    _______________    _____________________    ______________________    __________________    ___________________
+
+     {'B0' }      {'PureTemp 60'        }            1                 99.3                61.23               587.24                   3                        1                      -0.5                     1        
+     {'B0' }      {'CrodaTherm 60'      }            2                 93.6               62.468               562.54                   1                        2                      -0.5                     1        
+     {'B0' }      {'n-Heptacosane (C27)'}            3                 56.1               61.964               562.45                   2                        3                      -0.5                     1        
+     {'DQN'}      {'PureTemp 60'        }            1                 99.3               61.061                572.3                   3                        1                      -0.5                   0.5        
+     {'DQN'}      {'CrodaTherm 60'      }            2                 93.6               62.353               558.96                   1                        3                      -0.5                   0.5        
+     {'DQN'}      {'n-Heptacosane (C27)'}            3                 56.1               61.988               561.98                   2                        2                      -0.5                   0.5        
+
+  (three items per cluster: report the correlation with that caveat, not as a conclusion)
+CAMPAIGN_DONE_MARKER
+[run] PCMfree_none_B0_f1.0_fast                year 3 s | E_del45 770.4 kWh (win 452.8) | tau45 51.9 h (1/12 censored) | guard 755.1 h | viol 0
+[run] PCM_B0_PureTemp60_B0_f1.0_fast           year 11 s | E_del45 905.0 kWh (win 580.1) | tau45 62.9 h (7/12 censored) | guard 1294.9 h | viol 0
+[run] PCM_DQN_PureTemp60_DQN_f1.0_fast         year 11 s | E_del45 899.1 kWh (win 574.2) | tau45 62.6 h (7/12 censored) | guard 662.4 h | viol 0
+[run] PCM_B0_CrodaTherm60_B0_f1.0_fast         year 10 s | E_del45 876.7 kWh (win 550.3) | tau45 63.1 h (7/12 censored) | guard 1680.4 h | viol 0
+[run] PCM_DQN_CrodaTherm60_DQN_f1.0_fast       year 12 s | E_del45 873.8 kWh (win 547.4) | tau45 63.1 h (6/12 censored) | guard 812.6 h | viol 0
+[run] PCM_B0_nHeptacosaneC27_B0_f1.0_fast      year 10 s | E_del45 876.0 kWh (win 550.6) | tau45 62.6 h (6/12 censored) | guard 1880.3 h | viol 0
+[run] PCM_DQN_nHeptacosaneC27_DQN_f1.0_fast    year 11 s | E_del45 876.0 kWh (win 550.6) | tau45 62.4 h (6/12 censored) | guard 928.0 h | viol 0
+[run] PCMfree_none_B0_f0.7_fast                year 3 s | E_del45 777.3 kWh (win 457.3) | tau45 51.9 h (0/12 censored) | guard 748.7 h | viol 0
+[run] PCM_B0_PureTemp60_B0_f0.7_fast           year 12 s | E_del45 910.7 kWh (win 583.7) | tau45 62.6 h (7/12 censored) | guard 1201.4 h | viol 0
+[run] PCM_DQN_PureTemp60_DQN_f0.7_fast         year 12 s | E_del45 900.6 kWh (win 573.7) | tau45 62.2 h (7/12 censored) | guard 666.5 h | viol 0
+[run] PCMfree_none_B0_f1.3_fast                year 3 s | E_del45 766.2 kWh (win 449.9) | tau45 51.5 h (0/12 censored) | guard 769.4 h | viol 0
+[run] PCM_B0_PureTemp60_B0_f1.3_fast           year 12 s | E_del45 901.5 kWh (win 577.7) | tau45 63.0 h (7/12 censored) | guard 1347.3 h | viol 0
+[run] PCM_DQN_PureTemp60_DQN_f1.3_fast         year 13 s | E_del45 896.2 kWh (win 572.4) | tau45 62.8 h (7/12 censored) | guard 643.4 h | viol 0
+[campaign] 13 runs -> campaign_results.csv
+    controller              pcm              o1_consensus_rank    o1_mc_top3_pct    tau_hold_45C_mean_h    E_del45_win_kWh    twin_rank_by_tau_hold    twin_rank_by_E_del_win    spearman_tau_vs_o1    spearman_Edel_vs_o1
+    __________    _______________________    _________________    ______________    ___________________    _______________    _____________________    ______________________    __________________    ___________________
+
+     {'B0' }      {'PureTemp 60'        }            1                 99.3               62.892               580.11                   2                        1                      0.5                    0.5        
+     {'B0' }      {'CrodaTherm 60'      }            2                 93.6               63.147               550.25                   1                        3                      0.5                    0.5        
+     {'B0' }      {'n-Heptacosane (C27)'}            3                 56.1               62.596               550.56                   3                        2                      0.5                    0.5        
+     {'DQN'}      {'PureTemp 60'        }            1                 99.3               62.574               574.19                   2                        1                      0.5                    0.5        
+     {'DQN'}      {'CrodaTherm 60'      }            2                 93.6               63.051               547.35                   1                        3                      0.5                    0.5        
+     {'DQN'}      {'n-Heptacosane (C27)'}            3                 56.1               62.439               550.59                   3                        2                      0.5                    0.5        
+
+  (three items per cluster: report the correlation with that caveat, not as a conclusion)
+CAMPAIGN_DONE_MARKER
+        arm                   pcm              controller    tau_hold_45C_mean_h_frozen    tau_hold_45C_mean_h_cal    tau_hold_45C_mean_h_fast    E_del45_win_kWh_frozen    E_del45_win_kWh_cal    E_del45_win_kWh_fast
+    ____________    _______________________    __________    __________________________    _______________________    ________________________    ______________________    ___________________    ____________________
+
+    {'PCM-free'}    {'none'               }     {'B0' }                51.908                      51.908                      51.908                     452.82                  452.82                  452.82       
+    {'PCM+B0'  }    {'PureTemp 60'        }     {'B0' }                61.192                       61.23                      62.892                     587.16                  587.24                  580.11       
+    {'PCM+DQN' }    {'PureTemp 60'        }     {'DQN'}                61.011                      61.061                      62.574                     572.07                   572.3                  574.19       
+    {'PCM+B0'  }    {'CrodaTherm 60'      }     {'B0' }                62.443                      62.468                      63.147                     562.71                  562.54                  550.25       
+    {'PCM+DQN' }    {'CrodaTherm 60'      }     {'DQN'}                62.323                      62.353                      63.051                     559.04                  558.96                  547.35       
+    {'PCM+B0'  }    {'n-Heptacosane (C27)'}     {'B0' }                62.201                      61.964                      62.596                     562.73                  562.45                  550.56       
+    {'PCM+DQN' }    {'n-Heptacosane (C27)'}     {'DQN'}                61.977                      61.988                      62.439                     562.25                  561.98                  550.59       
+
+
+=== check_energy_balance, regime 1 ===
+[PASS] restart A (replay from stored state)       max dT 0.00e+00 C, max dh 0.00e+00 J/kg
+[PASS] restart B (run_hold_test vs full run)      max dTtop 0.00e+00, max dT nodes 0.00e+00 C, dE 0.00e+00 kWh, melt fraction at start 1.00
+[PASS] closure B0 (4800 h)                        residual 2.65e-12 % of collector heat (limit 0.1 %), worst hour 5.68e-11 Wh
+[PASS] closure DQN (4800 h)                       residual 2.46e-12 % of collector heat (limit 0.1 %), worst hour 5.68e-11 Wh
+[PASS] latent-heat accounting / PCM swap          swap(PureTemp 60) vs O2 vector: max dP 2.84e-14, max dh0 0.00e+00; PureTemp 60: 13.38 kg x 220 kJ/kg = 2944 kJ; CrodaTherm 60: 12.85 kg x 217 kJ/kg = 2789 kJ; n-Heptacosane (C27): 10.78 kg x 236 kJ/kg = 2543 kJ; 
+[PASS] plain-tank hold is an exponential          time constant 92.1 h; deviation 1.4e-11 K from the implicit-Euler solution, 3.2e-03 K from exp(-t/tau); real (non-uniform) loss vector: 0.09 K
+[PASS] zero input stays put                       max drift 4.73e-13 C, max dh 0.00e+00 J/kg
+[FAIL] sub-step independence (150 s -> 75 s)      annual delivered 912.362 -> 911.632 -> 911.260 kWh (150/75/37.5 s); change 0.0801 % then 0.0408 % (gate 0.05 %)
+[check_energy_balance] overall: PASS

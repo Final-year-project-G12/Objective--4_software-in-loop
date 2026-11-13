@@ -22,7 +22,7 @@ function tw = load_twin_params(exportDir, year)
 %   22 D_cap      23 A_cap      24 m_cap      25 band_margin 26 stiffness 27 n_sub_band 28 max_sub
 %   29 shield_on  30 bypass_wC  31 bypass_pC  32 max_wC     33 max_pC     34 (unused)  35 c_cond
 %   36 A_coll     37 fr_tau_alpha 38 fr_ul    39 I_cutoff   40 obs_low    41 obs_high  42 T_init_water
-%   43 n_nodes    44-50 spare
+%   43 n_nodes    44 length of one plant "hour" in s (0 = 3600; only benchmark_amanowicz.m sets it)   45-50 spare
 %   51:60 m_w per node [kg]     61:70 capsules per node     71:80 loss UA per node [W/K]
 %   (node 1 = bottom, node 10 = top)
 if nargin < 1 || isempty(exportDir)

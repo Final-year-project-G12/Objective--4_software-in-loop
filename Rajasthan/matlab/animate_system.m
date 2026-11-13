@@ -1,4 +1,4 @@
-function animate_system(L, file, titleStr, framesPerHour, Icut)
+function animate_system(L, file, titleStr, framesPerHour, Icut, stateText)
 %ANIMATE_SYSTEM  Animated schematic of the Rajasthan solar PCM water heater driven by a
 % simulation log L (from simulate_hours): sun and irradiance, collector, pump with
 % moving water particles, bypass state, storage tank drawn as two bands (upper band
@@ -10,6 +10,7 @@ function animate_system(L, file, titleStr, framesPerHour, Icut)
 if nargin < 3, titleStr = ''; end
 if nargin < 4, framesPerHour = 4; end
 if nargin < 5, Icut = 0; end      % collector cut-in irradiance [W/m^2]; pump idles below it
+if nargin < 6, stateText = ''; end  % fixed caption instead of the controller action (retention animation)
 n = numel(L.Tw);
 
 fig = figure('Visible', 'off', 'Position', [50 50 1100 720], 'Color', 'w');
@@ -83,7 +84,9 @@ actName = {'CHARGE', 'IDLE', 'BYPASS'};
 snapT = round(0.45 * n);      % a mid-event hour saved as a still image
 for t = 1:n
     Tw = L.Tw(t); Tb = L.Tbot(t); Tp = L.Tpcm(t); fm = L.f_melt(t); I = L.GHI(t);
-    pumpOn = (L.a_exec(t) == 0) && ((L.n_sw(t) + 0) == 0) && (I > Icut);
+    % the pump is drawn as running only when the loop really circulates: CHARGE executed, above the cut-in
+    % irradiance, and the collector actually adds heat (fix: it used to run whenever CHARGE was commanded)
+    pumpOn = (L.a_exec(t) == 0) && ((L.n_sw(t) + 0) == 0) && (I > Icut) && (L.Q_coll_Wh(t) > 0);
     bypass = (L.a_exec(t) == 2) || L.interlock(t) >= 2;
     shield = (L.n_sw(t) + L.n_sp(t)) > 0;
 
@@ -105,6 +108,7 @@ for t = 1:n
     st = sprintf('%s%s', actName{L.a_exec(t) + 1}, ternary(shield, '  (safety shield active)', ''));
     if L.interlock(t) == 2, st = 'SENSOR FAULT -> fail-safe BYPASS'; end
     if L.interlock(t) == 3, st = 'HARD-LIMIT FAULT LATCHED'; end
+    if ~isempty(stateText), st = stateText; end
     set(hState, 'String', st, 'Color', ternary(shield || L.interlock(t) >= 2, [0.8 0.1 0.1], [0.1 0.4 0.1]));
     set(hInfo, 'String', sprintf(' day %d  %02d:00\n GHI %4.0f W/m^2   T_{amb} %4.1f \\circC\n T_{top} %4.1f \\circC   T_{bottom} %4.1f \\circC\n T_{PCM} %4.1f \\circC   PCM melted %3.0f %%\n draw %4.1f kg/h   delivered %4.0f Wh', ...
         floor((t-1)/24) + 1, mod(round(L.hod(t)), 24), I, L.T_amb(t), Tw, Tb, Tp, 100*fm, L.draw_kg(t), L.E_del_Wh(t)));

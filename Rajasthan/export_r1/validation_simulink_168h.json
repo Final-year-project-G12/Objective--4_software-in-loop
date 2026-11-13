@@ -1,0 +1,51 @@
+{
+  "A_open_loop": {
+    "max_abs_dT_top_C": 7.1054273576010019E-14,
+    "max_abs_dT_bottom_C": 7.1054273576010019E-14,
+    "max_abs_dT_mean_C": 7.1054273576010019E-14,
+    "max_abs_dT_pcm_C": 7.1054273576010019E-14,
+    "max_abs_df_melt": 2.6090241078691179E-15,
+    "max_abs_dE_del_Wh": 1.0231815394945443E-12,
+    "delivered_kWh_matlab": 13.041227348561621,
+    "delivered_kWh_python": 13.041227348561616,
+    "shields_matlab": 0,
+    "shields_python": 0,
+    "violations_matlab": 0,
+    "violations_python": 0,
+    "pass": true
+  },
+  "A_policy_on_python_obs": {
+    "action_agreement_pct": 100,
+    "max_rel_dQ": 3.3475281918781734E-7
+  },
+  "C_closed_loop": {
+    "action_agreement_pct": 100,
+    "max_abs_dT_top_C": 7.1054273576010019E-14,
+    "max_abs_dT_pcm_C": 7.1054273576010019E-14,
+    "max_abs_dobs": 2.6645352988050451E-16,
+    "delivered_kWh_matlab": 13.041227348561621,
+    "delivered_kWh_python": 13.041227348561616,
+    "shields_matlab": 0,
+    "shields_python": 0,
+    "violations_matlab": 0,
+    "pass": true
+  },
+  "overall_pass": true,
+  "B_simulink": {
+    "action_agreement_pct": 100,
+    "max_abs_dT_top_C": 7.1054273576010019E-14,
+    "max_abs_dT_pcm_C": 7.1054273576010019E-14,
+    "delivered_kWh_matlab": 13.041227348561621,
+    "delivered_kWh_python": 13.041227348561616,
+    "delivered_rel_err_pct": 4.0863259076520293E-14,
+    "shields_matlab": 0,
+    "shields_python": 0,
+    "violations_matlab": 0,
+    "pass": true
+  },
+  "regime": 1,
+  "year": 2023,
+  "hours": 168,
+  "matlab": "26.2.0.3433840 (R2026b) Update 1",
+  "generated": "2026-11-14T00:51:29"
+}

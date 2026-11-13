@@ -2,7 +2,7 @@
 
 **One-line summary:** Objective 4 is done as a **software-in-the-loop (SIL) digital twin in MATLAB/Simulink**: the trained Objective 3 DQN controller is plugged into a simulated Rajasthan solar PCM water heater with noisy sensors and a safety interlock, and tested on normal and extreme weather. This is *emulated* validation, not experimental validation.
 
-**State of the work today:** the MATLAB twin has been run in MATLAB R2026b for all three regimes: full-year validation, six scenarios, plots, and (for regime 1) animations. A Python copy of the same code (`sil_python_mirror.py`) gives the same numbers as a cross-check. The Simulink block diagram and the generated C code are not done, because the installed MATLAB has neither Simulink nor MATLAB Coder.
+**State of the work today:** the MATLAB twin has been run in MATLAB R2026b for all three regimes: full-year validation, six scenarios, plots, and (for regime 1) animations. A Python copy of the same code (`sil_python_mirror.py`) gives the same numbers as a cross-check. The Simulink model was built and run for one week of regime 1 (identical actions, 0.78 s per simulated hour; the generated files were then deleted and are rebuilt on demand); the generated C code was not run in this pass. On 14 November 2026 the improvement plan v2 was added for regime 1: a retention (hold-time) test, a PCM swap over Objective 1's top-3, a 13-run simulation matrix, energy-balance checks, a tank-level comparison with a published experiment, figures and animations (section 1.9).
 
 ---
 
@@ -69,7 +69,7 @@
 
 The remaining differences are rounding noise from the two linear solvers. The Python mirror gives the same table with differences of exactly zero.
 
-**Still to do:** the one-week Simulink check and `verify_codegen`, once Simulink and MATLAB Coder are installed.
+**Added since:** the one-week Simulink check passes (100 % identical actions, 13.04 = 13.04 kWh). **Still to do:** `verify_codegen` (generated C), not run in this pass.
 
 ### 1.6 How results were evaluated
 
@@ -89,10 +89,12 @@ For every scenario, the DQN and the always-charge baseline B0 run on the same we
 | Six edge-case scenarios, three regimes: table and plots | Done, in MATLAB |
 | Animations | Done for regime 1 (four 10-day videos, four shorter clips) |
 | Independent Python cross-check of all of the above | Done |
-| Simulink model `pcm_drl_twin_rj.slx` | Not built: Simulink not installed; builder script never run |
-| Generated C code of the controller | Not done: MATLAB Coder not installed |
+| Simulink model `pcm_drl_twin_rj.slx` | Built and run for one week of regime 1: passes |
+| Generated C code of the controller | Not run in this pass |
 | Processor-in-the-loop on a target board | Not done; future work |
-| Comparison with published experimental results | Not done in this folder |
+| Retention test, PCM swap, simulation matrix, checks, figures, animations (plan v2) | Done for regime 1 (section 1.9) |
+| Comparison with a published tank experiment | Done (Amanowicz & Turski 2025): within 1.1-1.4 K with matched capsule geometry, section 1.9 |
+| Comparison with published experimental results for this design | Not possible: no rig |
 
 ### 1.8 Final output so far (with explanation)
 
@@ -143,9 +145,43 @@ For every scenario, the DQN and the always-charge baseline B0 run on the same we
 - Only the regime 1 controller differs from always-charge. For regimes 0 and 2 the twin confirms the released policy is B0 in practice.
 - The hard limits (75 °C water / 65 °C PCM) are never reached in any scenario or in the full-year runs.
 
-**Limits:** no Simulink model or generated C yet; animations for regime 1 only; emulated, not experimental; perfect 3-hour forecast; melt fraction and energy fields treated as perfect estimates; rain enters only as less sunlight and cooler air; the interlock has no debounce; 2023 is a validation year.
+**Limits:** Simulink run for one week only and no generated C in this pass; animations for regime 1 only; emulated, not experimental; perfect 3-hour forecast; melt fraction and energy fields treated as perfect estimates; rain enters only as less sunlight and cooler air; the interlock has no debounce; 2023 is a validation year.
 
 ---
+
+### 1.9 Improvement plan v2 (added 14 Nov 2026, regime 1, 2023)
+
+The question added: how much heat does the tank hold, and for how long, after charging stops, with and without PCM and with and without the controller. Details, tables and file names are in `README.md` ("Improvement plan v2") and `OUTPUTS_GUIDE.md` section 8.
+
+| Result | Number |
+|---|---|
+| Hold time above 45 °C, water-only / PureTemp 60 + B0 / PureTemp 60 + DQN (mean of 12 evenings, 72 h cap) | 51.9 / 61.2 / 61.0 h |
+| Runs still above 45 °C at the cap | 1 / 7 / 6 of 12 |
+| Window energy (18:00-09:00, 45 °C), same three arms | 452.8 / 587.2 / 572.1 kWh per year |
+| Objective 2's repeatability band on this quantity | 14.4 kWh |
+| Melt fraction left after 24 h / 48 h | 0.11-0.18 / 0 |
+| Guard-band hours, B0 vs DQN | 994 vs 430 |
+| Energy closure over 4800 h | 2.7e-12 % (limit 0.1 %) |
+| Restart from a stored state | exact (0 difference) |
+| Sub-step test (150 s to 75 s) | 0.080 % change: above Objective 2's 0.05 % gate; 0.041 % for 75 s to 37.5 s |
+| Tank-level comparison with Amanowicz & Turski 2025, water + capsules, RMSE | 1.1-1.4 K with spheres matching the slab's surface/volume (frozen constants); 5.4-5.7 K with one sphere per capsule |
+| Capsule constant c fitted on Amanowicz & Turski | 5.03 (frozen 5): null result; fitting on the one-sphere mapping gives 40 and fails Tan/Dong |
+| Sub-step 0.080 % change | from the sensible-heat hours (-0.726 of -0.731 kWh), not the 2929 melting hours; water-only tank -0.66 % |
+
+Points to say in the viva:
+- **The PCM buys about 9-10 h of hold time and about 120-135 kWh a year in the evening window**, measured against a water-only tank of the same volume; both are far outside Objective 2's repeatability band. The number to quote is the difference, not the 61 h.
+- **The controller does not cost retention.** DQN and always-charge hold the same (61.0 vs 61.2 h); the DQN gives up 15 kWh of window energy (about the size of the band) and cuts guard-band hours by 57 %. The plan expected a possible retention loss; it did not appear in regime 1.
+- **Latent heat is spent within a day.** The capsules are 11-18 % melted after 24 h and solid after 48 h, so the hours beyond that are sensible heat. The long hold times are mostly the warm 26 °C mains water: the 30 °C criterion in Chen et al. 2025 cannot separate designs here (always at the cap).
+- **Objective 1's ranking is only weakly tested.** The three PCMs differ by about 1 h in hold time. By window energy the twin agrees PureTemp 60 is best; by hold time it ranks it last. Three items, so this is a caveat, not a conclusion.
+- **The earlier "capsule model too slow" finding was a geometry artefact.** The benchmark's 22 mm cuboid capsules were stood in for by one 83 mm sphere each, whose conduction path is 3.6 times too long. With spheres that keep the PCM mass and the surface/volume ratio the frozen constants (c = 5, F = 2) give RMSE 1.1-1.4 K and the printed temperature drops within 5 %. None of c, F or the film coefficient could remove the old 4.5-4.9 K bias; c fitted on the original mapping runs away to 40 and wrecks Tan 2009 and Dong 2022. Fitted on the matched mapping, c = 5.03: a null calibration. Tank loss: only that coefficient was fitted (water-only case).
+- **Single-capsule experiments still show the frozen model slower** (Tan 2009: 25 % melt at 71 against 40 min; Dong 2022: half melt at 78 against about 58 min), and the two disagree on how much to change c (about 10 against about 6). A campaign at c = 7.1 (bound, not a held-out result) gives hold times 0.4-1.7 h longer and window energy -12 to +2 kWh, with more guard-band hours: so the frozen hold times are, if anything, slightly short. Both campaigns are kept next to the default.
+- **Sub-step gate not met, and why.** 0.080 % for 150 to 75 s (gate 0.05 %, not relaxed): the melting hours contribute -0.005 of -0.731 kWh because melting hours already sub-step at 25 s; the sensible-heat hours carry it, and the water-only tank is worse (-0.66 %). Report it as a measured limitation of the implicit-Euler tank model at 150 s.
+- **Ranking:** the three PCMs differ by about 1 h in hold time; the twin ranks PureTemp 60 last on hold time but first on window energy (25 kWh ahead); three items are too few to support a ranking claim, and the order moves with the capsule constant.
+- **Retention figures from the literature are not ours.** Chen et al. 2025: 17.1 / 29.6 / 31.7 h above 30 °C on a 30 L/day RT35HC system with no controller. The "12 h without PCM" and "24-48 h with PCM plus AI" figures have no source in Chen or Singh. This folder: 51.9 h water-only and 61.0-62.4 h with PCM at 45 °C on 300 L/day, and the 30 °C column is at the cap everywhere.
+- **Objective 1 numbers:** the Monte-Carlo percentages in Objective 2's config and Objective 1 copy are 99.3 / 93.6 / 56.1; the plan's table (95.6 / 93.7 / 55.8) is from the later Objective 1 repository file (28 Oct 2026). Ranks and the cluster 1 shortlist are identical. The O2 `manifest.json` entry for that file is stale (935 bytes listed, 10 322 on disk).
+- **Three Rajasthan regimes** give similar gains (+129 to +140 kWh window, +8.3 to +9.8 h); this is not a three-state comparison, which needs the other twins' results.
+- **Two things found on the way:** a water-only tank latched a false hard-limit fault because the interlock compared its mean water temperature with the 65 °C PCM limit (fixed for that arm only); and the pump was drawn running whenever CHARGE was commanded, even without collector gain (fixed in the animation).
+- **Also done in the follow-up:** supercooling proxy (freezing point 2 K lower: hold time changes by under 1 h, 50 °C hold +0.5 to +1.0 h), pump energy from Objective 2's Ergun head (0.005 Wh per year, a lower bound). **Not done:** a cross-state F5 (needs the other two twins), generated C, option C1 (needs the Partial Differential Equation Toolbox).
 
 ## 2. Why MATLAB?
 
@@ -154,7 +190,7 @@ For every scenario, the DQN and the always-charge baseline B0 run on the same we
 - **It is the route to embedded code.** The same controller function can be compiled to C with MATLAB Coder and later used for processor-in-the-loop.
 - **One tool covers modelling, testing, plots and animation**, and the Tamil Nadu twin already uses it, so the two states are reported the same way.
 
-**What is needed to run it:** MATLAB (run here with R2026b). Simulink and Stateflow are needed only for the `.slx` model; MATLAB Coder only for the C code. `run_scenarios`, `validate_against_python` and `make_my_video` need base MATLAB only.
+**What is needed to run it:** MATLAB (run here with R2026b). Simulink and Stateflow are needed only for the `.slx` model; MATLAB Coder only for the C code. `run_scenarios`, `validate_against_python`, `make_my_video`, `run_campaign`, `check_energy_balance`, `benchmark_amanowicz` and `plot_pack` need base MATLAB only. `build_campaign_config.py` needs PyYAML (in the project environment).
 
 ---
 
@@ -163,13 +199,14 @@ For every scenario, the DQN and the always-charge baseline B0 run on the same we
 | Product | Purpose |
 |---|---|
 | **MATLAB (base)** | Plant physics, policy, sensor model, interlock, scenarios, plotting, MP4 animation |
-| **Simulink + Stateflow** | The block-diagram twin (`pcm_drl_twin_rj.slx`) built from MATLAB Function blocks |
-| **MATLAB Coder** | C code of `controller_step` (policy + interlock) |
+| **Simulink + Stateflow** | The block-diagram twin (`pcm_drl_twin_rj.slx`) built from MATLAB Function blocks (built and run once) |
+| **MATLAB Coder** | C code of `controller_step` (policy + interlock); not run in this pass |
+| **Not installed, not needed** | Statistics and Parallel Computing toolboxes: Spearman correlation and the 95 % confidence intervals are computed by hand, the campaign runs serially |
 | **Python (NumPy, numba, PyTorch, Stable-Baselines3)** | One-time export and reference run (`export_from_python.py`); the mirror check (`sil_python_mirror.py`) needs only NumPy, numba and matplotlib |
 
 **What the work demonstrates so far:** the trained controller can be rebuilt from exported numbers alone and then makes the same decision as in Objective 3 in every hour of a year; it stays inside the safety limits under no sun, rain, cold, heat and sensor failure; the fail-safe logic works; and for regime 1 it trades about 2 % of yearly delivery for 57 % fewer hours in the guard band.
 
-**What has not been verified:** the Simulink builder and the C code generation (never run), and behaviour on real hardware.
+**What has not been verified:** the C code generation (not run), Simulink beyond one week, and behaviour on real hardware.
 
 ---
 
@@ -184,4 +221,7 @@ cd Rajasthan/matlab
 regime = 1; doAnim = false; run_scenarios      % six scenarios, plots, table
 validate_against_python(1)                     % full-year check
 regime = 1; doAnim = true;  run_scenarios      % with animations
+check_energy_balance(1); benchmark_amanowicz   % plan v2 checks and benchmark
+run_campaign; plot_pack                        % plan v2 matrix and figures (after python build_campaign_config.py --regime 1)
+diagnose_capsule; calibrate_capsule; diagnose_substep(1)   % capsule diagnosis, calibration, sub-step attribution
 ```

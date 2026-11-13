@@ -1,4 +1,4 @@
-function [T, h, y] = pcm_plant_hour(I_t, T_amb, draw_kg, action, T, h, P)
+function [T, h, y, x] = pcm_plant_hour(I_t, T_amb, draw_kg, action, T, h, P)
 %PCM_PLANT_HOUR  One hour of the Rajasthan PCM solar water heater (frozen O2 physics).
 %
 % Line-for-line port of Objective 2's stratified-tank kernel
@@ -28,6 +28,12 @@ function [T, h, y] = pcm_plant_hour(I_t, T_amb, draw_kg, action, T, h, P)
 %             8 E_del_Wh (delivered up to 45 C)  9 E_unmet_Wh  10 Q_coll_Wh  11 draw_kg
 %            12 n_shield_water  13 n_shield_pcm  14 n_viol (sub-steps over a hard limit)
 %            15 a_exec  16 T_top_max  17 T_pcm_max  18 shield_seconds (water + PCM)
+%   x        [4x1] OPTIONAL extra accounting added for the Objective 4 improvement plan
+%            (does not change y or the physics; Simulink/codegen callers may ignore it):
+%             1 Q_load_Wh  heat carried out by the draw (relative to the mains temperature)
+%             2 Q_loss_Wh  heat lost to ambient through the tank wall
+%             3 E_del50_Wh delivered heat counted up to 50 C   4 E_unmet50_Wh unmet vs 50 C
+%            Closure: Q_coll_Wh - Q_load_Wh - Q_loss_Wh = change of stored energy (check_energy_balance.m)
 %#codegen
 
 N = 10;
@@ -76,11 +82,16 @@ for i = 1:N
     end
 end
 
-nsteps = round(3600 / dt);
-mdot_d = draw_kg / 3600;                 % constant draw rate over the hour
+% "hour" length: 3600 s unless P(44) > 0 (spare slot, 0 in every exported twin). Only the tank-level
+% benchmark (benchmark_amanowicz.m) sets it, to step a 2-hour cool-down in 300 s pieces.
+H_s = 3600;
+if P(44) > 0, H_s = P(44); end
+nsteps = round(H_s / dt);
+mdot_d = draw_kg / H_s;                  % constant draw rate over the hour
 step_draw = draw_kg / nsteps;
 
 hq_c = 0;  hq_un = 0;  h_draw = 0;  h_edel = 0;
+hq_load = 0;  hq_loss = 0;  h_edel50 = 0;  hq_un50 = 0;
 t_top_max = -1e9;  t_p_max = -1e9;
 n_sw = 0;  n_sp = 0;  n_viol = 0;  shield_s = 0;
 
@@ -180,6 +191,16 @@ for st = 1:nsteps
                 end
             end
         end
+        % extra accounting (uses the same Tn the implicit step solved for)
+        q_loss_now = 0;
+        for i = 1:N
+            q_loss_now = q_loss_now + loss_ua(i) * (Tn(i) - T_amb);
+        end
+        hq_loss = hq_loss + q_loss_now * dts;
+        hq_load = hq_load + mdot_d * cp * (t_top - mains) * dts;
+        if mdot_d > 0
+            hq_un50 = hq_un50 + mdot_d * cp * max(50 - t_top, 0) * dts;
+        end
         Tn = mix_inversions(Tn, m_w, N);
         for i = 1:N
             T(i) = Tn(i);
@@ -193,6 +214,7 @@ for st = 1:nsteps
         if dm > 0
             h_draw = h_draw + dm;
             h_edel = h_edel + dm * cp * max(min(t_top, target) - mains, 0);
+            h_edel50 = h_edel50 + dm * cp * max(min(t_top, 50) - mains, 0);
         end
         t_top_max = max(t_top_max, t_top);
         bad = false;
@@ -220,6 +242,7 @@ end
 y = [s(1); s(2); s(3); s(4); s(5); s(6); s(7); ...
      h_edel / 3600; hq_un / 3600; hq_c / 3600; h_draw; ...
      n_sw; n_sp; n_viol; a_exec; t_top_max; t_p_max; shield_s];
+x = [hq_load / 3600; hq_loss / 3600; h_edel50 / 3600; hq_un50 / 3600];
 end
 
 % ======================================================================

@@ -1,0 +1,121 @@
+{
+ "state": "rajasthan",
+ "regime": 1,
+ "o1": {
+  "source": "objective2-rajasthan/data/objective1 (Objective 2's copy of the Objective 1 outputs)",
+  "n_clusters": 3,
+  "cluster_id": 1,
+  "cluster_label": "hot, monsoon-influenced, steady solar resource, long low-clearness runs (high autonomy demand), medoid RJP_0192 -- Nagaur (83 pts)",
+  "n_points": 83,
+  "population_covered": 14033429,
+  "T_mains_C": 25.984,
+  "kendalls_w_cluster": 0.75,
+  "pcms": [
+   {
+    "name": "PureTemp 60",
+    "consensus_rank": 1,
+    "chosen_by_O2": true,
+    "Tm_C": 61.0,
+    "latent_heat_kJ_kg": 220.0,
+    "density_solid_kg_m3": 960.0,
+    "cp_solid_kJ_kgK": 2.04,
+    "cp_liquid_kJ_kgK": 2.38,
+    "k_W_mK": 0.2,
+    "supercooling_K": -0.5,
+    "cycles_tested": 1695.0,
+    "mc_top3_inclusion_pct": 99.3
+   },
+   {
+    "name": "CrodaTherm 60",
+    "consensus_rank": 2,
+    "chosen_by_O2": false,
+    "Tm_C": 59.8,
+    "latent_heat_kJ_kg": 217.0,
+    "density_solid_kg_m3": 922.0,
+    "cp_solid_kJ_kgK": 1.4,
+    "cp_liquid_kJ_kgK": 2.3,
+    "k_W_mK": 0.22999999999999998,
+    "supercooling_K": -1.7000000000000028,
+    "cycles_tested": 1533.0,
+    "mc_top3_inclusion_pct": 93.60000000000001
+   },
+   {
+    "name": "n-Heptacosane (C27)",
+    "consensus_rank": 3,
+    "chosen_by_O2": false,
+    "Tm_C": 59.0,
+    "latent_heat_kJ_kg": 236.0,
+    "density_solid_kg_m3": 773.0,
+    "cp_solid_kJ_kgK": 2.2,
+    "cp_liquid_kJ_kgK": 2.38,
+    "k_W_mK": 0.2415,
+    "supercooling_K": -0.7000000000000028,
+    "cycles_tested": 1404.0,
+    "mc_top3_inclusion_pct": 56.10000000000001
+   }
+  ]
+ },
+ "o2": {
+  "chosen": {
+   "pcm": "PureTemp 60",
+   "pcm_rank": 1,
+   "R_in_m": 0.0399999188021001,
+   "fraction": 0.29586925961579813,
+   "N": 52,
+   "flow": 0.0492621269067906,
+   "arrangement": "single-layer",
+   "g_window": 137.44536819136957,
+   "g_annual": 144.93333399445598,
+   "d_overheat": 245.19837022251443,
+   "g_window_sd": 4.012236043445312,
+   "t_pcm_max": 62.29506249326185,
+   "t_water_max": 72.19602598966871,
+   "feasible_select": true,
+   "pcm_mass_kg": 13.38260055120757,
+   "explore_g_window": 138.96327845421678,
+   "explore_g_annual": 146.38028756274122,
+   "gain_tau_serve_h": 0.024474940270701257,
+   "gain_tau_serve_se": 0.004448944250598243,
+   "gain_tau_hold_h": 8.948745518255762,
+   "gain_serve_frac": -0.0005649023014587714
+  },
+  "repeatability_band": {
+   "g_window": 14.373494189882395,
+   "g_annual": 14.136869905170652,
+   "d_overheat": 152.27224748629033
+  },
+  "tank_volume_L": 50.0,
+  "collector_m2": 1.5,
+  "n_capsule": 52,
+  "flow_kg_s": 0.0492621269067906,
+  "arrangement": "single-layer",
+  "hydraulics": {
+   "source": "objective2-rajasthan/src/design/geometry.py::compute_geometry (Ergun, packed bed of spheres)",
+   "dp_nominal_Pa": 0.013610167050563345,
+   "pump_power_nominal_W": 1.117442960779119e-06,
+   "void_fraction": 0.5557795255293412,
+   "ergun_a_Pa_per_kg_s": 0.09045198343016857,
+   "ergun_b_Pa_per_kg_s2": 3.7722398278443023,
+   "pump_efficiency": 0.6,
+   "note": "pump_efficiency 0.6 = system_config_shared.yaml pump.efficiency = contract pump_efficiency"
+  }
+ },
+ "o3": {
+  "controller": "DQN 17-64-64-3",
+  "weights_file": "export_r1/dqn_qnet_r1.json",
+  "contract": "obj3_contract_v3.0_rajasthan_2026-11-11"
+ },
+ "provenance": {
+  "date": "2026-11-14",
+  "python": "3.10.11",
+  "sha256": {
+   "OBJECTIVE2\\Objective---2\\objective2-rajasthan\\data\\objective1\\mcdm_topk_by_cluster.csv": "6fd249b07eb3385b0bfb1af2f62c97cee99f32c4913b05dd2ceac936429cebac",
+   "OBJECTIVE2\\Objective---2\\objective2-rajasthan\\data\\objective1\\pcm_database_rajasthan.csv": "56dc3f6461e1581ee979e59ae9bfb41a636f6081eaad035fb9af9d1c8bca7fa0",
+   "OBJECTIVE2\\Objective---2\\objective2-rajasthan\\configs\\states\\rajasthan.yaml": "158bfd366953d1be5f8043aacfb175c9f0d5e0b22e3a11b8785697be94b60726",
+   "OBJECTIVE2\\Objective---2\\objective2-rajasthan\\results\\g10_selection_r1.json": "de6364d5908cf5322a6800ce4436fc172558664d0861612843d6e4f0e85f56b2",
+   "Objective--4_software-in-loop\\Rajasthan\\export_r1\\plant_params.json": "d995c7c5e53fd24cde8ba3c2a50a21880d30d00ed6942e771e2a53a2f0cff935",
+   "Objective--4_software-in-loop\\Rajasthan\\export_r1\\dqn_qnet_r1.json": "96d4788b89498dac3e0e272952f0d458cabde969064a6e628ad7f514c724b9a9",
+   "OBJECTIVE2\\Objective---2\\objective2-rajasthan\\data\\objective1\\manifest.json": "6e8df98590fb7c42fa87b000d6337cf26dacdaa1df1600c638aabb6ed7a406c4"
+  }
+ }
+}

@@ -1,0 +1,7 @@
+controller,pcm,o1_consensus_rank,o1_mc_top3_pct,tau_hold_45C_mean_h,E_del45_win_kWh,twin_rank_by_tau_hold,twin_rank_by_E_del_win,spearman_tau_vs_o1,spearman_Edel_vs_o1
+B0,PureTemp 60,1,99.3,61.2297665342555,587.242916895543,3,1,-0.5,1
+B0,CrodaTherm 60,2,93.6,62.4684384785026,562.537389682685,1,2,-0.5,1
+B0,n-Heptacosane (C27),3,56.1,61.9636951427704,562.448663522995,2,3,-0.5,1
+DQN,PureTemp 60,1,99.3,61.0610796767611,572.302614548386,3,1,-0.5,0.5
+DQN,CrodaTherm 60,2,93.6,62.3527399657411,558.962217823305,1,3,-0.5,0.5
+DQN,n-Heptacosane (C27),3,56.1,61.9878842893451,561.984758867879,2,2,-0.5,0.5

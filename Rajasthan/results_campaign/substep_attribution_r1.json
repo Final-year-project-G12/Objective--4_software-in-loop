@@ -1,0 +1,62 @@
+{
+  "pcm_150s_to_75s": {
+    "total_change_pct": -0.080079922875245749,
+    "total_change_kWh": -0.73061902982082239,
+    "melting_hours": 2929,
+    "other_hours": 5831,
+    "diff_melting_hours_kWh": -0.0049005487419439614,
+    "diff_other_hours_kWh": -0.72571848107887682,
+    "abs_diff_melting_hours_kWh": 0.20446255699988333,
+    "abs_diff_other_hours_kWh": 0.85687326046811563,
+    "diff_pump_on_hours_kWh": -0.46189808397902415,
+    "diff_pump_off_hours_kWh": -0.26872094584179873,
+    "share_of_total_from_melting_hours_pct": 0.67073926929411842,
+    "gate_pct": 0.05,
+    "gate_met": false
+  },
+  "pcm_75s_to_37p5s": {
+    "total_change_pct": -0.040808423467724987,
+    "total_change_kWh": -0.37202251868998826,
+    "melting_hours": 2929,
+    "other_hours": 5831,
+    "diff_melting_hours_kWh": 0.005145678231229015,
+    "diff_other_hours_kWh": -0.37716819692121772,
+    "abs_diff_melting_hours_kWh": 0.1038617977477259,
+    "abs_diff_other_hours_kWh": 0.44755470249314838,
+    "diff_pump_on_hours_kWh": -0.23156418918135269,
+    "diff_pump_off_hours_kWh": -0.1404583295086369,
+    "share_of_total_from_melting_hours_pct": -1.3831631078001982,
+    "gate_pct": 0.05,
+    "gate_met": true
+  },
+  "plain_150s_to_75s": {
+    "total_change_pct": -0.66435875359873564,
+    "total_change_kWh": -5.1185334408407162,
+    "melting_hours": 0,
+    "other_hours": 8760,
+    "diff_melting_hours_kWh": 0,
+    "diff_other_hours_kWh": -5.1185334408407162,
+    "abs_diff_melting_hours_kWh": 0,
+    "abs_diff_other_hours_kWh": 5.6291831505485224,
+    "diff_pump_on_hours_kWh": -0.615432715884781,
+    "diff_pump_off_hours_kWh": -4.5031007249559423,
+    "share_of_total_from_melting_hours_pct": -0,
+    "gate_pct": 0.05,
+    "gate_met": false
+  },
+  "plain_75s_to_37p5s": {
+    "total_change_pct": -0.36665443179265123,
+    "total_change_kWh": -2.8061114879492317,
+    "melting_hours": 0,
+    "other_hours": 8760,
+    "diff_melting_hours_kWh": 0,
+    "diff_other_hours_kWh": -2.8061114879492317,
+    "abs_diff_melting_hours_kWh": 0,
+    "abs_diff_other_hours_kWh": 2.9253462531940673,
+    "diff_pump_on_hours_kWh": -0.32512543142263134,
+    "diff_pump_off_hours_kWh": -2.480986056526608,
+    "share_of_total_from_melting_hours_pct": -0,
+    "gate_pct": 0.05,
+    "gate_met": false
+  }
+}

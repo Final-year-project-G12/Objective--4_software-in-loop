@@ -1,0 +1,8 @@
+[A open-loop] max|dT_top| = 1.85e-13 C  max|dT_pcm| = 1.78e-13 C  max|df| = 5.11e-15  shields 115463 vs 115463  viol 0 vs 0  -> PASS
+[A policy]    action agreement on Python obs = 100.000 %  max rel |dQ| = 2.21e-05
+[C closed loop] action agreement = 100.000 %  max|dT_top| = 1.85e-13 C  delivered 954.98 vs 954.98 kWh  shields 115463 vs 115463  -> PASS
+[validate] overall: PASS  (report: export_r0/validation_report.json)
+[A open-loop] max|dT_top| = 2.98e-13 C  max|dT_pcm| = 5.68e-13 C  max|df| = 1.01e-14  shields 227778 vs 227778  viol 0 vs 0  -> PASS
+[A policy]    action agreement on Python obs = 100.000 %  max rel |dQ| = 1.34e-05
+[C closed loop] action agreement = 100.000 %  max|dT_top| = 2.98e-13 C  delivered 970.32 vs 970.32 kWh  shields 227778 vs 227778  -> PASS
+[validate] overall: PASS  (report: export_r2/validation_report.json)

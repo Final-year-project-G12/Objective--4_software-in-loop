@@ -1,0 +1,10 @@
+[fit] c on Amanowicz & Turski, surface/volume-matched mapping: 5.030   original one-sphere mapping: 39.986 (search bound 40)   on Tan+Dong (not held out): 7.096
+                    candidate                       c       AT_RMSE_matched_K    AT_RMSE_original_K    Tan_RMSE_f    Dong_RMSE_f    Tan_t25_min    Tan_t50_min    Tan_t75_min    Tan_t90_min    Dong_t25_min    Dong_t50_min    Dong_t75_min    Dong_t90_min
+    __________________________________________    ______    _________________    __________________    __________    ___________    ___________    ___________    ___________    ___________    ____________    ____________    ____________    ____________
+
+    {'frozen (O2)'                           }         5         1.4055                5.7185           0.36128       0.078074        71.438         145.73         184.66            NaN          38.101          78.032           99.07          112.21   
+    {'fit on A&T, original mapping'          }    39.986         1.8873                4.5219           0.47037        0.44711        8.9329         18.135         23.097         26.113          4.7649          9.6167          12.391          14.032   
+    {'fit on A&T, matched mapping (proposed)'}    5.0296         1.4055                5.7124           0.35963       0.078507        71.017         144.97         183.57            NaN          37.876          77.433          98.488          111.55   
+    {'fit on Tan+Dong (not held out)'        }    7.0964         1.4547                5.3822           0.22248        0.15187        50.334         102.61         130.11          147.1          26.845              55          69.807          79.065   
+
+experiment quantile times (min): Tan [40 60 90 120]   Dong [29.7 58.4 103.6 126]

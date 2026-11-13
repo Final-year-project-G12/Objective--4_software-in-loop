@@ -1,0 +1,5 @@
+Rendering 120 hours to D:\Final Year Project\Objective--4_software-in-loop\Rajasthan\matlab\..\results_campaign\figures\A1_schematic_clear_days.mp4 ...
+[Warning: The video's width and height has been padded to be a multiple of two as required by the H.264 codec.] 
+Done in 85 s. Delivered 13.7 kWh, shield trips 2340, hard violations 0.
+[Warning: The video's width and height has been padded to be a multiple of two as required by the H.264 codec.] 
+[Warning: The video's width and height has been padded to be a multiple of two as required by the H.264 codec.] 
