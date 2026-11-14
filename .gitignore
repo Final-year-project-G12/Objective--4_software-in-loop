@@ -8,4 +8,5 @@ __pycache__/
 *.pyc
 .claude/
 # files over 50 MB:
-# (none)
+# 65 MB, old copy
+from_objective3_working_dir/objective4_software_in_loop.zip
