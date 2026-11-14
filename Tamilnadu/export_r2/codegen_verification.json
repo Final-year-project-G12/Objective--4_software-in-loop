@@ -1,8 +1,0 @@
-{
-  "regime": 2,
-  "hours": 8760,
-  "c_files": 9,
-  "c_lines": 1357,
-  "pct_identical_vs_matlab": 100,
-  "pct_identical_vs_python": 100
-}

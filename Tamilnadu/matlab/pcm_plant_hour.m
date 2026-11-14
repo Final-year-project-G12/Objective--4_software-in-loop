@@ -1,4 +1,4 @@
-function [T_w, T_pcm, h_pcm, f_melt, E_del_Wh, E_unmet_Wh, n_sw, n_sp, n_viol, a_exec] = ...
+function [T_w, T_pcm, h_pcm, f_melt, E_del_Wh, E_unmet_Wh, n_sw, n_sp, n_viol, a_exec, Q_coll_Wh, Q_loss_Wh] = ...
     pcm_plant_hour(I_t, T_amb, draw_kg, action, T_w, T_pcm, h_pcm, f_melt, P)
 %PCM_PLANT_HOUR  One hour of the PCM solar water heater (frozen O2 physics).
 %
@@ -41,7 +41,7 @@ draw_per_substep  = draw_kg / n_substeps_per_hr;
 
 policy_circulate = (action == CHARGE);
 
-E_del_Wh = 0; E_unmet_Wh = 0;
+E_del_Wh = 0; E_unmet_Wh = 0; Q_coll_Wh = 0; Q_loss_Wh = 0;
 n_sw = 0; n_sp = 0; n_viol = 0;
 a_exec = action;
 
@@ -122,6 +122,8 @@ for outer = 1:n_substeps_per_hr
         end
         q_load = max(m_draw_rate * cp_w * (T_w_new - T_mains), 0);
         q_pcm  = ua_eff * (T_w_new - T_pcm);
+        if circulating, q_coll = a_coll - b_coll * T_w_new; else, q_coll = 0; end
+        q_loss = U_tank * A_tank * (T_w_new - T_amb);
 
         if m_pcm > 0, dh = q_pcm * dt_sub / m_pcm; else, dh = 0; end
         h_n = h_pcm + dh;
@@ -137,6 +139,8 @@ for outer = 1:n_substeps_per_hr
 
         E_del_Wh   = E_del_Wh   + q_load  * dt_sub / 3600;
         E_unmet_Wh = E_unmet_Wh + q_unmet * dt_sub / 3600;
+        Q_coll_Wh  = Q_coll_Wh  + q_coll  * dt_sub / 3600;
+        Q_loss_Wh  = Q_loss_Wh  + q_loss  * dt_sub / 3600;
 
         T_w = T_w_new; T_pcm = T_pcm_n; h_pcm = h_n; f_melt = f_n;
     end

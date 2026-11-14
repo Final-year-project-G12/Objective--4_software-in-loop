@@ -1,0 +1,16 @@
+# MATLAB / Simulink caches and autosaves
+slprj/
+*.slxc
+*.asv
+*.autosave
+# run logs and scratch
+*.log
+probe.*
+__pycache__/
+*.pyc
+.claude/
+# generated C code / MEX of the old controller (regenerate if needed)
+export*/codegen_c/
+export*/codegen_mex/
+# Files over 50 MB must not be committed (none exist today). List any new ones here, e.g.:
+# results/large_trace.csv

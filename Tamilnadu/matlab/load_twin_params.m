@@ -27,13 +27,21 @@ tw.P        = P;
 tw.params   = pp;
 tw.demand24 = pp.demand_kg_by_hour(:);
 
-% weather -> From Workspace structure [hour_idx, GHI, T_amb, local_hour]
+% weather -> From Workspace structure [hour_idx, GHI, T_amb, local_hour, GHI_clearsky]
+% (5th column present only on exports regenerated after the O3-5 smart-
+% forecast fix; absent on stale pre-fix exports, in which case the V3
+% forecast cannot be reconstructed and simulate_hours.m falls back to GHI
+% itself as a clearsky stand-in, degrading the forecast fields only.)
 W = readmatrix(fullfile(exportDir, sprintf('weather_%d.csv', year)));
 N = size(W, 1);
 tw.N = N;
+tw.has_clearsky = size(W, 2) >= 5;
+if ~tw.has_clearsky
+    W(:, 5) = W(:, 2);   % no clearsky column exported -- degrade gracefully
+end
 tw.wx.time = (0:N-1)' * 3600;
-tw.wx.signals.values = W(:, 1:4);
-tw.wx.signals.dimensions = 4;
+tw.wx.signals.values = W(:, 1:5);
+tw.wx.signals.dimensions = 5;
 
 % initial state = PCMEnv.reset(initial_pcm_state="solid")
 Ts = pp.Tm_C - pp.half_width_K;  Tl = pp.Tm_C + pp.half_width_K;

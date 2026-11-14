@@ -18,6 +18,16 @@ function [a_cmd, interlock_state] = safety_interlock(a_policy, Tw_m, Tpcm_m, sen
 persistent fault_latched
 if isempty(fault_latched), fault_latched = false; end
 
+if ischar(a_policy) && strcmp(a_policy, 'set_latch')
+    fault_latched = logical(Tw_m);
+    a_cmd = NaN; interlock_state = NaN;
+    return;
+end
+if ischar(a_policy) && strcmp(a_policy, 'get_latch')
+    a_cmd = double(fault_latched); interlock_state = NaN;
+    return;
+end
+
 max_wC = P(29); max_pC = P(30); byp_wC = P(32); byp_pC = P(33);
 BYPASS = 2;
 

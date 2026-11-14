@@ -1,0 +1,16 @@
+{
+  "H": 100,
+  "good": {
+    "max_abs_dTw": 0,
+    "max_abs_dTpcm": 0,
+    "max_abs_df": 0,
+    "action_agreement_pct": 100,
+    "pass": true
+  },
+  "naive": {
+    "max_abs_dTw": 0.325840256454768,
+    "max_abs_dTpcm": 0.602990020823043,
+    "action_agreement_pct": 100,
+    "first_divergent_hour": []
+  }
+}

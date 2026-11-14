@@ -1,0 +1,59 @@
+{
+  "closure": {
+    "arm1_plain_B0": {
+      "dE_stored_J": 622635.73448813148,
+      "in_minus_out_J": 622635.73426580988,
+      "residual_pct": 3.5706527506658827E-8
+    },
+    "arm2_pcm_B0": {
+      "dE_stored_J": -1.125872745090194E+6,
+      "in_minus_out_J": -1.1263524633604567E+6,
+      "residual_pct": 0.042590422258364007
+    },
+    "arm3_pcm_SAC": {
+      "dE_stored_J": -1.125872745090194E+6,
+      "in_minus_out_J": -1.1288452866588486E+6,
+      "residual_pct": 0.26332586084074505
+    }
+  },
+  "pcm_swap": {
+    "note": "span includes a wall-cp sensible term by construction; m_pcm*L_J_kg alone is the pure-latent reference, not the pass/fail quantity.",
+    "pass": true
+  },
+  "exp_hold": {
+    "tau_h": 116.07267700303024,
+    "max_abs_dT_C": 0.0022083564206738515,
+    "residual_pct": 0.0049074587126085589
+  },
+  "zero_input": {
+    "arm1_plain_B0": {
+      "max_abs_dTw": 0,
+      "max_abs_dTpcm": 0
+    },
+    "arm2_pcm_B0": {
+      "max_abs_dTw": 3.5527136788005009E-14,
+      "max_abs_dTpcm": 1.4210854715202004E-14
+    },
+    "arm3_pcm_SAC": {
+      "max_abs_dTw": 3.5527136788005009E-14,
+      "max_abs_dTpcm": 1.4210854715202004E-14
+    }
+  },
+  "substep": {
+    "arm1_plain_B0": {
+      "delivered_dt150_Wh": 120137.82824039611,
+      "delivered_dt75_Wh": 120172.7108395996,
+      "residual_pct": 0.029035483423004726
+    },
+    "arm2_pcm_B0": {
+      "delivered_dt150_Wh": 125240.83520177567,
+      "delivered_dt75_Wh": 125220.52993111429,
+      "residual_pct": 0.016212979280015027
+    },
+    "arm3_pcm_SAC": {
+      "delivered_dt150_Wh": 124631.91186750318,
+      "delivered_dt75_Wh": 124604.25293207055,
+      "residual_pct": 0.022192498709345219
+    }
+  }
+}

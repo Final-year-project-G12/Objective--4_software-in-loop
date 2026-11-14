@@ -21,10 +21,10 @@ differ. Never mix files between them.
 | Output | Tamil Nadu | Rajasthan |
 |---|---|---|
 | Twin validated against the Python simulator | yes | yes (full year, 3 regimes) |
-| Six scenarios: plots and summary table | yes (3 regimes) | yes (3 regimes) |
-| Animation videos | yes | yes (regime 1) |
-| Simulink block-diagram model | yes | no (Simulink not installed where Rajasthan was run) |
-| Generated C code of the controller | yes | no (MATLAB Coder not installed where Rajasthan was run) |
+| Six scenarios: plots and summary table | yes (regime 0, 3 arms, plus dead/stuck pyranometer) | yes (3 regimes) |
+| Animation video | yes (`Tamilnadu/video/`) | yes (regime 1) |
+| Simulink block-diagram model | no (removed: it was built for the pre-retrain controller) | no (Simulink not installed where Rajasthan was run) |
+| Generated C code of the controller | no (removed: it was for the pre-retrain controller) | no (MATLAB Coder not installed where Rajasthan was run) |
 | Python cross-check that needs no MATLAB | no | yes (`sil_python_mirror.py`) |
 
 ## Requirements

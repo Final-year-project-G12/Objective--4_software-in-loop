@@ -77,7 +77,14 @@ actName = {'CHARGE', 'IDLE', 'BYPASS'};
 snapT = round(0.45 * n);      % a mid-event hour saved as a still image
 for t = 1:n
     Tw = L.Tw(t); Tp = L.Tpcm(t); fm = L.f_melt(t); I = L.GHI(t);
-    pumpOn = (L.a_exec(t) == 0) && ((L.n_sw(t) + 0) == 0) && (I > Icut);
+    % Pump state follows the REAL collector gain (Q_coll_Wh), not the
+    % a_exec/GHI-cutoff proxy: pcm_plant_hour.m can force circulating=false
+    % mid-hour when the linearised Hottel-Whillier gain would come out
+    % negative (T_w already hot, sun low) even though a_exec still reads
+    % CHARGE and I > Icut -- that combination used to show the pump running
+    % with zero actual gain. Q_coll_Wh is exactly zero whenever no substep
+    % that hour actually circulated, so it is the correct ground truth.
+    pumpOn = L.Q_coll_Wh(t) > 0;
     bypass = (L.a_exec(t) == 2) || L.interlock(t) >= 2;
     shield = (L.n_sw(t) + L.n_sp(t)) > 0;
 

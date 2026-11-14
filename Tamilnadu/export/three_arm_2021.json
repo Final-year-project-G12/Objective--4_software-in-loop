@@ -1,0 +1,34 @@
+{
+  "year": 2021,
+  "fraction": 0.29587085509033423,
+  "arms": [
+    {
+      "arm": "1_plain_B0",
+      "delivered_kWh": 1853.4512368832111,
+      "unmet_kWh": 684.27728622600716,
+      "shields": 17020,
+      "hard_violations": 0,
+      "thermal_efficiency_pct": 38.451763216530111,
+      "demand_coverage_pct": 73.03583578799703
+    },
+    {
+      "arm": "2_pcm_B0",
+      "delivered_kWh": 2002.6085120567982,
+      "unmet_kWh": 488.89818410550549,
+      "shields": 39705,
+      "hard_violations": 0,
+      "thermal_efficiency_pct": 41.54618518613222,
+      "demand_coverage_pct": 80.377408382704289
+    },
+    {
+      "arm": "3_pcm_SAC",
+      "delivered_kWh": 1971.3866278838352,
+      "unmet_kWh": 499.9331609665843,
+      "shields": 18604,
+      "hard_violations": 0,
+      "thermal_efficiency_pct": 40.898454901405906,
+      "demand_coverage_pct": 79.770600178007
+    }
+  ],
+  "solar_kWh_on_collector": 4820.1983000000027
+}

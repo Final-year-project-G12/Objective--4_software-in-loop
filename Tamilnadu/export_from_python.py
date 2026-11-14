@@ -15,7 +15,7 @@ plant the policy was trained on. This script freezes, from the Python side:
                              with no ONNX support package needed
   4. reference_<year>.csv -- the Python environment's own trajectory under the
                              deterministic SAC policy, used by
-                             matlab/validate_against_python.m to prove the
+                             matlab/validate_v3_full.m to prove the
                              Simulink twin reproduces the simulator
                              (O4 test-plan step 4: SIL replay).
 
@@ -110,7 +110,7 @@ def export_plant_params(env: PCMEnv, regime_id: int) -> dict:
     }
 
 
-def export_sac_actor(model_path: pathlib.Path):
+def export_sac_actor(model_path: pathlib.Path, obs_version: str, forecast_mode: str):
     from stable_baselines3 import SAC
     m = SAC.load(str(model_path), device="cpu")
     actor = m.policy.actor
@@ -121,6 +121,9 @@ def export_sac_actor(model_path: pathlib.Path):
     return {
         "algo": "sac",
         "source_checkpoint": str(model_path),
+        "obs_version": obs_version,
+        "forecast_mode": forecast_mode,
+        "obs_dim": int(W1.shape[1]),
         "arch": f"obs({W1.shape[1]}) -> Linear256 -> ReLU -> Linear256 -> ReLU -> Linear1 -> tanh -> bin",
         "bins": "a < -1/3 -> CHARGE(0); -1/3 <= a <= 1/3 -> IDLE(1); a > 1/3 -> BYPASS(2)",
         "W1": W1.tolist(), "b1": b1.tolist(),
@@ -171,7 +174,9 @@ def main():
     ap.add_argument("--regime", type=int, default=0)
     ap.add_argument("--year", type=int, default=2011)
     ap.add_argument("--hours", type=int, default=8760)
-    ap.add_argument("--model", default=str(REPO_ROOT / "results" / "sac" / "r0" / "best_model" / "best_model.zip"))
+    ap.add_argument("--model", default=str(REPO_ROOT / "results" / "sac" / "r0_smartfc" / "best_model" / "best_model.zip"))
+    ap.add_argument("--forecast-mode", default="smart", choices=["perfect", "smart", "none"],
+                     help="must match the forecast_mode the --model checkpoint was TRAINED with (default: smart, the deployed variant per CORRECTIONS_OBJECTIVE3.md O3-5/O3-6)")
     ap.add_argument("--out", default=str(OUT_DIR), help="output folder (export_r1 / export_r2 for other regimes)")
     args = ap.parse_args()
     out_dir = pathlib.Path(args.out)
@@ -179,9 +184,16 @@ def main():
 
     from stable_baselines3 import SAC
     obs_dim = int(SAC.load(args.model, device="cpu").observation_space.shape[0])
+    # obs_dim==15 is the V2/V3 15-dim shape (V1 + 3h GHI forecast + next-hour
+    # demand); V3 is that same shape run with forecast_mode="smart" (the
+    # realistic, deployable forecast) rather than V2's "perfect" look-ahead.
+    # The export MUST pass the same forecast_mode the checkpoint was trained
+    # with, or the reference rollout silently measures the wrong policy.
+    obs_version = "V3" if obs_dim == 15 else "V1"
+    fmode = args.forecast_mode if obs_dim == 15 else "none"
     env = PCMEnv(CONTRACT, regime_id=args.regime, year=args.year,
-                 obs_version="V2" if obs_dim == 15 else "V1")
-    print(f"[export] policy observation size = {obs_dim} ({'V2 forecast' if obs_dim == 15 else 'V1'})")
+                 obs_version=obs_version, forecast_mode=fmode)
+    print(f"[export] policy observation size = {obs_dim} ({obs_version}, forecast_mode={fmode})")
 
     params = export_plant_params(env, args.regime)
     (out_dir / "plant_params.json").write_text(json.dumps(params, indent=1))
@@ -189,17 +201,23 @@ def main():
           f"n={params['n_capsule']} D={params['D_cap_m']*1e3:.1f} mm")
 
     w = env._weather
-    wx = np.column_stack([
+    has_clearsky = "GHI_clearsky_Wm2" in w.columns
+    cols = [
         np.arange(len(w)),
         w["GHI_Wm2"].to_numpy(float),
         w["T_amb_C"].to_numpy(float),
         w["local_hour"].to_numpy(float) if "local_hour" in w.columns else np.arange(len(w)) % 24,
-    ])
+    ]
+    header = "hour_idx,GHI_Wm2,T_amb_C,local_hour"
+    if has_clearsky:
+        cols.append(w["GHI_clearsky_Wm2"].to_numpy(float))
+        header += ",GHI_clearsky_Wm2"
+    wx = np.column_stack(cols)
     np.savetxt(out_dir / f"weather_{args.year}.csv", wx, delimiter=",",
-               header="hour_idx,GHI_Wm2,T_amb_C,local_hour", comments="", fmt="%.10g")
-    print(f"[export] weather_{args.year}.csv  {len(w)} hours")
+               header=header, comments="", fmt="%.10g")
+    print(f"[export] weather_{args.year}.csv  {len(w)} hours  clearsky={'yes' if has_clearsky else 'NO -- V3 forecast cannot be replicated in MATLAB'}")
 
-    actor, model = export_sac_actor(pathlib.Path(args.model))
+    actor, model = export_sac_actor(pathlib.Path(args.model), obs_version, fmode)
     (out_dir / "sac_actor_r0.json").write_text(json.dumps(actor))
     print(f"[export] sac_actor_r0.json  layers {obs_dim}->256->256->1")
 

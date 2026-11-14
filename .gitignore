@@ -1,0 +1,11 @@
+# repo-wide: caches, logs, and anything over 50 MB (none today; list new ones below)
+slprj/
+*.slxc
+*.asv
+*.autosave
+*.log
+__pycache__/
+*.pyc
+.claude/
+# files over 50 MB:
+# (none)

@@ -1,0 +1,29 @@
+{
+  "A": {
+    "max_abs_dT_w_C": 2.5579538487363607E-13,
+    "max_abs_dT_pcm_C": 8.0291329140891321E-13,
+    "delivered_kWh_matlab": 2059.6156967032593,
+    "delivered_kWh_python": 2059.6156967032603,
+    "shields_matlab": 17227,
+    "shields_python": 17227,
+    "violations_matlab": 0,
+    "pass": true
+  },
+  "B": {
+    "action_agreement_pct": 100,
+    "pass": true
+  },
+  "C": {
+    "action_agreement_pct": 100,
+    "max_abs_dT_w_C": 2.5579538487363607E-13,
+    "delivered_kWh_matlab": 2059.6156967032593,
+    "delivered_kWh_python": 2059.6156967032603,
+    "shields_matlab": 17227,
+    "shields_python": 17227,
+    "pass": true
+  },
+  "overall_pass": true,
+  "year": 2011,
+  "N": 8760,
+  "generated": "2026-11-14T12:48:57"
+}
