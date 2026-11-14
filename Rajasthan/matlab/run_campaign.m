@@ -14,6 +14,10 @@ function run_campaign(passes, tag, over)
 %   flow   Objective 2's PCM only, flow x0.7 and x1.3 (x1.0 comes from 'core'), B0 and DQN, + water-only.
 %   seeds  the sensor-fault edge case with 20 noise seeds -> mean and 95 % confidence interval.
 %   supercool freezing point 2 K below the melting point during the hold (supercooling proxy), PureTemp 60, B0 and DQN
+%   sac     the three Rajasthan regimes with the Objective 3 SAC as a fourth arm (water-only B0, PCM + B0, PCM + DQN, PCM + SAC)
+%           -> campaign_regimes<tag>.csv  (use run_campaign({'sac'}, '_sac'))
+%   swap_sac regime 1: the three O1 PCMs x flow x0.7/1.0/1.3 with the SAC (trained for PureTemp 60 at the O2 flow, so a
+%           robustness test of the policy as well as a PCM swap)  -> campaign_results<tag>.csv  (run_campaign({'swap_sac'}, '_swapsac'))
 %   regimes the three Rajasthan regimes (own PCM and DQN each) -> campaign_regimes.csv, input of figure F5
 %   scen   the six edge cases (run_scenarios.m, unchanged) copied into the campaign tables.
 %
@@ -82,6 +86,8 @@ if ~isempty(tab)
 end
 
 if any(strcmp(passes, 'regimes')), regimes_pass(ctx); end
+if any(strcmp(passes, 'sac')), regimes_sac_pass(ctx); end
+if any(strcmp(passes, 'swap_sac')), swap_sac_pass(ctx, pcms, band); end
 if any(strcmp(passes, 'supercool')), supercool_pass(ctx, iO2); end
 if any(strcmp(passes, 'seeds')), seeds_pass(ctx); end
 if any(strcmp(passes, 'scen')), scen_pass(here, outDir); end
@@ -103,7 +109,7 @@ P(5) = P(5) * fm;
 if isfield(c.over, 'c'), P(35) = c.over.c; end      % capsule-model overrides (calibration sensitivity runs)
 if isfield(c.over, 'F'), P(16) = c.over.F; end
 twr = tw;  twr.h0 = h0;
-mode = double(strcmp(ctrl, 'B0'));                  % simulate_hours: 0 = trained DQN, 1 = B0
+mode = find(strcmp(ctrl, {'DQN', 'B0', 'SAC'})) - 1;  % simulate_hours: 0 = trained DQN, 1 = B0, 2 = trained SAC
 runId = sprintf('%s_%s_%s_f%.1f', strrep(arm, '+', '_'), regexprep(pname, '[^A-Za-z0-9]', ''), ctrl, fm);
 runId = strrep(runId, '-', '');
 if c.regime ~= 1, runId = sprintf('r%d_%s', c.regime, runId); end
@@ -239,6 +245,39 @@ T = cell2table(rows, 'VariableNames', {'pcm', 'controller', 'freezing_shift_K', 
     'E_rec45_24h_kWh', 'E_rec45_48h_kWh', 'f_melt_24h', 'f_melt_36h'});
 writetable(T, fullfile(c.outDir, ['supercooling_sensitivity' c.tag '.csv']));
 disp(T);
+end
+
+function regimes_sac_pass(c0)
+% The three Rajasthan regimes with the SAC as a fourth arm. Regimes 0 and 2: the released DQN always charges (it equals B0), so the SAC
+% is the first controller that differs from always-charge there. Needs export_r<k>/sac_actor_r<k>.json (export_from_python.py --algo sac).
+tab = {};
+for r = 0:2
+    c = c0;  c.regime = r;
+    c.tw = load_twin_params(fullfile(fileparts(mfilename('fullpath')), '..', sprintf('export_r%d', r)), c0.year);
+    assert(isfield(c.tw, 'sac'), 'regime %d: sac_actor_r%d.json missing', r, r);
+    c.Wall = c.tw.wx.signals.values(:, 1:4);
+    c.rows17 = find(c.Wall(:, 4) == 17);
+    tab{end+1} = do_run(c, 'PCM-free', 0, 'B0', 1.0, false);   %#ok<AGROW>
+    tab{end+1} = do_run(c, 'PCM+B0', -1, 'B0', 1.0, false);    %#ok<AGROW>
+    tab{end+1} = do_run(c, 'PCM+DQN', -1, 'DQN', 1.0, false);  %#ok<AGROW>
+    tab{end+1} = do_run(c, 'PCM+SAC', -1, 'SAC', 1.0, false);  %#ok<AGROW>
+end
+T = add_gains(struct2table([tab{:}]), c0.band);
+writetable(T, fullfile(c0.outDir, ['campaign_regimes' c0.tag '.csv']));
+fprintf('[campaign] 3 regimes x 4 arms -> campaign_regimes%s.csv\n', c0.tag);
+end
+
+function swap_sac_pass(c, pcms, band)
+% Regime 1: all three O1 PCMs at flow x0.7, x1.0, x1.3 with the SAC (and the water-only tank at each flow for the gains).
+tab = {};
+for fm = [0.7 1.0 1.3]
+    tab{end+1} = do_run(c, 'PCM-free', 0, 'B0', fm, false);                 %#ok<AGROW>
+    for i = 1:numel(pcms)
+        tab{end+1} = do_run(c, 'PCM+SAC', i, 'SAC', fm, false);             %#ok<AGROW>
+    end
+end
+writetable(add_gains(struct2table([tab{:}]), band), fullfile(c.outDir, ['campaign_results' c.tag '.csv']));
+fprintf('[campaign] %d runs (SAC, PCM x flow) -> campaign_results%s.csv\n', numel(tab), c.tag);
 end
 
 function regimes_pass(c0)

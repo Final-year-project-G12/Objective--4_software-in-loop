@@ -9,7 +9,7 @@ function plot_pack(which)
 % benchmark_amanowicz_curves.csv (written by run_campaign.m and benchmark_amanowicz.m).
 % Writes PNG / MP4 into results_campaign/figures/. Nothing is drawn by hand.
 here = fileparts(mfilename('fullpath')); addpath(here);
-if nargin < 1 || isempty(which), which = {'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'A1', 'A2', 'A3'}; end
+if nargin < 1 || isempty(which), which = {'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'A1', 'A2', 'A3'}; end
 R = fullfile(here, '..', 'results_campaign');
 Fd = fullfile(R, 'figures');
 if ~isfolder(Fd), mkdir(Fd); end
@@ -31,6 +31,8 @@ if has('F6'), F6(R, Fd); end
 if has('F7'), F7(R, Fd, band); end
 if has('F8'), F8(R, Fd); end
 if has('F9'), F9(R, Fd); end
+if has('F10'), F10(R, Fd); end
+if has('F11'), F11(R, Fd); end
 if has('A1'), A1(here, Fd); end
 if has('A2') || has('A3'), A23(here, R, Fd, best, which); end
 end
@@ -264,6 +266,54 @@ legend(ax, {'DQN', 'B0'}, 'Location', 'northeast'); grid(ax, 'on'); title(ax, '(
 ax = nexttile(tl); bar(ax, H); xticks(ax, 1:numel(sc)); xticklabels(ax, lab); xtickangle(ax, 30); ylabel(ax, 'guard-band (shield) hours in the event');
 grid(ax, 'on'); title(ax, '(b) shield hours; dead pyranometer = last group');
 exportgraphics(fig, fullfile(Fd, 'F9_edge_cases_with_dead_pyranometer.png'), 'Resolution', 120); close(fig);
+end
+
+function F10(R, Fd)
+% the three Rajasthan regimes with the Objective 3 SAC as a fourth arm (run_campaign({'sac'}, '_sac'))
+f = fullfile(R, 'campaign_regimes_sac.csv');
+if ~isfile(f), fprintf('[plot_pack] F10 skipped: campaign_regimes_sac.csv missing\n'); return; end
+T = readtable(f);
+arms = {'PCM-free', 'PCM+B0', 'PCM+DQN', 'PCM+SAC'};  lab = {'water-only', 'PCM + B0', 'PCM + DQN', 'PCM + SAC'};
+cols = [0.5 0.5 0.5; 0.85 0.33 0.1; 0 0.45 0.74; 0.47 0.67 0.19];
+vars = {'E_del45_kWh', 'tau_hold_45C_mean_h', 'guard_band_h'};
+ttl = {'delivered 2023 [kWh]', 'hold above 45 \circC, mean of 12 evenings [h]', 'guard-band hours'};
+fig = nf([50 50 1250 430]);
+tl = tiledlayout(fig, 1, 3, 'TileSpacing', 'compact', 'Padding', 'compact');
+title(tl, 'F10  Three Rajasthan regimes, four arms: water-only, PCM + B0, PCM + DQN, PCM + SAC (2023)', 'FontWeight', 'bold');
+for k = 1:3
+    ax = nexttile(tl); hold(ax, 'on');
+    M = zeros(3, 4);
+    for r = 0:2
+        for a = 1:4, M(r + 1, a) = T.(vars{k})(strcmp(T.arm, arms{a}) & T.regime == r); end
+    end
+    b = bar(ax, M);
+    for a = 1:4, b(a).FaceColor = cols(a, :); end
+    xticklabels(ax, {'regime 0', 'regime 1', 'regime 2'}); ylabel(ax, ttl{k}); grid(ax, 'on');
+    if k == 1, legend(ax, lab, 'Location', 'southeast'); end
+    if k == 2, yline(ax, 72, 'k:', '72 h cap'); end
+end
+exportgraphics(fig, fullfile(Fd, 'F10_four_arms_three_regimes.png'), 'Resolution', 120); close(fig);
+end
+
+function F11(R, Fd)
+% Objective 3's observation faults on the twin, regime 1: B0, DQN, SAC (o3_sensor_faults.csv from run_o3_sensor_faults.m)
+f = fullfile(R, 'o3_sensor_faults.csv');
+if ~isfile(f), fprintf('[plot_pack] F11 skipped: o3_sensor_faults.csv missing\n'); return; end
+T = readtable(f);  T = T(T.regime == 1, :);
+faults = unique(T.fault, 'stable');  ctrls = {'B0', 'DQN', 'SAC'};
+cols = [0.85 0.33 0.1; 0 0.45 0.74; 0.47 0.67 0.19];
+fig = nf([50 50 1200 430]);
+tl = tiledlayout(fig, 1, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
+title(tl, 'F11  Objective 3 observation faults on the twin, regime 1, 2023 (physics and shield see the true state)', 'FontWeight', 'bold');
+vars = {'E_del45_kWh', 'guard_band_h'};  ttl = {'delivered [kWh]', 'guard-band hours'};
+for k = 1:2
+    ax = nexttile(tl); M = zeros(numel(faults), 3);
+    for c = 1:3, for i = 1:numel(faults), M(i, c) = T.(vars{k})(strcmp(T.controller, ctrls{c}) & strcmp(T.fault, faults{i})); end, end
+    b = bar(ax, M);  for c = 1:3, b(c).FaceColor = cols(c, :); end
+    xticklabels(ax, strrep(faults, '_', ' ')); xtickangle(ax, 35); ylabel(ax, ttl{k}); grid(ax, 'on');
+    if k == 1, legend(ax, {'B0', 'DQN', 'SAC'}, 'Location', 'southeast'); ylim(ax, [min(M(:)) * 0.97, max(M(:)) * 1.02]); end
+end
+exportgraphics(fig, fullfile(Fd, 'F11_o3_sensor_faults.png'), 'Resolution', 120); close(fig);
 end
 
 function A1(here, Fd)

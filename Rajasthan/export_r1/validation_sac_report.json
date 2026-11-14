@@ -1,0 +1,63 @@
+{
+  "A_open_loop": {
+    "max_abs_dT_top_C": 2.2737367544323206E-13,
+    "max_abs_dT_pcm_C": 2.7711166694643907E-13,
+    "max_abs_df_melt": 1.0658141036401503E-14,
+    "delivered_kWh_matlab": 873.5727447176431,
+    "delivered_kWh_python": 873.5727447176431,
+    "shields_matlab": 23377,
+    "shields_python": 23377,
+    "violations_matlab": 0,
+    "violations_python": 0,
+    "pass": true
+  },
+  "A_policy_on_python_obs": {
+    "action_agreement_pct": 100,
+    "max_abs_da_cont": 1.3411045074462891E-6,
+    "hours_within_1e5_of_a_bin_edge": 0
+  },
+  "C_closed_loop": {
+    "action_agreement_pct": 100,
+    "max_abs_dT_top_C": 2.2737367544323206E-13,
+    "max_abs_dT_pcm_C": 2.7711166694643907E-13,
+    "max_abs_dobs": 2.6645352988050451E-16,
+    "delivered_kWh_matlab": 873.5727447176431,
+    "delivered_kWh_python": 873.5727447176431,
+    "shields_matlab": 23377,
+    "shields_python": 23377,
+    "violations_matlab": 0,
+    "actions_charge_idle_bypass": [
+      5962,
+      1693,
+      1105
+    ],
+    "pass": true
+  },
+  "overall_pass": true,
+  "controller": {
+    "algo": "sac",
+    "tag": "sac_r1_w2.55_s42_V3_60min_dr",
+    "sha256": "50598fb6a3f08ba47d35511e826792f34464a4b60aaf0b84cc952adba5a30f1f",
+    "selection": {
+      "tag": "sac_r1_w2.55_s42_V3_60min_dr",
+      "pool": "results/gen2/gen2_summary_sac.csv",
+      "n_runs_in_pool": 15,
+      "n_pass_annual_rule": 6,
+      "pct_of_B0_delivery": 95.704299003248252,
+      "pct_of_B0_window": 93.356264443430319,
+      "shield_cut_vs_B0_pct": 86.206934810297923,
+      "shield_weight": 2.55,
+      "seed": 42,
+      "shield_h": 143.88657407407408,
+      "E45_kWh_validation_mean": 885.96018503524328,
+      "sha256": [],
+      "o3_selection_file_lists": "sac_r1_w0_s42_V3_60min_dr",
+      "same_as_o3_selection_file": false
+    }
+  },
+  "regime": 1,
+  "year": 2023,
+  "hours": 8760,
+  "matlab": "26.2.0.3433840 (R2026b) Update 1",
+  "generated": "2026-11-15T01:01:53"
+}

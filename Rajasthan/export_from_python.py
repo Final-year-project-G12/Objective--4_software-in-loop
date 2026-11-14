@@ -22,10 +22,23 @@ Files written to export_r<regime>/ :
   dqn_qnet_r<k>.json    Q-network weights and where they came from (path + SHA-256)
   reference_<year>.csv  the Python environment's own hourly trajectory under the deterministic DQN
 
+  --algo sac (added 15 Nov 2026, after Objective 3's SAC runs finished) writes, next to the DQN files and without touching them:
+  sac_actor_r<k>.json   SAC actor weights (17-256-256-1, tanh) of the run Objective 3's CURRENT rule selects for the regime, with its
+                        path, SHA-256 and how it was selected
+  reference_sac_<year>.csv   the Python environment's own hourly trajectory under the deterministic SAC actor
+
+  --forecast-mode smart (added 15 Nov 2026) writes, again without touching any existing file:
+  clearsky_<year>.csv            the stored clear-sky GHI column Objective 3's smart forecast uses (hour_idx, GHI_clearsky_Wm2)
+  reference_smart_<year>.csv     (--algo dqn) the DQN's Python trajectory when the look-ahead is smart persistence, not the true future
+  reference_sac_smart_<year>.csv (--algo sac) the same for the SAC
+  Smart persistence (o3/environment/forecast.py): GHI_hat(t+h) = Kc(t) * GHI_clear(t+h), Kc(t) = GHI(t) / GHI_clear(t). The policies were trained
+  with the PERFECT forecast, so this is Objective 3's "optimism check" (perfect-trained, scored with smart).
+
 Usage (any working directory; needs the Python environment Objective 3 uses):
     python export_from_python.py --regime 1
     python export_from_python.py --regime 0
     python export_from_python.py --regime 2
+    python export_from_python.py --regime 1 --algo sac        # also 0 and 2
 
 The Objective 3 Rajasthan tree is found at ../../solar-pcm-control--Objective3/rajasthan
 (override with the environment variable O3_RAJASTHAN_ROOT). Nothing in Objective 2 or 3 is modified.
@@ -55,6 +68,11 @@ from o3.utils import weather_roles                                # noqa: E402
 
 CONTRACT = config_O2.CONTRACT_FILE
 SELECTED = O3_ROOT / "results" / "gen2" / "gen2_selected_dqn.json"
+# SAC runs: the re-run grid (regimes 0 and 2, 14 Nov 2026) takes precedence over the original sweep (regime 1 only was retained there).
+SAC_SUMMARIES = [O3_ROOT / "results" / "rerun_2026-11-13" / "gen2" / "gen2_summary_sac.csv",
+                 O3_ROOT / "results" / "gen2" / "gen2_summary_sac.csv"]
+SAC_SELECTED_FILES = [O3_ROOT / "results" / "rerun_2026-11-13" / "gen2" / "gen2_selected_sac.json",
+                      O3_ROOT / "results" / "gen2" / "gen2_selected_sac.json"]
 
 # Order of the first 35 entries of the kernel parameter vector (o2_adapter.build_runtime).
 KERNEL_P_NAMES = [
@@ -79,6 +97,101 @@ def selected_model(regime_id: int) -> tuple[pathlib.Path, dict]:
     sel = json.loads(SELECTED.read_text())[f"r{regime_id}_60min"]
     path = O3_ROOT / "results" / "gen2" / sel["tag"] / "best_model" / "best_model.zip"
     return path, sel
+
+
+def select_sac(regime_id: int) -> tuple[pathlib.Path, dict]:
+    """The SAC run Objective 3's CURRENT rule picks for this regime: zero hard violations and zero hours over the limit, then annual
+    delivery >= 95 % of B0, then the largest shield-hour cut (scripts/gen2_study.py, annual-only rule of 2026-11-13). The pool is the
+    re-run grid when it has the regime (0 and 2), otherwise the original sweep (regime 1). The regime 1 selection is computed here:
+    Objective 3's gen2_selected_sac.json for regime 1 was written under the OLD rule (annual AND window) and not refreshed, so it
+    still lists the always-charge run w = 0."""
+    import csv
+    for f in SAC_SUMMARIES:
+        rows = [r for r in csv.DictReader(open(f, encoding="utf-8")) if int(r["regime_id"]) == regime_id]
+        if rows:
+            break
+    else:
+        raise SystemExit(f"no SAC runs for regime {regime_id} in {[str(x) for x in SAC_SUMMARIES]}")
+    ok = [r for r in rows if int(float(r["violations"])) == 0 and float(r["hours_over_limit"]) == 0
+          and float(r["pct_of_B0_delivery"]) >= 95.0]
+    if not ok:
+        raise SystemExit(f"regime {regime_id}: no SAC run passes the annual-only rule")
+    best = max(ok, key=lambda r: float(r["shield_cut_vs_B0_pct"]))
+    path = f.parent / best["tag"] / "best_model" / "best_model.zip"
+    sel = {"tag": best["tag"], "pool": str(f.relative_to(O3_ROOT)).replace("\\", "/"), "n_runs_in_pool": len(rows),
+           "n_pass_annual_rule": len(ok), "pct_of_B0_delivery": float(best["pct_of_B0_delivery"]),
+           "pct_of_B0_window": float(best["pct_of_B0_window"]), "shield_cut_vs_B0_pct": float(best["shield_cut_vs_B0_pct"]),
+           "shield_weight": float(best["shield_weight"]), "seed": int(best["seed"]), "shield_h": float(best["shield_h"]),
+           "E45_kWh_validation_mean": float(best["E45_kWh"]), "sha256": None}
+    # does Objective 3's own selection file list the same run?
+    o3 = None
+    for sf in SAC_SELECTED_FILES:
+        d = json.loads(sf.read_text())
+        if f"r{regime_id}_60min" in d:
+            o3 = d[f"r{regime_id}_60min"]
+            break
+    sel["o3_selection_file_lists"] = o3["tag"] if o3 else None
+    sel["same_as_o3_selection_file"] = bool(o3 and o3["tag"] == best["tag"])
+    if o3 and o3["tag"] == best["tag"]:
+        sel["sha256"] = o3.get("sha256")
+    return path, sel
+
+
+def export_sac_actor(model, model_path: pathlib.Path, sel: dict, regime_id: int) -> dict:
+    """SAC actor = tanh(mu(latent_pi(obs))), latent_pi = Linear-ReLU-Linear-ReLU; deterministic action. Binned by the O3 wrapper
+    (o3/environment/gym_wrapper.py::PCMContinuousGymEnv._to_discrete): a < -1/3 CHARGE, |a| <= 1/3 IDLE, a > 1/3 BYPASS."""
+    actor = model.policy.actor
+    lin = [m for m in actor.latent_pi if m.__class__.__name__ == "Linear"]
+    if len(lin) != 2:
+        raise RuntimeError(f"expected a 2-hidden-layer SAC actor, found {len(lin)} hidden Linear layers")
+    W1, b1 = lin[0].weight.detach().numpy(), lin[0].bias.detach().numpy()
+    W2, b2 = lin[1].weight.detach().numpy(), lin[1].bias.detach().numpy()
+    Wm, bm = actor.mu.weight.detach().numpy(), actor.mu.bias.detach().numpy()
+    sha = sha256_of_file(model_path)
+    return {
+        "algo": "sac", "regime_id": regime_id, "tag": sel["tag"],
+        "source_checkpoint": str(model_path.relative_to(O3_ROOT)).replace("\\", "/"),
+        "sha256": sha, "sha256_matches_o3_selected": (None if sel.get("sha256") is None else bool(sha == sel["sha256"])),
+        "selection": sel,
+        "arch": f"obs({W1.shape[1]}) -> Linear{W1.shape[0]} -> ReLU -> Linear{W2.shape[0]} -> ReLU -> Linear{Wm.shape[0]} (mu) -> tanh",
+        "actions": "a < -1/3 : 0 CHARGE;  |a| <= 1/3 : 1 IDLE;  a > 1/3 : 2 BYPASS",
+        "W1": W1.tolist(), "b1": b1.tolist(), "W2": W2.tolist(), "b2": b2.tolist(), "Wmu": Wm.tolist(), "bmu": bm.tolist(),
+    }
+
+
+def sac_action(model, obs) -> tuple[int, float]:
+    import torch
+    with torch.no_grad():
+        a = float(model.policy.actor(torch.as_tensor(obs[None, :]), deterministic=True).numpy().reshape(-1)[0])
+    pred = float(np.asarray(model.predict(obs, deterministic=True)[0]).reshape(-1)[0])
+    if abs(pred - a) > 1e-6:
+        raise RuntimeError(f"model.predict {pred} differs from the actor output {a}")
+    return (0 if a < -1.0 / 3.0 else (2 if a > 1.0 / 3.0 else 1)), a
+
+
+def run_reference_sac(env: PCMEnv, model, hours: int) -> list[dict]:
+    """Deterministic SAC rollout on the Python environment, logged per hour (same columns as run_reference, a_cont instead of q)."""
+    obs, _ = env.reset(year=env.year, initial_pcm_state="solid")
+    obs = np.clip(obs, OBS_LOW, OBS_HIGH).astype(np.float32)
+    rows = []
+    for h in range(hours):
+        action, a_cont = sac_action(model, obs)
+        obs_in = obs.copy()
+        obs, reward, term, trunc, info = env.step(action)
+        obs = np.clip(obs, OBS_LOW, OBS_HIGH).astype(np.float32)
+        rows.append({
+            "hour_idx": h, "action": action, "action_executed": int(info["action_executed"]), "a_cont": a_cont,
+            "T_w_C": float(info["T_w_C"]), "T_bottom_C": float(info["T_bottom_C"]), "T_mean_C": float(info["T_w_mean_C"]),
+            "T_pcm_C": float(info["T_pcm_C"]), "f_melt": float(info["f_melt"]),
+            "E_stored_kWh": float(info["E_stored_kWh"]), "E_rec45_kWh": float(info["E_rec45_kWh"]),
+            "E_del_Wh": float(info["E_delivered_Wh"]), "E_unmet_Wh": float(info["E_unmet_Wh"]),
+            "Q_coll_Wh": float(info["Q_collector_Wh"]), "n_shield_w": int(info["n_shield_water"]),
+            "n_shield_p": int(info["n_shield_pcm"]), "n_viol": int(info["n_safety_violations"]), "reward": float(reward),
+            **{f"obs{k}": float(obs_in[k]) for k in range(len(obs_in))},
+        })
+        if term or trunc:
+            break
+    return rows
 
 
 def export_plant_params(env: PCMEnv, regime_id: int, T0, h0) -> dict:
@@ -200,6 +313,10 @@ def main():
     ap.add_argument("--hours", type=int, default=8760)
     ap.add_argument("--model", default=None, help="DQN .zip (default: the one in results/gen2/gen2_selected_dqn.json)")
     ap.add_argument("--out", default=None, help="output folder (default: export_r<regime>)")
+    ap.add_argument("--forecast-mode", default="perfect", choices=["perfect", "smart"],
+                    help="perfect (default: the files the twin was built on) or smart (writes clearsky_<year>.csv and the *_smart reference only)")
+    ap.add_argument("--algo", default="dqn", choices=["dqn", "sac"],
+                    help="dqn (default: the files the twin was built on) or sac (writes sac_actor_r<k>.json and reference_sac_<year>.csv only)")
     args = ap.parse_args()
 
     role = weather_roles.role_of(args.year)
@@ -209,6 +326,13 @@ def main():
 
     out_dir = pathlib.Path(args.out) if args.out else O4_ROOT / f"export_r{args.regime}"
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.forecast_mode == "smart":
+        export_smart(args, out_dir)
+        return
+    if args.algo == "sac":
+        main_sac(args, out_dir)
+        return
 
     from stable_baselines3 import DQN
     model_path, sel = selected_model(args.regime)
@@ -252,6 +376,75 @@ def main():
     tot_sh = sum(r["n_shield_w"] + r["n_shield_p"] for r in rows)
     acts = np.bincount([r["action"] for r in rows], minlength=3)
     print(f"[export] reference_{args.year}.csv  {len(rows)} h  delivered(E_del45)={tot_del:.1f} kWh  "
+          f"shield activations={tot_sh}  violations={sum(r['n_viol'] for r in rows)}  "
+          f"actions CHARGE/IDLE/BYPASS={acts.tolist()}")
+
+
+def export_smart(args, out_dir: pathlib.Path):
+    """Clear-sky column and the Python reference trajectory with Objective 3's smart-persistence forecast (policies trained with perfect)."""
+    env = PCMEnv(CONTRACT, regime_id=args.regime, year=args.year, obs_version="V3", forecast_mode="smart")
+    clear = np.asarray(env._clear, dtype=float)
+    if clear.shape[0] != env._n_hours or not np.all(np.isfinite(clear)):
+        raise SystemExit("the weather file has no usable GHI_clearsky_Wm2 column")
+    np.savetxt(out_dir / f"clearsky_{args.year}.csv", np.column_stack([np.arange(len(clear)), clear]), delimiter=",",
+               header="hour_idx,GHI_clearsky_Wm2", comments="", fmt="%.17g")
+    print(f"[export] clearsky_{args.year}.csv  {len(clear)} hours  (max {clear.max():.0f} W/m2)")
+    if args.algo == "sac":
+        from stable_baselines3 import SAC
+        model_path, sel = select_sac(args.regime)
+        model = SAC.load(str(model_path), device="cpu")
+        rows = run_reference_sac(env, model, args.hours)
+        name = f"reference_sac_smart_{args.year}.csv"
+    else:
+        from stable_baselines3 import DQN
+        model_path, sel = selected_model(args.regime)
+        model = DQN.load(str(model_path), device="cpu", custom_objects={"lr_schedule": lambda _: 0.0, "exploration_schedule": lambda _: 0.0})
+        rows = run_reference(env, model, args.hours)
+        name = f"reference_smart_{args.year}.csv"
+    keys = list(rows[0].keys())
+    with open(out_dir / name, "w") as f:
+        f.write(",".join(keys) + "\n")
+        for r in rows:
+            f.write(",".join(repr(r[k]) if isinstance(r[k], float) else str(r[k]) for k in keys) + "\n")
+    tot_del = sum(r["E_del_Wh"] for r in rows) / 1000
+    tot_sh = sum(r["n_shield_w"] + r["n_shield_p"] for r in rows)
+    acts = np.bincount([r["action"] for r in rows], minlength=3)
+    print(f"[export] {name}  {len(rows)} h  delivered(E_del45)={tot_del:.1f} kWh  shield activations={tot_sh}  "
+          f"violations={sum(r['n_viol'] for r in rows)}  actions CHARGE/IDLE/BYPASS={acts.tolist()}")
+
+
+def main_sac(args, out_dir: pathlib.Path):
+    from stable_baselines3 import SAC
+    model_path, sel = select_sac(args.regime)
+    if args.model:
+        model_path = pathlib.Path(args.model).resolve()
+        sel = {**sel, "tag": model_path.parent.parent.name, "sha256": None, "same_as_o3_selection_file": False}
+    model = SAC.load(str(model_path), device="cpu")
+    if int(model.observation_space.shape[0]) != 17:
+        raise SystemExit("this twin is written for the 17-field V3 observation")
+    meta = json.loads((model_path.parent.parent / "run_meta.json").read_text())
+    if meta.get("forecast_mode", "perfect") != "perfect":
+        raise SystemExit(f"{meta['tag']} was trained with forecast_mode={meta['forecast_mode']}; the twin supplies the perfect forecast")
+    env = PCMEnv(CONTRACT, regime_id=args.regime, year=args.year, obs_version="V3")
+
+    actor = export_sac_actor(model, model_path, sel, args.regime)
+    (out_dir / f"sac_actor_r{args.regime}.json").write_text(json.dumps(actor), encoding="utf-8")
+    s = actor["selection"]
+    print(f"[export] sac_actor_r{args.regime}.json  {actor['tag']}  {actor['arch']}")
+    print(f"         selected by O3's annual-only rule from {s['pool']} ({s['n_pass_annual_rule']} of {s['n_runs_in_pool']} runs pass): "
+          f"{s['pct_of_B0_delivery']:.1f} % of B0, shield cut {s['shield_cut_vs_B0_pct']:.1f} %; same as O3 selection file: "
+          f"{s['same_as_o3_selection_file']} (file lists {s['o3_selection_file_lists']}); sha256 matches: {actor['sha256_matches_o3_selected']}")
+
+    rows = run_reference_sac(env, model, args.hours)
+    keys = list(rows[0].keys())
+    with open(out_dir / f"reference_sac_{args.year}.csv", "w") as f:
+        f.write(",".join(keys) + "\n")
+        for r in rows:
+            f.write(",".join(repr(r[k]) if isinstance(r[k], float) else str(r[k]) for k in keys) + "\n")
+    tot_del = sum(r["E_del_Wh"] for r in rows) / 1000
+    tot_sh = sum(r["n_shield_w"] + r["n_shield_p"] for r in rows)
+    acts = np.bincount([r["action"] for r in rows], minlength=3)
+    print(f"[export] reference_sac_{args.year}.csv  {len(rows)} h  delivered(E_del45)={tot_del:.1f} kWh  "
           f"shield activations={tot_sh}  violations={sum(r['n_viol'] for r in rows)}  "
           f"actions CHARGE/IDLE/BYPASS={acts.tolist()}")
 

@@ -42,6 +42,10 @@ Compiled 14 Nov 2026 from the files on disk in `export_r1/`, `results_campaign/`
 8. **Replay year (A, C):** every Rajasthan result, including the edge cases, uses 2023, an Objective 3 validation year (the policy was selected on it): a fidelity check, not an unbiased performance figure. The Tamil Nadu twin's edge cases use a locked test year; this one does not.
 9. **Sizing:** 50 L / 1.5 m² = 33.3 L/m², below the 40-100 L/m² band of IS 12976:2023; stated, not changed. It also explains the low demand coverage (37 % of a 300 L/day draw).
 
+## Objective 3 update (15 Nov 2026)
+
+Objective 3 finished DQN and SAC training. The released DQN files are unchanged (byte-identical re-export); the DQN re-run does not reproduce the regime 1 headline run. The SAC controllers of all three regimes were added to the twin and validated (100 % identical actions); the twin agrees with Objective 3's own 2023 tables to about 1e-12 kWh. SAC against always-charge: guard-band hours cut 96 / 86 / 71 % for 3.6-4.5 % of delivery and 1.4-5.0 h of hold at 45 C; it loses most of its shield benefit with a dead pyranometer or a frozen PCM estimator. No SAC number has held-out confirmation. Details: `J_objective3_update_sac_and_rerun.md`.
+
 ## Not done
 
 - Option C1 (3-D single capsule): needs the Partial Differential Equation Toolbox, which is not installed.

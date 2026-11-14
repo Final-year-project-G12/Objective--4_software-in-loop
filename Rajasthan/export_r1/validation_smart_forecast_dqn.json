@@ -1,0 +1,15 @@
+{
+  "regime": 1,
+  "controller": "DQN",
+  "action_agreement_pct": 99.98858447488584,
+  "max_abs_dT_top_C": 0.84197330232020562,
+  "delivered_kWh_matlab": 894.790179415285,
+  "delivered_kWh_python": 894.85680583096564,
+  "shields_matlab": 92716,
+  "shields_python": 92839,
+  "max_abs_dobs": 0.12513464689254761,
+  "mismatch_hours": 1,
+  "mismatch_max_rel_Q_gap": 3.2961738080359793E-7,
+  "delivered_rel_diff_pct": 0.0074454834836672036,
+  "pass": true
+}

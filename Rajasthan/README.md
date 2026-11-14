@@ -8,7 +8,7 @@ cases, same outputs.
 **Status: emulated validation only.** It shows the controller behaves correctly on the same physics
 it was trained on. It is not experimental validation.
 
-**What has and has not been run (read this first):**
+**What has and has not been run (read this first):** the section "Objective 3 update (15 Nov 2026)" below covers the SAC controllers added after Objective 3 finished its training.
 
 | Part | State |
 |---|---|
@@ -33,7 +33,7 @@ The folder is not a copy with the state name changed, because Rajasthan's Object
 | "Water temperature" | the one node | the **top** node (delivery node, where the shield looks) |
 | Replay year | 2011 | **2023** (a validation year; see below) |
 | Export folders | `export/`, `export_r1/`, `export_r2/` | `export_r0/`, `export_r1/`, `export_r2/` |
-| Default regime | 0 | **1** (the regime of Objective 3's locked test; the regime 0 and 2 policies always charge) |
+| Default regime | 0 | **1** (the regime of Objective 3's locked test; the regime 0 and 2 DQN policies always charge; the Objective 3 SAC, added 15 Nov 2026, does not) |
 
 **Why 2023 and not 2011.** For Rajasthan, 2011–2015 are Objective 2's held-out test years and
 2006–2010 are Objective 3's test years behind a one-shot lock that has already been used. Neither may
@@ -174,7 +174,7 @@ hold time moves by under 1 h. The collector's F_R does not depend on flow in thi
 
 **Three regimes (figure F5, `campaign_regimes.csv`).** Rajasthan has only three regimes here, not three states.
 PCM gain over water-only in window energy: +129 kWh (r0), +134 (r1), +140 (r2); in hold time +8.3, +9.3, +9.8 h.
-Regimes 0 and 2 run the always-charge policy, so DQN = B0. A cross-state table needs the other two twins.
+Regimes 0 and 2 run the always-charge policy with the released DQN, so DQN = B0 there (the SAC, below, is the controller that differs). A cross-state table needs the other two twins.
 
 **Sensor-fault case, 20 seeds** (mean ± 95 % CI): DQN 8.40 ± 0.02 kWh and 5.49 ± 0.13 shield hours; B0 8.60 ± 0.02 kWh
 and 13.86 ± 0.19 h.
@@ -331,6 +331,48 @@ the standing limitation: 50 L / 1.5 m2 = 33.3 L/m2 is below the 40-100 L/m2 band
 **C1, the 3-D single-capsule check: not done.** It needs the Partial Differential Equation Toolbox; `ver` shows it is not installed, and nothing was installed. The held-out Tan 2009 /
 Dong 2022 check (above) is the capsule-level evidence.
 
+## Objective 3 update (15 Nov 2026): SAC controllers and the DQN re-run
+
+**Objective 3 finished SAC and DQN training (re-run of 13-14 Nov 2026) and Objective 4 was updated on 15 Nov 2026** (full account: `reports/J_objective3_update_sac_and_rerun.md`).
+
+- **DQN side unchanged.** The released DQN files re-exported from the current Objective 3 tree are byte-identical in all three regimes. Objective 3's DQN re-run does not reproduce the regime 1 headline run (retrained: 100 % of B0, 0 % shield cut, against 98.2 % / 57 % before); the original model, with its hash, is the one used (it passed Objective 3's spent locked test: 98.0 % of B0, shield -61 %). In regimes 0 and 2 every DQN run that passes is always-charge, in the original study and in the re-run.
+- **SAC added as a controller in all three regimes** (`sac_policy.m`, `export_from_python.py --algo sac`, `validate_sac_against_python.m`). The run is the one Objective 3's current annual-only rule selects: regime 0 `sac_r0_w5.85_s123`, regime 1 `sac_r1_w2.55_s42` (selected here; Objective 3's selection file for regime 1 is stale and still lists the always-charge run), regime 2 `sac_r2_w0.85_s0`. Validation: 100 % identical actions in all three regimes (delivered 912.523 / 873.573 / 935.093 kWh).
+- **The twin agrees with Objective 3 to rounding** (`results_campaign/o3_crosscheck_2023.csv`): water-only twin, B0, B1, the released DQN and the three SAC runs match Objective 3's 2023 tables to 6e-12 kWh. Objective 3's seven sensor faults, run on the twin for the DQN, match its `phase9_sensor_faults_r1.csv` to 3e-12 kWh for the five deterministic faults.
+- **Results, 2023, SAC against always-charge (B0):** guard-band hours 28.6 / 143.6 / 307 against 798 / 994 / 1073 (cuts of 96 %, 86 %, 71 %, regimes 0 / 1 / 2); delivered 912.5 / 873.6 / 935.1 kWh (95.6 %, 95.7 %, 96.4 % of B0); 45 °C hold 47.5 / 56.1 / 55.0 h against 52.1 / 61.2 / 56.4 h. **The SAC costs retention** (4.6 h, 5.0 h, 1.4 h): Objective 3's reward has no retention term. The released DQN in regime 1 cuts guard-band hours by 57 % with no loss of hold time (61.0 h).
+- **The SAC depends on its sensors:** with a dead pyranometer or a frozen PCM estimator it loses most of its shield benefit (regime 1: 535 and 660 guard-band hours against 144), with no hard-limit hours and no interlock trigger.
+- **Not confirmed on held-out data.** All SAC numbers are validation-year ones (2023 is in Objective 3's selection set); Objective 3's locked test is spent and was not re-run; the annual-only rule is a post-hoc change (all three selected SAC runs fail the older annual-and-window rule). The twin supplies the perfect 3-hour forecast the SAC was trained with.
+
+New files (all new names; no existing output changed): `export_r<k>/sac_actor_r<k>.json`, `reference_sac_2023.csv`, `validation_sac_report.json`, `four_arm_2023.csv/.json/.png`, `scenarios_4arm/`; `results_campaign/campaign_regimes_sac.csv`, `campaign_results_swapsac.csv`, `o3_crosscheck_2023.csv`, `o3_sensor_faults.csv`, `o3_sensor_faults_vs_o3_dqn_r1.csv`, `figures/F10_four_arms_three_regimes.png`, `F11_o3_sensor_faults.png`, `hold_curves/*_sac.csv`, `*_swapsac.csv`. Code: `matlab/sac_policy.m`, `b1_policy.m` (Objective 3's reactive rule B1, policy mode 3), `validate_sac_against_python.m`, `four_arm_2023.m`, `run_c_scenarios_sac.m`, `run_o3_sensor_faults.m`, `compare_with_o3.m`; `simulate_hours.m` gained policy modes 2 (SAC) and 3 (B1) and an optional observation-fault hook; `run_campaign.m` gained the `sac` and `swap_sac` passes; `export_from_python.py` gained `--algo sac`.
+
+| 2023 | Regime 0 (savE OM55) | Regime 1 (PureTemp 60) | Regime 2 (PureTemp 58) |
+|---|---|---|---|
+| Delivered, B0 / SAC [kWh] | 955.0 / 912.5 | 912.4 / 873.6 (DQN 897.3) | 970.3 / 935.1 |
+| Guard-band hours, B0 / SAC | 798 / 28.6 | 994 / 143.6 (DQN 430) | 1073 / 307 |
+| Hold at 45 C, water-only / B0 / SAC [h] | 43.7 / 52.1 / 47.5 | 51.9 / 61.2 / 56.1 (DQN 61.0) | 46.7 / 56.4 / 55.0 |
+| SAC run, validation % of B0, shield cut | w5.85 s123: 95.2 %, 96.4 % | w2.55 s42: 95.7 %, 86.2 % | w0.85 s0: 96.4 %, 71.1 % |
+
+## Forecast optimism check (15 Nov 2026): perfect against smart-persistence forecast
+
+The Rajasthan DQN and SAC were trained with a **perfect** 3-hour irradiance forecast in the observation; the Tamil Nadu SAC was trained with Objective 3's **smart persistence** forecast, GHI_hat(t+h) = Kc(t) x GHI_clear(t+h). `matlab/run_forecast_check.m` scores the released Rajasthan controllers with the smart forecast, **without retraining** (`smart_kc.m`, the stored clear-sky column, `simulate_hours(..., clearsky)`; shortcut `run_f.m`).
+
+- **Validation:** the MATLAB closed loop with the smart forecast reproduces Objective 3's Python smart-forecast run (`export_from_python.py --forecast-mode smart`): SAC 100 % identical actions in regimes 0, 1, 2 (870.524 / 909.096 / 934.058 kWh as in Python); DQN regime 1 99.989 % (one hour, 3346, where the DQN's two best Q-values differ by less than 1e-5 relative, float32 against double; delivered 894.790 against 894.857 kWh, 0.007 %). Reports: `export_r<k>/validation_smart_forecast_<dqn|sac>.json`.
+- **Result** (`results_campaign/forecast_optimism_2023.csv`), perfect to smart: DQN r1 897.3 to 894.8 kWh, guard-band hours 430 to 392, 45 C hold 61.0 h unchanged; SAC r1 873.6 to 870.5 kWh (144 to 125 h, hold 56.2 h); SAC r0 912.5 to 909.1 kWh (28.6 to 24.4 h, hold 47.5 h); SAC r2 935.1 to 934.1 kWh (307 to 301 h, hold 55.0 h). **Delivery moves by 0.1-0.4 % and guard-band hours do not get worse**, so the headline numbers are not an artefact of a perfect forecast.
+- **Limits:** the clear-sky column is the stored one (Objective 3 uses the same offline); a live analytic clear-sky model adds error (17.5 % rRMSE against the stored column in Objective 3). Next-hour demand stays perfect. The policies were not retrained with the smart forecast.
+
+New files: `export_r<k>/clearsky_2023.csv`, `reference_smart_2023.csv` (regime 1), `reference_sac_smart_2023.csv`, `validation_smart_forecast_*.json`; `results_campaign/forecast_optimism_2023.csv`.
+
+## Tamil Nadu parity pass 2 (15 Nov 2026): launchers, 20-seed intervals, shared-format table
+
+Everything new; no existing output changed (re-validation: delivered 954.983 / 897.262 / 970.320 kWh, regimes 0 / 1 / 2, 100 % identical actions; `export_r1/scenarios/scenario_summary.csv` untouched).
+
+**Launchers** (`matlab/`, thin wrappers, names as in the Tamil Nadu twin): `run_val` (A, validation incl. SAC, ~3 min), `run_arm` (B, 3-arm and 4-arm 2023, ~10 min), `run_c` (C, scenarios, ~10 min), `run_day` (D1, one-day cycle), `run_d` (D, hold test + swap study), `run_e` (E, Objective 3 cross-check), `run_f` (F, forecast optimism check), `run_h` (H, 20-seed sensor-fault intervals, ~15 min). Timings are indicative.
+
+**20-seed intervals** (`export_r<k>/scenarios_4arm/sensor_fault_20seed_ci.csv`, `sensor_fault_20seed_raw.mat`): 10-day April window, delivered kWh and guard-band hours, mean and standard error of 20 seeds, four cases (healthy, dead pyranometer 0 W/m2, stuck 500 W/m2, 12 h sensor blackout). Regime 1 guard-band hours (mean +- SE): SAC 2.8 +- 0.17 healthy, 17.6 +- 0.17 dead, 11.7 +- 0.30 stuck; DQN 17.2 healthy, 28.2 dead, 19.6 stuck; B0 45.1 whatever the sensors. Hard-limit violations: 0 in all seeds and cases. The plain tank and B0 do not read the observation, so a pyranometer fault does not change them (identical rows). A dead pyranometer costs the SAC most of its shield benefit but never a limit violation. `scenario_summary_4arm.csv` gained two columns, `delivered_kWh_10day` and `shield_hours_10day`.
+
+**Shared-format table** (`results_campaign/shared_format_table_rajasthan_2023.csv`, `matlab/shared_format_table.m`): 2023 per regime and arm in the joint plan's metric list (delivery at 45 / 50 C, window, unmet, guard-band hours, hard-limit hours, melt cycles, pump hours, kWh per kg PCM and per m2, hold at 30 / 40 / 45 / 50 C), measured at the top layer, perfect 3 h forecast.
+
+**Risks and limitations (consolidated):** software only (no hardware); one training seed per controller; 2023 is a validation year also used to select the controllers (not out-of-sample; Objective 3's locked test is spent); the forecast is supplied, not sensed (perfect in training, smart-persistence check above); next-hour demand is perfect; the SAC and DQN depend on the pyranometer; hold times are model values (lumped capsule slower than single-sphere benchmarks, SUPPORTED only at tank level); 50 L / 1.5 m2 is below IS 12976:2023 (33.3 L/m2); the 0.05 % sub-step gate fails by 0.080 % (sensible-heat hours) and is reported, not relaxed.
+
 ## Tamil Nadu-layout additions (14 Nov 2026): three-arm tables, one-day cycle, hold test, swap table, videos, reports
 
 Added so the Rajasthan folder mirrors the Tamil Nadu twin's layout and file names (`docs/OBJECTIVE4_RAJASTHAN_SCOPE.md` lists the nine items; `docs/plan_O4.md` maps plan sections and prompts A-H to files). Everything below is new; no existing output was changed.
@@ -389,7 +431,7 @@ Findings worth stating in the report:
   01:00 is 0 on every day), so no latent heat carries into the next morning with this 50 L sizing.
 - Zero hard-limit violations in every case. The 12-hour blackout puts the interlock in fail-safe
   BYPASS for 15 hours (12 blackout + 3 random dropouts), and the loop recovers afterwards.
-- **Regimes 0 and 2: the released DQN always charges** (0 IDLE hours in 8760), so it equals B0 in every
+- **Regimes 0 and 2: the released DQN always charges** (0 IDLE hours in 8760; the Objective 3 SAC, added 15 Nov 2026, is the first controller that differs from always-charge there), so it equals B0 in every
   scenario. This matches Objective 3's own record (`gen2_selected_dqn.json`: 0 switches, 100 % of B0).
   The twin runs for these regimes, but there is no controller benefit to show.
 
@@ -421,3 +463,6 @@ Findings worth stating in the report:
 - Rain has no physics of its own; it enters only as lower irradiance and ambient temperature.
 - The 50 L / 1.5 m² system is below the 40–100 L/m² band of IS 12976:2023 (a standing Objective 2 limitation).
 - The policy decides hourly; the shield inside the plant acts at every solver sub-step (150 s or shorter).
+- Objective 3 update (15 Nov 2026): the SAC results are validation-year (2023) only, on a year Objective 3 used to select the run; Objective 3's locked test is spent and was not re-run, so no SAC number has held-out confirmation. The annual-only delivery rule that selects them is a post-hoc change. The regime 1 SAC selection is computed here by Objective 3's rule because its selection file for that regime was not refreshed.
+- The SAC costs retention (hold at 45 C 4.6 / 5.0 / 1.4 h shorter than always-charge in regimes 0 / 1 / 2), because Objective 3's reward has no retention term; it also loses most of its shield benefit with a dead pyranometer or a frozen PCM estimator, with no interlock trigger.
+- Objective 3's DQN re-run does not reproduce its regime 1 headline run; the released model file and its hash, not the training recipe, are what the twin uses.

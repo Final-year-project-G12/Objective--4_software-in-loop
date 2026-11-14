@@ -20,6 +20,7 @@
 | Hourly sunlight (GHI), air temperature, hour of day, 2023 (8760 h) | Rajasthan point-year weather of the regime's medoid point (Objective 2 files) | `export_r*/weather_2023.csv` |
 | Hot-water demand per hour of day | Objective 2 demand model | inside `plant_params.json` |
 | Controller weights (neural network 17-64-64-3) | Objective 3 released DQN models (`results/gen2/gen2_selected_dqn.json`) | `export_r*/dqn_qnet_r<k>.json` |
+| SAC actor weights (17-256-256-1, tanh), added 15 Nov 2026 | The SAC run Objective 3's annual-only rule selects per regime (`results/rerun_2026-11-13/gen2/` for regimes 0 and 2, `results/gen2/` for regime 1) | `export_r*/sac_actor_r<k>.json`, `reference_sac_2023.csv` |
 | Python reference run (only for checking the twin) | Objective 3 environment | `export_r*/reference_2023.csv` |
 
 They are produced by one script, `export_from_python.py`, and can be regenerated at any time:
@@ -55,6 +56,8 @@ The weather data are real hourly values; the **edge cases are made by editing th
 | PCM capsules | Enthalpy method per node (melt fraction), Wakao–Kaguei heat transfer, aluminium wall heat capacity | `pcm_plant_hour.m` | Physics |
 | In-plant safety shield | Cuts the collector loop at 72 °C (top node) and PCM charging at 62 °C, checked every sub-step | `pcm_plant_hour.m` | Fixed rule |
 | Baseline B0 | Always CHARGE | `dqn_policy.m` (mode 1) | Fixed |
+| Decision with the SAC (added 15 Nov 2026) | **Soft Actor-Critic** actor, tanh(mu), binned at +-1/3 into CHARGE / IDLE / BYPASS | `sac_policy.m` (`simulate_hours` mode 2) | Trained in Objective 3; only evaluated here |
+| Objective 3 reactive rule B1 | Priority rules on the observation | `b1_policy.m` (`simulate_hours` mode 3) | Fixed |
 | Animation | MATLAB graphics objects updated per frame, `VideoWriter` MPEG-4 | `animate_system.m` | Drawing only |
 
 No training, optimisation or machine learning runs in Objective 4.
@@ -178,7 +181,7 @@ plot_pack                        % F1-F8 (about 2 min); plot_pack({'A1','A2','A3
 - The forecast fields of the observation are the true future weather (a perfect forecast). A real device would use a forecast with errors.
 - Melt fraction, stored energy and recoverable energy are treated as perfect estimator outputs.
 - Rain only reduces sunlight and air temperature; there is no frost or wet-surface model.
-- Regime 0 and 2 policies are always-charge, so their DQN and B0 results are identical.
+- Regime 0 and 2 DQN policies are always-charge, so their DQN and B0 results are identical (the Objective 3 SAC, added 15 Nov 2026, differs; section 10).
 - 2023 is a validation year: the policy was selected using it, so these runs are a fidelity check, not an unbiased performance figure.
 
 ---
@@ -245,3 +248,37 @@ Things that could be mistaken for results of something else:
 | `docs/` | `OBJECTIVE4_RAJASTHAN_SCOPE.md`, `plan_O4.md` |
 
 Pyranometer faults in the three-arm table: dead (reads 0), stuck at 500 and stuck at 1000 W/m2 (constant for the whole run), real sun unchanged; definitions in the header of `matlab/edge_scenarios.m`. Not done: option C1 (3-D single capsule: the Partial Differential Equation Toolbox is not installed).
+
+## 10. Objective 3 update files (15 Nov 2026; new files only)
+
+**Objective 3 finished SAC and DQN training (re-run of 13-14 Nov 2026) and Objective 4 was updated on 15 Nov 2026** (full account: `reports/J_objective3_update_sac_and_rerun.md`).
+
+| File / folder | Content |
+|---|---|
+| `export_r<k>/sac_actor_r<k>.json` | SAC actor weights, the run's tag, SHA-256, and how it was selected (pool, number passing, % of B0, shield cut, whether Objective 3's own selection file lists it) |
+| `export_r<k>/reference_sac_2023.csv` | The Python environment's hourly trajectory under the SAC (the validation reference) |
+| `export_r<k>/validation_sac_report.json` | Open loop, policy on Python's observations, closed loop: 100 % identical actions in all three regimes |
+| `export_r<k>/four_arm_2023.csv/.json/.png` | Plain tank, PCM + B0, PCM + DQN, PCM + SAC over 2023 (adds % of B0 delivery, window, shield cut) |
+| `export_r<k>/scenarios_4arm/` | The nine edge cases with the four arms (`scenario_summary_4arm.csv`, one plot per scenario, `edge_cases_grid_4arm.png`) |
+| `results_campaign/campaign_regimes_sac.csv` | The three regimes x four arms with the hold test (12 evenings), gains and all metrics |
+| `results_campaign/campaign_results_swapsac.csv` | Regime 1: three PCMs x flow x0.7/1.0/1.3 with the SAC |
+| `results_campaign/o3_crosscheck_2023.csv` | The twin against Objective 3's own 2023 results: water-only twin, B0, B1, DQN, SAC (differences about 1e-12) |
+| `results_campaign/o3_sensor_faults.csv`, `o3_sensor_faults_vs_o3_dqn_r1.csv` | Objective 3's seven observation faults on the twin for B0, DQN, SAC; the DQN rows against `phase9_sensor_faults_r1.csv` |
+| `results_campaign/figures/F10_four_arms_three_regimes.png`, `F11_o3_sensor_faults.png` | Four arms across the regimes; the fault set |
+| `reports/J_objective3_update_sac_and_rerun.md` | The full account |
+
+Things that could be mistaken for results of something else: `a_cont` in `reference_sac_2023.csv` and the first `q` column of the SAC logs is the SAC output in [-1, 1] (not a Q-value); the SAC selection for regime 1 is computed by `export_from_python.py` with Objective 3's rule because Objective 3's `gen2_selected_sac.json` is stale for that regime; the noisy faults (2 % noise, combined) do not match Objective 3 to the digit because the random numbers differ.
+
+
+## Added 15 Nov 2026 (smart-forecast check, Tamil Nadu parity pass 2)
+
+| File | What it is |
+|---|---|
+| `export_r<k>/clearsky_2023.csv` | stored clear-sky GHI column used by the smart-persistence forecast |
+| `export_r1/reference_smart_2023.csv`, `export_r<k>/reference_sac_smart_2023.csv` | Objective 3's Python run with forecast_mode = smart (validation reference) |
+| `export_r<k>/validation_smart_forecast_<dqn|sac>.json` | MATLAB against that reference (actions, dT, delivered, near-tie mismatch) |
+| `results_campaign/forecast_optimism_2023.csv` | perfect against smart forecast: delivery, guard-band hours, % of B0, hold |
+| `export_r<k>/scenarios_4arm/sensor_fault_20seed_ci.csv`, `sensor_fault_20seed_raw.mat` | 20-seed mean +- SE, 4 arms x 4 sensor cases, 10-day window |
+| `export_r<k>/scenarios_4arm/scenario_summary_4arm.csv` | now also `delivered_kWh_10day`, `shield_hours_10day` |
+| `results_campaign/shared_format_table_rajasthan_2023.csv` | cross-state shared-format 2023 table |
+| `matlab/run_val.m run_arm.m run_c.m run_day.m run_d.m run_e.m run_f.m run_h.m` | launchers (Tamil Nadu names) |

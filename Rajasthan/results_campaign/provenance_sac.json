@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-14",
+  "python": "3.10.11",
+  "sha256": {
+    "OBJECTIVE2_Objective___2_objective2_rajasthan_data_objective1_mcdm_topk_by_cluster_csv": "6fd249b07eb3385b0bfb1af2f62c97cee99f32c4913b05dd2ceac936429cebac",
+    "OBJECTIVE2_Objective___2_objective2_rajasthan_data_objective1_pcm_database_rajasthan_csv": "56dc3f6461e1581ee979e59ae9bfb41a636f6081eaad035fb9af9d1c8bca7fa0",
+    "OBJECTIVE2_Objective___2_objective2_rajasthan_configs_states_rajasthan_yaml": "158bfd366953d1be5f8043aacfb175c9f0d5e0b22e3a11b8785697be94b60726",
+    "OBJECTIVE2_Objective___2_objective2_rajasthan_results_g10_selection_r1_json": "de6364d5908cf5322a6800ce4436fc172558664d0861612843d6e4f0e85f56b2",
+    "Objective__4_software_in_loop_Rajasthan_export_r1_plant_params_json": "d995c7c5e53fd24cde8ba3c2a50a21880d30d00ed6942e771e2a53a2f0cff935",
+    "Objective__4_software_in_loop_Rajasthan_export_r1_dqn_qnet_r1_json": "96d4788b89498dac3e0e272952f0d458cabde969064a6e628ad7f514c724b9a9",
+    "OBJECTIVE2_Objective___2_objective2_rajasthan_data_objective1_manifest_json": "6e8df98590fb7c42fa87b000d6337cf26dacdaa1df1600c638aabb6ed7a406c4"
+  },
+  "capsule_overrides": {},
+  "matlab_version": "26.2.0.3433840 (R2026b) Update 1",
+  "toolboxes": [
+    "MATLAB",
+    "MATLAB Coder",
+    "MATLAB Compiler",
+    "MATLAB Copilot",
+    "Optimization Toolbox",
+    "Simscape",
+    "Simscape Fluids",
+    "Simscape Multibody",
+    "Simulink",
+    "Simulink 3D Animation",
+    "Simulink Check",
+    "Simulink Coder",
+    "Simulink Compiler",
+    "Simulink Copilot",
+    "Simulink Coverage",
+    "Simulink Design Optimization",
+    "Simulink Design Verifier",
+    "Stateflow"
+  ],
+  "run_date": "2026-11-15 01:04"
+}

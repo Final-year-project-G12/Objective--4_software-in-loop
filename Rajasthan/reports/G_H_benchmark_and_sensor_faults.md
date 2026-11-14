@@ -30,4 +30,4 @@ Amanowicz and Turski (Energies 18(2) 345, 2025): a 9.6 dm³ Styrofoam tank cooli
 
 **Over the full year** (ideal other sensors, no seed): DQN with a dead pyranometer 908.85 kWh and 701 guard-band hours, against 897.3 kWh and 430 healthy (B0: 912.36 kWh, 994 h); it commands a different action in 246 of 8760 h and idles 228 h instead of 356. With the sensor dead, the DQN is no safer than healthy; a plausibility check on the irradiance reading (0 at noon with a clear forecast) would be the obvious addition for a real device.
 
-**Not run:** a pyranometer that freezes at its last reading during the day (stuck is a constant here); regimes 0 and 2 with sensor faults (their policies always charge, so they equal B0).
+**Not run:** a pyranometer that freezes at its last reading during the day (stuck is a constant here); regimes 0 and 2 with the DQN under sensor faults (it equals B0 there; the SAC is covered by `results_campaign/o3_sensor_faults.csv`, report J section 7). Objective 3's seven observation faults are also run on the twin (report J): the DQN rows match Objective 3's phase 9 table to 3e-12 kWh for the five deterministic faults.

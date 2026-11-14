@@ -142,10 +142,10 @@ For every scenario, the DQN and the always-charge baseline B0 run on the same we
 **Findings worth stating:**
 - The PCM melts fully around midday and is fully solid again in the night, every day of 2023, in all three regimes. No latent heat carries into the next morning with the 50 L / 1.5 m² sizing.
 - The top node sits at the 72 °C guard band for hundreds of hours a year under always-charge (798 h regime 0, 994 h regime 1, 1073 h regime 2). The collector is large for the tank, which is the known Objective 2 sizing limitation (33.3 L/m², below IS 12976:2023).
-- Only the regime 1 controller differs from always-charge. For regimes 0 and 2 the twin confirms the released policy is B0 in practice.
+- Only the regime 1 DQN differs from always-charge. For regimes 0 and 2 the twin confirms the released DQN is B0 in practice (Objective 3's re-run confirms it: every passing DQN run there is B0). The Objective 3 SAC, added 15 Nov 2026 (section 1.10), differs from always-charge in all three regimes.
 - The hard limits (75 °C water / 65 °C PCM) are never reached in any scenario or in the full-year runs.
 
-**Limits:** Simulink run for one week only; generated C verified for regime 1 only; animations for regime 1 only; emulated, not experimental; perfect 3-hour forecast; melt fraction and energy fields treated as perfect estimates; rain enters only as less sunlight and cooler air; the interlock has no debounce; 2023 is a validation year.
+**Limits:** the SAC results are validation-year only (no held-out test, post-hoc annual-only selection rule, regime 1 selection computed here); Simulink run for one week only; generated C verified for regime 1 only; animations for regime 1 only; emulated, not experimental; perfect 3-hour forecast; melt fraction and energy fields treated as perfect estimates; rain enters only as less sunlight and cooler air; the interlock has no debounce; 2023 is a validation year.
 
 ---
 
@@ -184,6 +184,24 @@ Points to say in the viva:
 - **Three Rajasthan regimes** give similar gains (+129 to +140 kWh window, +8.3 to +9.8 h); this is not a three-state comparison, which needs the other twins' results.
 - **Two things found on the way:** a water-only tank latched a false hard-limit fault because the interlock compared its mean water temperature with the 65 °C PCM limit (fixed for that arm only); and the pump was drawn running whenever CHARGE was commanded, even without collector gain (fixed in the animation).
 - **Also done in the follow-up:** supercooling proxy (freezing point 2 K lower: hold time changes by under 1 h, 50 °C hold +0.5 to +1.0 h), pump energy from Objective 2's Ergun head (0.005 Wh per year, a lower bound). **Not done:** a cross-state F5 (needs the other two twins), option C1 (needs the Partial Differential Equation Toolbox, not installed).
+
+### 1.10 Objective 3 update (15 Nov 2026): SAC controllers and the DQN re-run
+
+Objective 3 finished training DQN and SAC. What it means for Objective 4, in the order it matters (full account: `reports/J_objective3_update_sac_and_rerun.md`):
+
+1. **DQN side unchanged.** The released DQN files re-exported from the current Objective 3 tree are byte-identical in all three regimes. Objective 3's DQN re-run does not reproduce the regime 1 headline run (retrained: 100 % of B0, 0 % shield cut, against 98.2 % / 57 % before); the original model, with its hash, is the one used (it passed Objective 3's spent locked test: 98.0 % of B0, shield -61 %). In regimes 0 and 2 every DQN run that passes is always-charge, in the original study and in the re-run.
+- **SAC added as a controller in all three regimes** (`sac_policy.m`, `export_from_python.py --algo sac`, `validate_sac_against_python.m`). The run is the one Objective 3's current annual-only rule selects: regime 0 `sac_r0_w5.85_s123`, regime 1 `sac_r1_w2.55_s42` (selected here; Objective 3's selection file for regime 1 is stale and still lists the always-charge run), regime 2 `sac_r2_w0.85_s0`. Validation: 100 % identical actions in all three regimes (delivered 912.523 / 873.573 / 935.093 kWh).
+- **The twin agrees with Objective 3 to rounding** (`results_campaign/o3_crosscheck_2023.csv`): water-only twin, B0, B1, the released DQN and the three SAC runs match Objective 3's 2023 tables to 6e-12 kWh. Objective 3's seven sensor faults, run on the twin for the DQN, match its `phase9_sensor_faults_r1.csv` to 3e-12 kWh for the five deterministic faults.
+- **Results, 2023, SAC against always-charge (B0):** guard-band hours 28.6 / 143.6 / 307 against 798 / 994 / 1073 (cuts of 96 %, 86 %, 71 %, regimes 0 / 1 / 2); delivered 912.5 / 873.6 / 935.1 kWh (95.6 %, 95.7 %, 96.4 % of B0); 45 °C hold 47.5 / 56.1 / 55.0 h against 52.1 / 61.2 / 56.4 h. **The SAC costs retention** (4.6 h, 5.0 h, 1.4 h): Objective 3's reward has no retention term. The released DQN in regime 1 cuts guard-band hours by 57 % with no loss of hold time (61.0 h).
+- **The SAC depends on its sensors:** with a dead pyranometer or a frozen PCM estimator it loses most of its shield benefit (regime 1: 535 and 660 guard-band hours against 144), with no hard-limit hours and no interlock trigger.
+- **Not confirmed on held-out data.** All SAC numbers are validation-year ones (2023 is in Objective 3's selection set); Objective 3's locked test is spent and was not re-run; the annual-only rule is a post-hoc change (all three selected SAC runs fail the older annual-and-window rule). The twin supplies the perfect 3-hour forecast the SAC was trained with.
+
+Points to say in the viva:
+- **A controller now exists in every regime.** The SAC cuts guard-band hours by 96 %, 86 % and 71 % in regimes 0, 1, 2 for 3.6-4.5 % of annual delivery; the DQN does 57 % in regime 1 only.
+- **It is a trade-off, not a free win.** The SAC shortens the 45 C hold by 4.6 / 5.0 / 1.4 h against always-charge, halving the PCM's retention gain in regimes 0 and 1. Objective 3's reward has no retention term; adding one is the obvious next step for Objective 3, not for the twin.
+- **Sensor dependence.** A dead pyranometer or a frozen PCM estimator takes back most of the SAC's safety benefit with no alarm. A plausibility check and Objective 3's own fail-safe (fall back to B1 when the f_melt estimator diverges; B1 is now in the twin) are the mitigations.
+- **The twin is a faithful replay of Objective 3's environment**: agreement to about 1e-12 kWh for the water-only twin, B0, B1, DQN and the three SAC runs, and for five of Objective 3's seven sensor faults.
+- **No held-out confirmation for the SAC.**
 
 ## 2. Why MATLAB?
 

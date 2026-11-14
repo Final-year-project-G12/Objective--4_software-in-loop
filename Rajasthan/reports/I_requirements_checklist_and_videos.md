@@ -14,6 +14,7 @@
 | 3-D videos | Yes: day, clear single cycle, no-sunlight single cycle, 72 h hold | this file |
 | PCM swap, top-3, flow x0.7 / x1.0 / x1.3 | Yes, all nine PCM-flow cells, B0 and DQN | `E_pcm_swap.md` |
 | Benchmark | Yes: diagnosed, and a calibration run (null: c = 5.03) | `G_H_benchmark_and_sensor_faults.md` |
+| Objective 3 SAC controllers (added 15 Nov 2026) | Yes: exported, validated (100 % identical actions), four-arm tables, edge cases, hold test, swap, sensor faults, cross-check with Objective 3 to about 1e-12 kWh. No SAC videos yet | `J_objective3_update_sac_and_rerun.md` |
 | Controller used is the released one | Verified: SHA-256 of the exported weights matches `gen2_selected_dqn.json`; the export re-run is byte-identical | `A_validation_and_three_arm.md` |
 
 ## Is arm 3 better and more optimal than arms 1 and 2?

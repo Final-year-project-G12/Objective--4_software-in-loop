@@ -1,0 +1,63 @@
+{
+  "A_open_loop": {
+    "max_abs_dT_top_C": 2.7000623958883807E-13,
+    "max_abs_dT_pcm_C": 3.1974423109204508E-13,
+    "max_abs_df_melt": 7.8825834748386114E-15,
+    "delivered_kWh_matlab": 935.092578167625,
+    "delivered_kWh_python": 935.09257816762454,
+    "shields_matlab": 58550,
+    "shields_python": 58550,
+    "violations_matlab": 0,
+    "violations_python": 0,
+    "pass": true
+  },
+  "A_policy_on_python_obs": {
+    "action_agreement_pct": 100,
+    "max_abs_da_cont": 1.4901161193847656E-6,
+    "hours_within_1e5_of_a_bin_edge": 0
+  },
+  "C_closed_loop": {
+    "action_agreement_pct": 100,
+    "max_abs_dT_top_C": 2.7000623958883807E-13,
+    "max_abs_dT_pcm_C": 3.1974423109204508E-13,
+    "max_abs_dobs": 2.6645352988050451E-16,
+    "delivered_kWh_matlab": 935.092578167625,
+    "delivered_kWh_python": 935.09257816762454,
+    "shields_matlab": 58550,
+    "shields_python": 58550,
+    "violations_matlab": 0,
+    "actions_charge_idle_bypass": [
+      5377,
+      1731,
+      1652
+    ],
+    "pass": true
+  },
+  "overall_pass": true,
+  "controller": {
+    "algo": "sac",
+    "tag": "sac_r2_w0.85_s0_V3_60min_dr",
+    "sha256": "3acd8597d890d8934d25e8fe96cb4c7030d827ca3b1ae64f05573fea9e88d16f",
+    "selection": {
+      "tag": "sac_r2_w0.85_s0_V3_60min_dr",
+      "pool": "results/rerun_2026-11-13/gen2/gen2_summary_sac.csv",
+      "n_runs_in_pool": 9,
+      "n_pass_annual_rule": 3,
+      "pct_of_B0_delivery": 96.354188170723262,
+      "pct_of_B0_window": 94.329701625231579,
+      "shield_cut_vs_B0_pct": 71.139984055584819,
+      "shield_weight": 0.85,
+      "seed": 0,
+      "shield_h": 320.9467592592593,
+      "E45_kWh_validation_mean": 940.80530221582285,
+      "sha256": "3acd8597d890d8934d25e8fe96cb4c7030d827ca3b1ae64f05573fea9e88d16f",
+      "o3_selection_file_lists": "sac_r2_w0.85_s0_V3_60min_dr",
+      "same_as_o3_selection_file": true
+    }
+  },
+  "regime": 2,
+  "year": 2023,
+  "hours": 8760,
+  "matlab": "26.2.0.3433840 (R2026b) Update 1",
+  "generated": "2026-11-15T01:02:12"
+}

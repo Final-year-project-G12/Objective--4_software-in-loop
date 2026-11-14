@@ -10,6 +10,7 @@ function tw = load_twin_params(exportDir, year)
 %   N          number of weather hours
 %   T0, h0     [10x1] initial node water temperature / PCM enthalpy (reset "solid")
 %   s0         [7x1] derived initial state (pcm_derive_state)
+%   sac        (only if export_r<k>/sac_actor_r<k>.json exists) SAC actor weights and selection record; ref_sac its Python reference
 %   W1..b3     DQN Q-network weights
 %   ref        Python reference trajectory (table), [] if not exported
 %   regime, params, qnet_info
@@ -70,6 +71,17 @@ tw.W2 = A.W2;  tw.b2 = A.b2(:);
 tw.W3 = A.W3;  tw.b3 = A.b3(:);
 assert(size(tw.W1, 2) == 17 && size(tw.W3, 1) == 3, 'expected a 17-input, 3-action Q-network');
 tw.qnet_info = rmfield(A, {'W1', 'b1', 'W2', 'b2', 'W3', 'b3'});
+
+% SAC actor (export_from_python.py --algo sac), if exported: tw.sac with W1 b1 W2 b2 Wmu bmu and the reference trajectory tw.ref_sac
+sacFile = fullfile(exportDir, sprintf('sac_actor_r%d.json', pp.regime_id));
+if isfile(sacFile)
+    S = jsondecode(fileread(sacFile));
+    assert(size(S.W1, 2) == 17 && size(S.Wmu, 1) == 1, 'expected a 17-input SAC actor with one output');
+    tw.sac = struct('W1', S.W1, 'b1', S.b1(:), 'W2', S.W2, 'b2', S.b2(:), 'Wmu', S.Wmu, 'bmu', S.bmu(:), ...
+        'tag', S.tag, 'sha256', S.sha256, 'selection', S.selection);
+    sacRef = fullfile(exportDir, sprintf('reference_sac_%d.csv', year));
+    if isfile(sacRef), tw.ref_sac = readtable(sacRef); end
+end
 
 % Python reference trajectory, if exported
 refFile = fullfile(exportDir, sprintf('reference_%d.csv', year));

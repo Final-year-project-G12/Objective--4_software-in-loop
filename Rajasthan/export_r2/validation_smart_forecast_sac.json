@@ -1,0 +1,15 @@
+{
+  "regime": 2,
+  "controller": "SAC",
+  "action_agreement_pct": 100,
+  "max_abs_dT_top_C": 2.5579538487363607E-13,
+  "delivered_kWh_matlab": 934.05754104366451,
+  "delivered_kWh_python": 934.05754104366406,
+  "shields_matlab": 58785,
+  "shields_python": 58785,
+  "max_abs_dobs": 2.6645352988050451E-16,
+  "mismatch_hours": 0,
+  "mismatch_max_rel_Q_gap": 0,
+  "delivered_rel_diff_pct": 4.8685153848054655E-14,
+  "pass": true
+}

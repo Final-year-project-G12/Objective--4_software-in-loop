@@ -39,4 +39,4 @@ Efficiency = delivered / incident solar energy on the collector (GHI × 1.5 m²)
 - Against the plain tank: yes. +126.8 kWh delivered, +9 to +10 h of hold at 45 °C (report D).
 - Against PCM + B0: **no on delivered energy** (the DQN delivers 15.1 kWh less in the year) and **no on hold time** (61.0 against 61.2 h). **Yes on safety:** 57 % fewer guard-band hours (430 against 994), 68 % fewer shield activations.
 - So the honest claim is: the PCM gives the energy and retention benefit, and the DQN gives nearly the same benefit with far fewer safety interventions. Do not claim the DQN improves retention.
-- Only regime 1 has a controller that differs from always-charge; the released regime 0 and 2 policies always charge, so their arms 2 and 3 are identical.
+- Only regime 1's DQN differs from always-charge; the released regime 0 and 2 DQN policies always charge, so their arms 2 and 3 are identical. The Objective 3 SAC (15 Nov 2026) differs in all three regimes: see `J_objective3_update_sac_and_rerun.md` and `export_r<k>/four_arm_2023.csv` (regime 1: SAC delivers 873.6 kWh, 143.6 guard-band hours, hold 56.1 h).
