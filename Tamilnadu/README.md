@@ -45,6 +45,25 @@ Removed from this version because they were built for the pre-retrain controller
 caches: the Simulink model (`pcm_drl_twin.slx`) and its builder, the generated C code and MEX of the
 old controller, the old single-arm scenario videos, and the previous output guide/discussion documents.
 
+## What is in `export/` (no overlap, one file per purpose)
+
+| File(s) | What it is | Replay year |
+|---|---|---|
+| `plant_params.json`, `sac_actor_r0.json` | Frozen plant and the exported SAC actor (r0_smartfc, 15 inputs) | n/a |
+| `weather_2011.csv`, `reference_2011.csv` | Weather and Python reference run used by `validate_v3_full` and the edge cases | 2011 (locked test year) |
+| `weather_2021.csv`, `reference_2021.csv` | Weather and Python reference run used by the three-arm, hold test, PCM swap, plots and video | 2021 (validation year) |
+| `validation_report_v3.json` | Open-loop / policy-only / closed-loop check vs Python | 2011 |
+| `three_arm_2021.*` | Three-arm comparison table and figure | 2021 |
+| `one_day_cycle_2021.*` | One-day plot (day 71) and its data | 2021 |
+| `restart_check.json`, `energy_balance_report.json` | Restart and energy-balance checks | 2021 |
+| `hold_test.csv`, `hold_test_thresholds.csv` | 72 h hold test, per start day | 2021 |
+| `pcm_swap_study.*` | PCM swap and flow study | 2021 |
+| `amanowicz_benchmark.json` | Tank-level benchmark (two-endpoint check) | n/a |
+| `scenarios_3arm/` | Edge-case table and figures, dead/stuck pyranometer, 20-seed CIs | 2011 |
+| `../export_r1/`, `../export_r2/` | Regime 1 and 2 exports (r1_smartfc, r2_smartfc) and validation reports | 2011 |
+
+All figures in this folder come from the frozen `r0_smartfc` SAC; there are no older-controller plots left.
+
 ## How to run
 
 ```bash
@@ -95,7 +114,7 @@ the safety limits, B0 does not.
 three arms side by side — water temperature, PCM temperature, melt fraction,
 collector gain, delivered energy and shield events per hour.
 
-## Edge cases (regime 0, 10-day window, 4-day spin-up/event/recovery)
+## Edge cases (regime 0, replay year 2011, 10-day window, 4-day spin-up/event/recovery)
 
 Clear, no sunlight, rain/heavy cloud, low temperature, heat wave, noisy sensors
 with a 12 h blackout — each run for all 3 arms — plus a dead and a stuck

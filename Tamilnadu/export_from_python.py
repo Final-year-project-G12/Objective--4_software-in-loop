@@ -10,7 +10,7 @@ plant the policy was trained on. This script freezes, from the Python side:
   2. weather_<year>.csv   -- the held-out test-year weather (hour index, GHI,
                              T_amb, local hour) that the Simulink From Workspace
                              block replays
-  3. sac_actor_r0.json    -- the SAC actor weights (11-256-256-1 MLP, tanh) so
+  3. sac_actor_r0.json    -- the SAC actor weights (15-256-256-1 MLP, tanh; V3 observation, smart forecast) so
                              the policy runs in a plain MATLAB Function block
                              with no ONNX support package needed
   4. reference_<year>.csv -- the Python environment's own trajectory under the
