@@ -39,7 +39,10 @@ video replay 2021 (an Objective 3 validation year).
 | `export_r1/`, `export_r2/` | Regime 1 and 2 exports with their validation reports (all pass). Regime 0 is the primary regime. |
 | `reports/` | One markdown report per work item (validation, three arms, plots, edge cases, hold test, PCM swap, video, benchmark, sensor faults) and an audit summary. |
 | `docs/` | `plan_O4.md` (joint plan with the Rajasthan twin) and `OBJECTIVE4_TAMILNADU_SCOPE.md`. |
-| `video/` | `o4_three_arm_day071_2021.mp4`, the three-arm day video. |
+| `video/` | `o4_three_arm_day071_2021.mp4` (three-arm day), `o4_3d_day071_2021.mp4` (3-D day) and `o4_3d_edge_clear_2021.mp4` (3-D clear single cycle). |
+| `export/scenarios_3arm/video/` | 2-D single-cycle edge-case videos: `edge_clear`, `edge_no_sunlight`, `edge_heat_wave`, `edge_sensor_fault`. Rain/cloud, low temperature, pyranometer faults, the 3-D 72 h hold and the 3-D no-sunlight cycle are not captured yet; commands are in `reports/I_requirements_checklist_and_videos.md`. |
+| `pictures/` | Still pictures taken from the videos at key moments (`<video>_<seconds>s.png`). |
+| `matlab/run_edge_videos.m`, `run_3d_videos.m` | Render the 2-D edge-case videos and the 3-D cutaway videos. |
 
 Removed from this version because they were built for the pre-retrain controller or were
 caches: the Simulink model (`pcm_drl_twin.slx`) and its builder, the generated C code and MEX of the
