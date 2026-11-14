@@ -1,0 +1,66 @@
+{
+  "restart_replay_max_dT_C": 0,
+  "restart_replay_max_dh_Jkg": 0,
+  "restart_replay_pass": true,
+  "restart_hold_max_dTtop_C": 0,
+  "restart_hold_max_dTnodes_C": 0,
+  "restart_hold_max_dEstored_kWh": 0,
+  "restart_hold_start_row": 3613,
+  "restart_hold_f_at_start": 1,
+  "restart_hold_pass": true,
+  "closure_B0_total_residual_pct": 2.6509214465352128E-12,
+  "closure_B0_max_hourly_residual_Wh": 5.6843418860808015E-11,
+  "closure_B0_Q_coll_kWh": 778.39408711238468,
+  "closure_B0_pass": true,
+  "closure_DQN_total_residual_pct": 2.4647199301537189E-12,
+  "closure_DQN_max_hourly_residual_Wh": 5.6843418860808015E-11,
+  "closure_DQN_Q_coll_kWh": 747.89992931911115,
+  "closure_DQN_pass": true,
+  "swap_reproduces_O2_max_dP": 2.8421709430404007E-14,
+  "latent": {
+    "pcm1": {
+      "name": "PureTemp 60",
+      "PCM_mass_kg": 13.38260055120757,
+      "latent_total_kJ": 2944.1721212656653,
+      "band_err": 0,
+      "melt_frac_roundtrip_err": 0
+    },
+    "pcm2": {
+      "name": "CrodaTherm 60",
+      "PCM_mass_kg": 12.852872612722271,
+      "latent_total_kJ": 2789.0733569607328,
+      "band_err": 0,
+      "melt_frac_roundtrip_err": 1.1102230246251565E-16
+    },
+    "pcm3": {
+      "name": "n-Heptacosane (C27)",
+      "PCM_mass_kg": 10.775781485503597,
+      "latent_total_kJ": 2543.0844305788487,
+      "band_err": 0,
+      "melt_frac_roundtrip_err": 0
+    }
+  },
+  "latent_pass": true,
+  "exp_hold_max_dev_vs_discrete_K": 1.4217960142559605E-11,
+  "exp_hold_max_dev_vs_exact_K": 0.0032349749658422411,
+  "exp_hold_real_loss_vector_dev_K": 0.0936165135414484,
+  "exp_hold_time_constant_h": 92.1269671630572,
+  "exp_hold_pass": true,
+  "zero_input_max_drift_C": 4.7251091928046662E-13,
+  "zero_input_max_dh_Jkg": 0,
+  "zero_input_pass": true,
+  "substep_dt_s": [
+    150,
+    75,
+    37.5
+  ],
+  "substep_E_del45_kWh": [
+    912.36230454422241,
+    911.6316855144006,
+    911.25966299571
+  ],
+  "substep_rel_change_75_to_37p5_pct": 0.040808423467724987,
+  "substep_rel_change_pct": 0.080079922875245749,
+  "substep_pass": false,
+  "overall_pass": true
+}

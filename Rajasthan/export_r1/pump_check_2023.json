@@ -1,0 +1,20 @@
+{
+  "arm1_plain_B0": {
+    "hours_old_rule_pump_on": 3180,
+    "hours_old_rule_pump_on_without_collector_gain": 174,
+    "hours_new_rule_pump_on": 3006,
+    "violations_new_rule": 0
+  },
+  "arm2_pcm_B0": {
+    "hours_old_rule_pump_on": 3345,
+    "hours_old_rule_pump_on_without_collector_gain": 169,
+    "hours_new_rule_pump_on": 3176,
+    "violations_new_rule": 0
+  },
+  "arm3_pcm_DQN": {
+    "hours_old_rule_pump_on": 3348,
+    "hours_old_rule_pump_on_without_collector_gain": 169,
+    "hours_new_rule_pump_on": 3179,
+    "violations_new_rule": 0
+  }
+}

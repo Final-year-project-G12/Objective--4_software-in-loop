@@ -1,0 +1,18 @@
+# MATLAB / Simulink caches and autosaves
+slprj/
+*.slxc
+*.asv
+*.autosave
+*_mex.mexw64
+codegen/
+# run logs and scratch (results_campaign/_*_log.txt are console logs of single runs)
+*.log
+results_campaign/_*_log.txt
+__pycache__/
+*.pyc
+# generated C code / MEX of the controller (regenerate with verify_codegen.m)
+export*/codegen_c/
+export*/codegen_mex/
+# generated Simulink model (rebuilt by run_twin.m or validate_against_python(1, 2023, 168, true))
+matlab/pcm_drl_twin_rj.slx
+matlab/twin_consts.mat

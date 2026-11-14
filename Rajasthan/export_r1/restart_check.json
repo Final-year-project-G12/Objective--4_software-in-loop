@@ -1,0 +1,11 @@
+{
+  "restart_replay_max_dT_C": 0,
+  "restart_replay_max_dh_Jkg": 0,
+  "restart_replay_pass": true,
+  "restart_hold_max_dTtop_C": 0,
+  "restart_hold_max_dTnodes_C": 0,
+  "restart_hold_max_dEstored_kWh": 0,
+  "restart_hold_start_row": 3613,
+  "restart_hold_pass": true,
+  "note": "difference must be 0: a stored hourly state replayed with the same inputs reproduces the full-year state; run_hold_test reproduces an independent full run"
+}

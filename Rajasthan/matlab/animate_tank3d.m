@@ -1,4 +1,4 @@
-function animate_tank3d(Lh, P, file)
+function animate_tank3d(Lh, P, file, labelFcn)
 %ANIMATE_TANK3D  A 3-D cutaway of the tank, animated from the twin's 1-D results (plan option C2).
 %
 % Water layers are coloured by node temperature, capsules by node melt fraction. THIS IS A 3-D VIEW OF A
@@ -6,8 +6,12 @@ function animate_tank3d(Lh, P, file)
 %   Lh   struct with Tn, hn  [(H+1) x 10] node water temperature and PCM enthalpy per hour
 %   P    plant parameter vector (node masses, capsules per node, PCM properties)
 %   file output MP4
+%   labelFcn  optional @(k) caption for hour k (default: hold caption '+k h after 18:00 ...'); the day and edge-case videos pass a clock caption
 N = 10;
 n = size(Lh.Tn, 1);
+if nargin < 4 || isempty(labelFcn)
+    labelFcn = @(k) sprintf('+%d h after 18:00   top %.1f \\circC   bottom %.1f \\circC', k - 1, Lh.Tn(k, N), Lh.Tn(k, 1));
+end
 Rt = 1;  Hn = 1;                                          % unit radius, unit height per layer
 ncap = round(P(61:70));
 Ts = P(9);  Tl = P(10);  L = P(11);  cps = P(12);  x = P(14);
@@ -59,7 +63,7 @@ for k = 1:n
             set(hC{c}, 'FaceColor', (1 - fm) * [0.25 0.45 0.9] + fm * [1.0 0.55 0.05]);
         end
     end
-    set(hT, 'String', sprintf('+%d h after 18:00   top %.1f \\circC   bottom %.1f \\circC', k - 1, Lh.Tn(k, N), Lh.Tn(k, 1)));
+    set(hT, 'String', labelFcn(k));
     for s = 1:nsub
         view(ax, 30 + 360 * ((k - 1) * nsub + s) / (n * nsub), 22);
         drawnow limitrate;

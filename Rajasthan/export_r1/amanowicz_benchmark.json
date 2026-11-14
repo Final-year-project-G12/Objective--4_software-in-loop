@@ -1,0 +1,103 @@
+{
+  "reference": "Amanowicz & Turski, Energies 18(2) 345 (2025); printed linear fits of the measured curves, equations 2-5",
+  "paper_drop_water_only_K": 14,
+  "paper_drop_with_capsules_K": 26,
+  "variants": [
+    {
+      "capsule_shape": "volume",
+      "loss_coefficient": "apriori",
+      "UA_W_K": 0.82072,
+      "case1_RMSE_K": 3.08596740260094,
+      "case1_MAE_K": 2.61018201254286,
+      "case1_bias_K": 2.61018201254286,
+      "case1_drop_7200s_K": 7.48974470460389,
+      "case2_RMSE_K": 8.41944758002419,
+      "case2_MAE_K": 7.92552355360577,
+      "case2_bias_K": 7.92552355360577,
+      "case2_drop_7200s_K": 20.3023193012373
+    },
+    {
+      "capsule_shape": "volume",
+      "loss_coefficient": "fitted",
+      "UA_W_K": 1.55196180196007,
+      "case1_RMSE_K": 0.456907743419938,
+      "case1_MAE_K": 0.407909591422689,
+      "case1_bias_K": -0.407909591422687,
+      "case1_drop_7200s_K": 12.96,
+      "case2_RMSE_K": 5.71853215803676,
+      "case2_MAE_K": 4.86228914437654,
+      "case2_bias_K": 4.86228914437654,
+      "case2_drop_7200s_K": 24.6151655688366
+    },
+    {
+      "capsule_shape": "area",
+      "loss_coefficient": "apriori",
+      "UA_W_K": 0.82072,
+      "case1_RMSE_K": 3.08596740260094,
+      "case1_MAE_K": 2.61018201254286,
+      "case1_bias_K": 2.61018201254286,
+      "case1_drop_7200s_K": 7.48974470460389,
+      "case2_RMSE_K": 7.93537444908833,
+      "case2_MAE_K": 7.42568929549387,
+      "case2_bias_K": 7.42568929549387,
+      "case2_drop_7200s_K": 20.8881605688479
+    },
+    {
+      "capsule_shape": "area",
+      "loss_coefficient": "fitted",
+      "UA_W_K": 1.55196180196007,
+      "case1_RMSE_K": 0.456907743419938,
+      "case1_MAE_K": 0.407909591422689,
+      "case1_bias_K": -0.407909591422687,
+      "case1_drop_7200s_K": 12.96,
+      "case2_RMSE_K": 5.38744031003505,
+      "case2_MAE_K": 4.4845718468539,
+      "case2_bias_K": 4.4845718468539,
+      "case2_drop_7200s_K": 24.9496660120739
+    },
+    {
+      "capsule_shape": "sv",
+      "loss_coefficient": "apriori",
+      "UA_W_K": 0.82072,
+      "case1_RMSE_K": 3.08596740260094,
+      "case1_MAE_K": 2.61018201254286,
+      "case1_bias_K": 2.61018201254286,
+      "case1_drop_7200s_K": 7.48974470460389,
+      "case2_RMSE_K": 1.06036396232068,
+      "case2_MAE_K": 0.828474476984141,
+      "case2_bias_K": 0.237015489146752,
+      "case2_drop_7200s_K": 25.1607238350232
+    },
+    {
+      "capsule_shape": "sv",
+      "loss_coefficient": "fitted",
+      "UA_W_K": 1.55196180196007,
+      "case1_RMSE_K": 0.456907743419938,
+      "case1_MAE_K": 0.407909591422689,
+      "case1_bias_K": -0.407909591422687,
+      "case1_drop_7200s_K": 12.96,
+      "case2_RMSE_K": 1.4055286275348,
+      "case2_MAE_K": 1.23711467296573,
+      "case2_bias_K": -0.893104914818444,
+      "case2_drop_7200s_K": 26.5826925534547
+    }
+  ],
+  "calibration": {
+    "c_AT_matched": 5.0296443492818694,
+    "c_AT_original": 39.985555150323478,
+    "c_TanDong": 7.096414599526863,
+    "UA": 1.5519618019600747,
+    "tan_experiment_min": [
+      40,
+      60,
+      90,
+      120
+    ],
+    "dong_experiment_min": [
+      29.677419354838712,
+      58.378378378378372,
+      103.57142857142857,
+      125.96296296296296
+    ]
+  }
+}

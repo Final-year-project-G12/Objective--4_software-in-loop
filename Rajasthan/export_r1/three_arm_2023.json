@@ -1,0 +1,43 @@
+{
+  "year": 2023,
+  "regime": 1,
+  "incident_solar_kWh": 2911.591875000001,
+  "arms": [
+    {
+      "arm": "1_plain_B0",
+      "delivered_kWh": 770.44720388108169,
+      "unmet_kWh": 1658.7716441402986,
+      "shields": 18123,
+      "hard_violations": 0,
+      "thermal_efficiency_pct": 26.46137360446788,
+      "demand_coverage_pct": 31.71584167925494,
+      "guard_band_h": 755.125,
+      "window_kWh": 452.82099639708696,
+      "collector_kWh": 1270.2729148888266
+    },
+    {
+      "arm": "2_pcm_B0",
+      "delivered_kWh": 912.36230454422241,
+      "unmet_kWh": 1516.3033921100753,
+      "shields": 314606,
+      "hard_violations": 0,
+      "thermal_efficiency_pct": 31.33551485625787,
+      "demand_coverage_pct": 37.56640141132155,
+      "guard_band_h": 993.57638888888891,
+      "window_kWh": 587.16471790533262,
+      "collector_kWh": 1340.1672403010232
+    },
+    {
+      "arm": "3_pcm_DQN",
+      "delivered_kWh": 897.26179907953758,
+      "unmet_kWh": 1531.4350979052733,
+      "shields": 101899,
+      "hard_violations": 0,
+      "thermal_efficiency_pct": 30.81688085420754,
+      "demand_coverage_pct": 36.944165416173341,
+      "guard_band_h": 429.97916666666669,
+      "window_kWh": 572.065260577409,
+      "collector_kWh": 1298.2957262502714
+    }
+  ]
+}

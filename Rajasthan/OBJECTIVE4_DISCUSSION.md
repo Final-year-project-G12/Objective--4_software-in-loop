@@ -183,7 +183,7 @@ Points to say in the viva:
 - **Objective 1 numbers:** the Monte-Carlo percentages in Objective 2's config and Objective 1 copy are 99.3 / 93.6 / 56.1; the plan's table (95.6 / 93.7 / 55.8) is from the later Objective 1 repository file (28 Oct 2026). Ranks and the cluster 1 shortlist are identical. The O2 `manifest.json` entry for that file is stale (935 bytes listed, 10 322 on disk).
 - **Three Rajasthan regimes** give similar gains (+129 to +140 kWh window, +8.3 to +9.8 h); this is not a three-state comparison, which needs the other twins' results.
 - **Two things found on the way:** a water-only tank latched a false hard-limit fault because the interlock compared its mean water temperature with the 65 °C PCM limit (fixed for that arm only); and the pump was drawn running whenever CHARGE was commanded, even without collector gain (fixed in the animation).
-- **Also done in the follow-up:** supercooling proxy (freezing point 2 K lower: hold time changes by under 1 h, 50 °C hold +0.5 to +1.0 h), pump energy from Objective 2's Ergun head (0.005 Wh per year, a lower bound). **Not done:** a cross-state F5 (needs the other two twins), option C1 (needs the Partial Differential Equation Toolbox, not installed), a pyranometer stuck at a non-zero value.
+- **Also done in the follow-up:** supercooling proxy (freezing point 2 K lower: hold time changes by under 1 h, 50 °C hold +0.5 to +1.0 h), pump energy from Objective 2's Ergun head (0.005 Wh per year, a lower bound). **Not done:** a cross-state F5 (needs the other two twins), option C1 (needs the Partial Differential Equation Toolbox, not installed).
 
 ## 2. Why MATLAB?
 
@@ -227,3 +227,9 @@ check_energy_balance(1); benchmark_amanowicz   % plan v2 checks and benchmark
 run_campaign; plot_pack                        % plan v2 matrix and figures (after python build_campaign_config.py --regime 1)
 diagnose_capsule; calibrate_capsule; diagnose_substep(1)   % capsule diagnosis, calibration, sub-step attribution
 ```
+
+---
+
+## 3b. Tamil Nadu-layout additions (14 Nov 2026)
+
+The folder now also has the Tamil Nadu twin's file layout: `export_r1/three_arm_2023.*`, `one_day_cycle_2023.*`, `hold_test*.csv`, `pcm_swap_study.*`, `scenarios_3arm/`, `video/`, `pictures/`, `reports/` (A-I and an audit summary) and `docs/` (scope and plan); `README.md` has the table and the plain-tank explanation. New findings from them: (1) the plain tank delivers 770.5 kWh a year and holds 51.9 h above 45 C against 912.4 kWh and 61.2 h with PCM + B0 and 897.3 kWh and 61.0 h with PCM + DQN; (2) in the edge cases the PCM tanks beat the plain tank by 1.5-2.1 kWh on clear, heat-wave and sensor-fault days and do not help on no-sun and rain days (the plain tank is 0.16 kWh better in the rain case); (3) the DQN loses 1.65 kWh at low temperature, a weak case outside its training range; (4) pyranometers stuck at 500 or 1000 W/m2 have no measurable effect on the DQN in the clear window, a dead one (0) raises its guard-band hours; (5) the full PCM x flow grid shows PureTemp 60 delivers 23 kWh more than the other two with B0 (inside the band with the DQN), while its hold is the shortest by about 1 h; (6) the old animation rule drew the pump on in 169-174 h a year per arm with no collector gain, the new rule has none.

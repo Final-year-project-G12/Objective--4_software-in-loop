@@ -314,7 +314,7 @@ the dead sensor:** fail-safe hours are 0 in the year runs and unchanged in all 2
 only the plant's own shield limits overheating, with zero hard-limit hours. Event-window row (clear April weather, sensor dead): DQN 11.18 kWh and 11.3 shield hours, B0 11.28 kWh and 18.8 h.
 The original `export_r1/scenarios/scenario_summary.csv` is unchanged (still six scenarios, identical to the committed file); the seven-scenario table is
 `results_campaign/edge_cases_with_dead_pyranometer/scenario_summary_with_dead_pyranometer.csv`, the year and seed tables are `results_campaign/dead_pyranometer_year.csv` and
-`dead_pyranometer_seeds.csv`. A pyranometer stuck at a non-zero value was not run.
+`dead_pyranometer_seeds.csv`. Pyranometers stuck at 500 and at 1000 W/m2 (constant, whole run) were run for all three arms in `export_r1/scenarios_3arm/`: no measurable effect on the DQN in the clear April window (11.05 kWh, same trips as healthy).
 
 **Handoff export re-run.** `export_from_python.py --regime 0/1/2` was re-run into a scratch folder (`--out`) with the current Objective 2 and 3 files. `plant_params.json`,
 `weather_2023.csv`, `dqn_qnet_r<k>.json` and `reference_2023.csv` are byte-identical to the existing `export_r0/`, `export_r1/`, `export_r2/` files in all three regimes, and the DQN SHA-256
@@ -330,6 +330,28 @@ the standing limitation: 50 L / 1.5 m2 = 33.3 L/m2 is below the 40-100 L/m2 band
 
 **C1, the 3-D single-capsule check: not done.** It needs the Partial Differential Equation Toolbox; `ver` shows it is not installed, and nothing was installed. The held-out Tan 2009 /
 Dong 2022 check (above) is the capsule-level evidence.
+
+## Tamil Nadu-layout additions (14 Nov 2026): three-arm tables, one-day cycle, hold test, swap table, videos, reports
+
+Added so the Rajasthan folder mirrors the Tamil Nadu twin's layout and file names (`docs/OBJECTIVE4_RAJASTHAN_SCOPE.md` lists the nine items; `docs/plan_O4.md` maps plan sections and prompts A-H to files). Everything below is new; no existing output was changed.
+
+| Item | Code (`matlab/`) | Output |
+|---|---|---|
+| Three-arm comparison 2023 | `three_arm_2023.m` | `export_r1/three_arm_2023.csv/.json/.png` |
+| One-day cycle, three arms | `one_day_cycle.m` | `export_r1/one_day_cycle_2023.csv/.png` (day 165) |
+| Edge cases for all three arms + dead / stuck-500 / stuck-1000 pyranometer | `edge_scenarios.m`, `run_c_scenarios.m` | `export_r1/scenarios_3arm/` (summary CSV, one plot per scenario, `edge_cases_grid.png`, `pyranometer_faults.png`) |
+| Hold test, three arms | `hold_test.m` | `export_r1/hold_test.csv`, `hold_test_thresholds.csv` |
+| Restart / energy balance / benchmark views | `export_summary_files.m` | `export_r1/restart_check.json`, `energy_balance_report.json`, `amanowicz_benchmark.json` |
+| PCM swap, all three PCMs x flow x0.7, x1.0, x1.3 | `run_campaign.m` (`flow_all`), `pcm_swap_study.m` | `export_r1/pcm_swap_study.csv/.json`, `results_campaign/campaign_results_flowall.csv` |
+| Pump check | `check_pump_drawing.m` | `export_r1/pump_check_2023.json` |
+| Three-arm 2-D videos (day, 7 edge cases) | `animate_three_arm.m`, `run_edge_videos.m` | `video/o4_three_arm_day165_2023.mp4`, `export_r1/scenarios_3arm/video/edge_<scenario>.mp4` |
+| 3-D videos (day, clear, no sunlight, 72 h hold) | `run_3d_videos.m`, `animate_tank3d.m` | `video/o4_3d_*_2023.mp4` |
+| Stills from the videos | `video_stills.m` | `pictures/<video>_<seconds>s.png` |
+| Reports A-I and audit summary | | `reports/` |
+
+Naming follows the Tamil Nadu twin: arms are `arm1_plain_B0`, `arm2_pcm_B0`, `arm3_pcm_DQN` (SAC replaced by the DQN), `three_arm_2023.csv` has the same columns (`thermal_efficiency_pct` is delivered energy over the incident solar energy on the collector, `demand_coverage_pct` is delivered / (delivered + unmet)), and `pcm_swap_study.csv` uses `policy_mode` 0 = policy, 1 = B0. In this 10-node kernel the shield-trip counts are per node and sub-step, so compare guard-band hours, not trips, with the single-node twin.
+
+**Why the plain tank behaves as it does** (arm 1, 50 L of water, no PCM). All storage is sensible heat: it warms as fast as the collector can push heat, reaches the 72 C guard band around noon, and then the shield cuts the collector, so surplus heat is lost instead of stored. It has no latent buffer, so it cools fastest in the evening (27.8 C at 19:00 on day 165 against 32 C for the PCM tanks) and delivers the least (770.5 kWh a year against 912.4 with PCM + B0). It also holds heat for a long time (51.9 h above 45 C): that is the climate, not the PCM: mains water is 26 C, so the tank has little to lose. The PCM tank has less water (35.2 kg of water and 13.4 kg of PCM in the same 50 L), so with no latent heat at all it would be worse (Objective 2's `pcm_L0` control: 33.6 h against 50.4 h plain and 59.4 h with PCM, regime 1, mean 2021-2023): the latent heat first has to pay for the water the capsules displace, then buys +9 h and +142 kWh a year. On rain and no-sun days, when nothing melts, the plain tank delivers as much or slightly more (2.65 against 2.49 kWh in the rain case).
 
 ## Edge cases (April 2023 weather, 4 days spin-up, 4 days event, 2 days recovery)
 

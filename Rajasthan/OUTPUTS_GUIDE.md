@@ -226,4 +226,22 @@ Things that could be mistaken for results of something else:
 - The capsule constant c is not changed anywhere: `run_campaign` only overrides it for the `_cal` and `_fast` sensitivity files.
 - Retention figures from the literature (Chen et al. 2025: 31.7 h above 30 °C, 30 L/day, RT35HC) are not this folder's measurements; this folder's are at 45 °C on 300 L/day. See README.
 - Handoff export re-run (14 Nov 2026, scratch folder): byte-identical to `export_r0/`, `export_r1/`, `export_r2/`; nothing replaced. `build_campaign_config.py` prints a five-line parameter check (tank volume, collector area, PCM mass, flow) against Objective 2: all PASS, with the 33.3 L/m2 limitation against IS 12976:2023.
-- Not done: option C1 (3-D single capsule): the Partial Differential Equation Toolbox is not installed. A pyranometer stuck at a non-zero value.
+- Not done: option C1 (3-D single capsule): the Partial Differential Equation Toolbox is not installed. 
+
+## 9. Tamil Nadu-layout files (added 14 Nov 2026; new files only)
+
+| File / folder | Content |
+|---|---|
+| `export_r1/three_arm_2023.csv/.json/.png` | Three arms over 2023: delivered, unmet, shield activations, hard violations, thermal efficiency, demand coverage (+ guard-band hours, window and collector energy) |
+| `export_r1/one_day_cycle_2023.csv/.png` | One day (165) hour by hour for the three arms, six-panel plot |
+| `export_r1/scenarios_3arm/` | Edge cases for plain tank, PCM + B0, PCM + DQN: `scenario_summary_3arm.csv` (9 scenarios x 3 arms), one plot per scenario, `edge_cases_grid.png`, `pyranometer_faults.png`, `video/edge_<scenario>.mp4` |
+| `export_r1/hold_test.csv`, `hold_test_thresholds.csv` | Hold test per arm and start day (45 C table and 30/40/45/50 C thresholds), 72 h cap |
+| `export_r1/pcm_swap_study.csv/.json` | O1 top-3 PCMs x flow x0.7/1.0/1.3 x B0/DQN (from `results_campaign/campaign_results_flowall.csv`) |
+| `export_r1/restart_check.json`, `energy_balance_report.json`, `amanowicz_benchmark.json` | Views of the check results in `results_campaign/` under the Tamil Nadu file names |
+| `export_r1/pump_check_2023.json` | Hours the old animation rule drew the pump on without collector gain (169-174 per arm), and 0 violations with the new rule |
+| `video/` | `o4_three_arm_day165_2023.mp4`, `o4_3d_day165_2023.mp4`, `o4_3d_edge_clear_2023.mp4`, `o4_3d_edge_no_sunlight_2023.mp4`, `o4_3d_hold72h_day165_2023.mp4` |
+| `pictures/` | Stills from the videos, `<video>_<seconds>s.png` |
+| `reports/` | `00_AUDIT_SUMMARY.md`, A (validation and three-arm), B (one-day plots), C (edge cases), D (checks and hold test), E (PCM swap), F (pump fix and video), G_H (benchmark and sensor faults), I (requirements checklist and video index) |
+| `docs/` | `OBJECTIVE4_RAJASTHAN_SCOPE.md`, `plan_O4.md` |
+
+Pyranometer faults in the three-arm table: dead (reads 0), stuck at 500 and stuck at 1000 W/m2 (constant for the whole run), real sun unchanged; definitions in the header of `matlab/edge_scenarios.m`. Not done: option C1 (3-D single capsule: the Partial Differential Equation Toolbox is not installed).

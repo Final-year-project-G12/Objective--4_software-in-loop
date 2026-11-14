@@ -1,0 +1,19 @@
+# Objective 4 (Rajasthan): plan and where each item lives
+
+The plan is `.claude/Objective4_Improvement_Plan_v2.docx` (a planning document, 13 Nov 2026). The Tamil Nadu twin splits the same work into prompts A to H; this table maps both onto the Rajasthan files, so the two states can be read side by side. Replay year 2023; primary regime 1.
+
+| Prompt | Work | Plan section | Rajasthan code (`matlab/`) | Rajasthan outputs | Report |
+|---|---|---|---|---|---|
+| A | Controller check, handoff re-run, export, validation, parameter check | 1.2, 2.2, 7.1 | `validate_against_python.m`, `build_campaign_config.py`, `export_from_python.py` | `export_r*/validation_report.json`, `results_campaign/campaign_config.json` | `reports/A_validation_and_three_arm.md` |
+| A | Three-arm comparison | 6.5 | `three_arm_2023.m`, `run_campaign.m` | `export_r1/three_arm_2023.csv/.json/.png`, `results_campaign/campaign_results.csv` | A |
+| B | One-day cycle plots | 8 (F1, F2) | `one_day_cycle.m`, `plot_pack.m` | `export_r1/one_day_cycle_2023.csv/.png`, `results_campaign/figures/F1`, `F2` | `reports/B_one_day_plots.md` |
+| C | Six edge cases plus dead and stuck pyranometer | 6.3 (existing six); pyranometer cases not in the plan | `run_scenarios.m` (unchanged), `edge_scenarios.m`, `run_c_scenarios.m`, `run_dead_pyranometer.m` | `export_r1/scenarios/` (original), `export_r1/scenarios_3arm/`, `results_campaign/dead_pyranometer_*.csv`, `figures/F9` | `reports/C_edge_cases.md` |
+| D | Restart check, energy balance, hold test | 7.1, 7.3, 4.3 | `check_energy_balance.m`, `run_hold_test.m`, `hold_test.m`, `diagnose_substep.m` | `export_r1/restart_check.json`, `energy_balance_report.json`, `hold_test.csv`, `hold_test_thresholds.csv`; `results_campaign/` | `reports/D_checks_and_hold_test.md` |
+| E | PCM swap with flow axis (optional) | 6.1, 6.2, 6.4 | `swap_pcm.m`, `run_campaign.m` (`flow_all`), `pcm_swap_study.m`, `twin_metrics.m` | `export_r1/pcm_swap_study.csv/.json`, `results_campaign/campaign_results_flowall.csv` | `reports/E_pcm_swap.md` |
+| F | Pump fix and one-day video | 8 (A1, A2, A3) | `animate_system.m`, `animate_three_arm.m`, `animate_tank3d.m`, `check_pump_drawing.m`, `run_edge_videos.m`, `run_3d_videos.m` | `video/`, `export_r1/scenarios_3arm/video/`, `pictures/`, `export_r1/pump_check_2023.json` | `reports/F_pump_fix_and_video.md` |
+| G | Amanowicz & Turski benchmark (optional) | 7.2 | `benchmark_amanowicz.m`, `amanowicz_case.m`, `diagnose_capsule.m`, `calibrate_capsule.m`, `capsule_single.m` | `export_r1/amanowicz_benchmark.json`, `results_campaign/benchmark_*`, `capsule_*` | `reports/G_H_benchmark_and_sensor_faults.md` |
+| H | README and write-up | 9 (P5) | | `README.md`, `OUTPUTS_GUIDE.md`, `OBJECTIVE4_DISCUSSION.md`, `reports/`, `docs/` | `reports/00_AUDIT_SUMMARY.md`, `reports/I_requirements_checklist_and_videos.md` |
+
+Plan items with no Tamil Nadu counterpart in this list, done for Rajasthan: figures F3-F9 (retention, three regimes, ranking, flow, benchmark, edge cases), the ranking check M8, 20-seed confidence intervals, the supercooling proxy and pump energy (`run_campaign.m`, `twin_metrics.m`), the one-week Simulink run and the generated-C check (`verify_codegen.m`). Not done: option C1 (3-D single capsule: the Partial Differential Equation Toolbox is not installed) and a cross-state figure.
+
+Ground rule kept throughout: existing outputs do not change. After every step `validate_against_python` is re-run for regimes 0, 1, 2 (delivered 954.983, 897.262, 970.320 kWh) and `export_r1/scenarios/scenario_summary.csv` stays identical to the committed file; new results go under new file names.

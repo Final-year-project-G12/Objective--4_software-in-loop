@@ -10,6 +10,7 @@ function run_campaign(passes, tag, over)
 %
 %   core   3 PCMs (Objective 1 top-3) x {B0, DQN} at the Objective 2 flow, + the water-only tank
 %          (arm 1), each with the full replay year and 12 retention tests started at 18:00.
+%   flow_all every O1 PCM at flow x0.7, x1.0, x1.3 (use a tag, e.g. run_campaign({'flow_all'}, '_flowall'))
 %   flow   Objective 2's PCM only, flow x0.7 and x1.3 (x1.0 comes from 'core'), B0 and DQN, + water-only.
 %   seeds  the sensor-fault edge case with 20 noise seeds -> mean and 95 % confidence interval.
 %   supercool freezing point 2 K below the melting point during the hold (supercooling proxy), PureTemp 60, B0 and DQN
@@ -50,6 +51,19 @@ if any(strcmp(passes, 'core'))
         tab{end+1} = do_run(ctx, 'PCM+B0', i, 'B0', 1.0, i == iO2);         %#ok<AGROW>  arm 2
         tab{end+1} = do_run(ctx, 'PCM+DQN', i, 'DQN', 1.0, i == iO2);       %#ok<AGROW>  arm 3
     end
+end
+if any(strcmp(passes, 'flow_all'))
+    % full PCM x flow grid for pcm_swap_study.m: all three O1 PCMs at flow x0.7, x1.0, x1.3, B0 and DQN, + water-only tank per flow
+    tabA = {};
+    for fm = [0.7 1.0 1.3]
+        tabA{end+1} = do_run(ctx, 'PCM-free', 0, 'B0', fm, false);               %#ok<AGROW>
+        for i = 1:numel(pcms)
+            tabA{end+1} = do_run(ctx, 'PCM+B0', i, 'B0', fm, false);             %#ok<AGROW>
+            tabA{end+1} = do_run(ctx, 'PCM+DQN', i, 'DQN', fm, false);           %#ok<AGROW>
+        end
+    end
+    writetable(add_gains(struct2table([tabA{:}]), band), fullfile(outDir, ['campaign_results' tag '.csv']));
+    fprintf('[campaign] %d runs (full PCM x flow grid) -> campaign_results%s.csv\n', numel(tabA), tag);
 end
 if any(strcmp(passes, 'flow'))
     for fm = [0.7 1.3]
