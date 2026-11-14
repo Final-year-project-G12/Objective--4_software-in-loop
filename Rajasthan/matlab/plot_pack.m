@@ -9,7 +9,7 @@ function plot_pack(which)
 % benchmark_amanowicz_curves.csv (written by run_campaign.m and benchmark_amanowicz.m).
 % Writes PNG / MP4 into results_campaign/figures/. Nothing is drawn by hand.
 here = fileparts(mfilename('fullpath')); addpath(here);
-if nargin < 1 || isempty(which), which = {'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'A1', 'A2', 'A3'}; end
+if nargin < 1 || isempty(which), which = {'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'A1', 'A2', 'A3'}; end
 R = fullfile(here, '..', 'results_campaign');
 Fd = fullfile(R, 'figures');
 if ~isfolder(Fd), mkdir(Fd); end
@@ -30,6 +30,7 @@ if has('F5'), F5(R, Fd); end
 if has('F6'), F6(R, Fd); end
 if has('F7'), F7(R, Fd, band); end
 if has('F8'), F8(R, Fd); end
+if has('F9'), F9(R, Fd); end
 if has('A1'), A1(here, Fd); end
 if has('A2') || has('A3'), A23(here, R, Fd, best, which); end
 end
@@ -241,6 +242,28 @@ for cs = 1:2
     if cs == 1, legend(ax, {'paper (printed linear fit)', 'one sphere per capsule, UA fitted', 'matched surface/volume, UA a priori', 'matched surface/volume, UA fitted'}, 'Location', 'northeast'); end
 end
 exportgraphics(fig, fullfile(Fd, 'F8_experiment_comparison.png'), 'Resolution', 120); close(fig);
+end
+
+function F9(R, Fd)
+% the seven edge cases (six original + dead pyranometer), DQN against B0, from run_scenarios with deadPyr = true
+f = fullfile(R, 'edge_cases_with_dead_pyranometer', 'scenario_summary_with_dead_pyranometer.csv');
+if ~isfile(f), fprintf('[plot_pack] F9 skipped: %s missing\n', f); return; end
+T = readtable(f);
+sc = unique(T.scenario, 'stable');
+D = zeros(numel(sc), 2);  H = D;
+for i = 1:numel(sc)
+    a = T(strcmp(T.scenario, sc{i}) & strcmp(T.policy, 'DQN'), :);  b = T(strcmp(T.scenario, sc{i}) & strcmp(T.policy, 'B0'), :);
+    D(i, :) = [a.delivered_kWh_event b.delivered_kWh_event];  H(i, :) = [a.shield_hours_event b.shield_hours_event];
+end
+fig = nf([50 50 1150 420]);
+tl = tiledlayout(fig, 1, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
+title(tl, 'F9  Edge cases, Rajasthan r1 (event = 4 days of April 2023), DQN against always-charge B0', 'FontWeight', 'bold');
+lab = strrep(sc, '_', ' ');
+ax = nexttile(tl); bar(ax, D); xticks(ax, 1:numel(sc)); xticklabels(ax, lab); xtickangle(ax, 30); ylabel(ax, 'delivered heat in the event [kWh]');
+legend(ax, {'DQN', 'B0'}, 'Location', 'northeast'); grid(ax, 'on'); title(ax, '(a) delivered energy');
+ax = nexttile(tl); bar(ax, H); xticks(ax, 1:numel(sc)); xticklabels(ax, lab); xtickangle(ax, 30); ylabel(ax, 'guard-band (shield) hours in the event');
+grid(ax, 'on'); title(ax, '(b) shield hours; dead pyranometer = last group');
+exportgraphics(fig, fullfile(Fd, 'F9_edge_cases_with_dead_pyranometer.png'), 'Resolution', 120); close(fig);
 end
 
 function A1(here, Fd)

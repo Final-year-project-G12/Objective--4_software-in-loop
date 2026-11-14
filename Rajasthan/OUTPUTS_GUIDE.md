@@ -7,7 +7,7 @@
 - **Outputs from MATLAB (R2026b):** per regime, a full-year validation report, a scenario summary table (CSV) and one result plot per scenario in `export_r*/scenarios/`; for regime 1 also the animation videos.
 - **The same checks from the Python mirror** in `export_r*/python_mirror/` (an independent cross-check with the same numbers).
 - **Improvement plan v2 outputs** (retention test, PCM swap, simulation matrix, tank-level benchmark, figures F1-F8, animations A1-A3) are in `results_campaign/`, described in section 8.
-- **Simulink:** the model was built and run for one week of regime 1 (passes). **Not produced:** generated C code (not run in this pass).
+- **Simulink:** the model was built and run for one week of regime 1 (passes). Generated C code of the controller: verified for regime 1 (100 % identical decisions).
 - **Videos are not recordings of a real device.** MATLAB runs the simulation, then draws one picture per simulated time step and joins them into an MP4.
 
 ---
@@ -86,7 +86,7 @@ All scenarios use the same real 10 days of April 2023 weather. **Days 1–4 and 
 | `export_r1/scenarios/*_animation.mp4`, `*_frame.png`, `my_*.mp4` | Animated schematic videos and stills. Ten-day videos: clear, no_sunlight, rain_cloud, low_temperature. Days 4-9 clips: heat_wave (DQN and B0), low_temperature, sensor_fault | Yes, regime 1 only |
 | `matlab/pcm_drl_twin_rj.slx`, `matlab/twin_consts.mat` (+ cache `.slxc`, `slprj/`) | Simulink model and its compiled-in constants (regime 1) | Built and run once on 14 Nov 2026, then deleted; rebuilt automatically by `run_twin.m` or `validate_against_python(1, 2023, 168, true)` |
 | `export_r1/validation_simulink_168h.json` | One week through the Simulink model: 100 % identical actions, 13.04 = 13.04 kWh. The only place a 168 h report is kept; `export_r*/validation_report.json` are the full-year (8760 h) reports | Yes |
-| `export_r*/codegen_c/`, `codegen_verification.json` | C code of the controller and the check that it decides like MATLAB | No: `verify_codegen` not run |
+| `export_r1/codegen_c/`, `codegen_mex/`, `codegen_verification.json` | C code of the controller and the check that it decides like MATLAB and Python over 8760 h (9 files, 1163 lines, 100 % identical) | Yes, regime 1 (14 Nov 2026) |
 
 Columns to read with care:
 - **shield_trips_event** counts guard-band activations per sub-step, and on the PCM side per node. Values are in the thousands. Use **shield_hours_event** to compare policies.
@@ -145,7 +145,7 @@ plot(L.Tw); hold on; plot(L.Tbot); plot(L.Tpcm)
 
 **The Simulink block diagram:** `validate_against_python(1, 2023, 168, true)` builds `pcm_drl_twin_rj.slx` and runs one week through it (about 2 minutes; note this call overwrites `export_r1/validation_report.json` with the one-week report, so run `validate_against_python(1)` again afterwards). The model is regime-specific (its constants are compiled in), so rebuild it to change regime.
 
-**Generated C code (controller only; needs MATLAB Coder; not run in this pass):**
+**Generated C code (controller only; needs MATLAB Coder and a C compiler, MinGW64 here; verified for regime 1):**
 
 ```matlab
 regime = 1; verify_codegen
@@ -174,7 +174,7 @@ plot_pack                        % F1-F8 (about 2 min); plot_pack({'A1','A2','A3
 ## 7. Honest limits
 
 - This is **emulated validation** (software-in-the-loop). No physical rig was used. One tank-level comparison with a published experiment is in section 8: the capsule model matches it to 1.1-1.4 K when the capsule geometry is mapped correctly, and the single-sphere Tan 2009 case is still faster in the experiment. A faster-capsule run lengthens hold times by 0.4-1.7 h, so the frozen hold times are not optimistic.
-- The Simulink model was run for one week only; `verify_codegen.m` (generated C) was not run in this pass.
+- The Simulink model was run for one week only. The generated C was verified for regime 1 only.
 - The forecast fields of the observation are the true future weather (a perfect forecast). A real device would use a forecast with errors.
 - Melt fraction, stored energy and recoverable energy are treated as perfect estimator outputs.
 - Rain only reduces sunlight and air temperature; there is no frost or wet-surface model.
@@ -204,6 +204,7 @@ Inputs: `build_campaign_config.py` reads Objective 2's copy of the Objective 1 f
 | `campaign_results_cal.csv`, `campaign_results_fast.csv`, `ranking_check_cal.csv`, `ranking_check_fast.csv`, `provenance_cal.json`, `provenance_fast.json`, `hold_curves/*_cal.csv`, `*_fast.csv` | The core and flow campaigns re-run with c = 5.03 (calibrated) and c = 7.10 (fast-melt bound); the default files (c = 5) are kept |
 | `calibration_effect.csv` | Per run: tau_hold, window energy and other metrics frozen / calibrated / fast, with the changes |
 | `supercooling_sensitivity.csv` | Hold test with the melt band moved 2 K down (supercooling proxy), PureTemp 60, B0 and DQN |
+| `dead_pyranometer_year.csv`, `dead_pyranometer_seeds.csv`, `edge_cases_with_dead_pyranometer/` (seven-scenario `scenario_summary_with_dead_pyranometer.csv` + plots), `figures/F9_edge_cases_with_dead_pyranometer.png` | Dead-pyranometer case: the controller's irradiance reads 0 for the whole run, real sun unchanged. Year (B0 and DQN, healthy against dead), 20 seeds on the 10-day window, and the seven-scenario table. The six-scenario `export_r1/scenarios/scenario_summary.csv` is unchanged. The interlock never triggers on this fault |
 | `substep_attribution_r1.json` | Where the sub-step difference comes from (melting hours against other hours, pump on against off, PCM tank against water-only tank); `diagnose_substep.m` |
 | `provenance.json` | Input hashes, MATLAB version and toolboxes, run date |
 | `figures/F1..F8_*.png` | Tank temperature map; operating trace with the 10 layers; retention curves; retention bars (error bars: SD over 12 starts, and Objective 2's band on window energy); three regimes side by side; ranking check; flow sensitivity; experiment comparison |
@@ -224,3 +225,5 @@ Things that could be mistaken for results of something else:
 - The sub-step gate (0.05 %) is not met: `energy_balance_report_r1.json` has `substep_pass: false` and `substep_attribution_r1.json` says why (sensible-heat hours, not melting hours).
 - The capsule constant c is not changed anywhere: `run_campaign` only overrides it for the `_cal` and `_fast` sensitivity files.
 - Retention figures from the literature (Chen et al. 2025: 31.7 h above 30 °C, 30 L/day, RT35HC) are not this folder's measurements; this folder's are at 45 °C on 300 L/day. See README.
+- Handoff export re-run (14 Nov 2026, scratch folder): byte-identical to `export_r0/`, `export_r1/`, `export_r2/`; nothing replaced. `build_campaign_config.py` prints a five-line parameter check (tank volume, collector area, PCM mass, flow) against Objective 2: all PASS, with the 33.3 L/m2 limitation against IS 12976:2023.
+- Not done: option C1 (3-D single capsule): the Partial Differential Equation Toolbox is not installed. A pyranometer stuck at a non-zero value.

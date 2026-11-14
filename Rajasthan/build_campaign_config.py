@@ -122,6 +122,34 @@ def main():
            "ergun_a_Pa_per_kg_s": a_coef, "ergun_b_Pa_per_kg_s2": b_coef, "pump_efficiency": 0.6,
            "note": "pump_efficiency 0.6 = system_config_shared.yaml pump.efficiency = contract pump_efficiency"}
 
+    # Parameter check: the twin's plant must equal what Objective 2 sized. Sources, read-only:
+    #   tank volume and collector area  configs/system_config_shared.yaml (tank.volume_L, collector.area_m2)
+    #   PCM mass and flow rate          results/g10_selection_r<k>.json "chosen" (the O2 design; pcm_mass_kg, flow)
+    # (the state config rajasthan.yaml holds the PCM shortlist and mains temperature, not the design).
+    shared = yaml.safe_load(open(O2 / "configs" / "system_config_shared.yaml", encoding="utf-8"))
+    rho_w = plant["kernel_P"][1]
+    d_out = plant["kernel_P"][21]
+    displaced_L = plant["n_capsule"] * (3.141592653589793 / 6.0) * d_out ** 3 * 1000.0
+    checks = [
+        ("tank volume [L]", plant["tank_volume_L"], shared["tank"]["volume_L"]),
+        ("tank volume from node water + displaced capsule volume [L]",
+         sum(plant["m_w_node_kg"]) / rho_w * 1000.0 + displaced_L, shared["tank"]["volume_L"]),
+        ("collector area [m2]", plant["A_coll_m2"], shared["collector"]["area_m2"]),
+        ("PCM mass [kg]", plant["m_pcm_kg"], chosen["pcm_mass_kg"]),
+        ("flow rate [kg/s]", plant["flow_kg_s"], chosen["flow"]),
+    ]
+    all_ok = True
+    print("parameter check (twin export_r%d against Objective 2):" % k)
+    for name, twin_v, o2_v in checks:
+        ok = abs(twin_v - o2_v) <= 1e-6 * max(1.0, abs(o2_v))
+        all_ok &= ok
+        print(f"  [{'PASS' if ok else 'FAIL'}] {name:<58} twin {twin_v:.6g}   O2 {o2_v:.6g}")
+    ratio = shared["tank"]["volume_L"] / shared["collector"]["area_m2"]
+    print(f"  LIMITATION: Objective 2 sizing is {shared['tank']['volume_L']:g} L / {shared['collector']['area_m2']:g} m2 = {ratio:.1f} L/m2, "
+          "below the 40-100 L/m2 band of IS 12976:2023 section 4.2 (O2 decision D8); stated, not changed.")
+    if not all_ok:
+        sys.exit("parameter check failed: the twin does not match the Objective 2 design")
+
     out = {
         "state": "rajasthan",
         "regime": k,

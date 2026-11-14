@@ -1,0 +1,62 @@
+[
+  {
+    "directory": "D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex",
+    "command": "C:\\ProgramData\\MATLAB\\SupportPackages\\R2026b\\3P.instrset\\mingw_w64.instrset\\bin\\gcc.exe -c -fexceptions -fno-omit-frame-pointer -m64 -DMATLAB_MEX_FILE  -DMATLAB_MEX_FILE -O2 -fwrapv -DNDEBUG -std=c99 -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\matlab\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\\interface\" -I \"D:\\Program Files\\MATLAB\\R2026b\\extern\\include\" -I \".\" -DMODEL=controller_step_mex -D__USE_MINGW_ANSI_STDIO=1 -msse2 -fno-predictive-commoning -Wno-stringop-overflow -Wno-maybe-uninitialized  controller_step_data.c -o build/win64/controller_step_data.o",
+    "file": "controller_step_data.c",
+    "output": "build/win64/controller_step_data.o"
+  },
+  {
+    "directory": "D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex",
+    "command": "C:\\ProgramData\\MATLAB\\SupportPackages\\R2026b\\3P.instrset\\mingw_w64.instrset\\bin\\gcc.exe -c -fexceptions -fno-omit-frame-pointer -m64 -DMATLAB_MEX_FILE  -DMATLAB_MEX_FILE -O2 -fwrapv -DNDEBUG -std=c99 -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\matlab\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\\interface\" -I \"D:\\Program Files\\MATLAB\\R2026b\\extern\\include\" -I \".\" -DMODEL=controller_step_mex -D__USE_MINGW_ANSI_STDIO=1 -msse2 -fno-predictive-commoning -Wno-stringop-overflow -Wno-maybe-uninitialized  rt_nonfinite.c -o build/win64/rt_nonfinite.o",
+    "file": "rt_nonfinite.c",
+    "output": "build/win64/rt_nonfinite.o"
+  },
+  {
+    "directory": "D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex",
+    "command": "C:\\ProgramData\\MATLAB\\SupportPackages\\R2026b\\3P.instrset\\mingw_w64.instrset\\bin\\gcc.exe -c -fexceptions -fno-omit-frame-pointer -m64 -DMATLAB_MEX_FILE  -DMATLAB_MEX_FILE -O2 -fwrapv -DNDEBUG -std=c99 -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\matlab\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\\interface\" -I \"D:\\Program Files\\MATLAB\\R2026b\\extern\\include\" -I \".\" -DMODEL=controller_step_mex -D__USE_MINGW_ANSI_STDIO=1 -msse2 -fno-predictive-commoning -Wno-stringop-overflow -Wno-maybe-uninitialized  controller_step_initialize.c -o build/win64/controller_step_initialize.o",
+    "file": "controller_step_initialize.c",
+    "output": "build/win64/controller_step_initialize.o"
+  },
+  {
+    "directory": "D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex",
+    "command": "C:\\ProgramData\\MATLAB\\SupportPackages\\R2026b\\3P.instrset\\mingw_w64.instrset\\bin\\gcc.exe -c -fexceptions -fno-omit-frame-pointer -m64 -DMATLAB_MEX_FILE  -DMATLAB_MEX_FILE -O2 -fwrapv -DNDEBUG -std=c99 -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\matlab\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\\interface\" -I \"D:\\Program Files\\MATLAB\\R2026b\\extern\\include\" -I \".\" -DMODEL=controller_step_mex -D__USE_MINGW_ANSI_STDIO=1 -msse2 -fno-predictive-commoning -Wno-stringop-overflow -Wno-maybe-uninitialized  controller_step_terminate.c -o build/win64/controller_step_terminate.o",
+    "file": "controller_step_terminate.c",
+    "output": "build/win64/controller_step_terminate.o"
+  },
+  {
+    "directory": "D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex",
+    "command": "C:\\ProgramData\\MATLAB\\SupportPackages\\R2026b\\3P.instrset\\mingw_w64.instrset\\bin\\gcc.exe -c -fexceptions -fno-omit-frame-pointer -m64 -DMATLAB_MEX_FILE  -DMATLAB_MEX_FILE -O2 -fwrapv -DNDEBUG -std=c99 -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\matlab\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\\interface\" -I \"D:\\Program Files\\MATLAB\\R2026b\\extern\\include\" -I \".\" -DMODEL=controller_step_mex -D__USE_MINGW_ANSI_STDIO=1 -msse2 -fno-predictive-commoning -Wno-stringop-overflow -Wno-maybe-uninitialized  controller_step.c -o build/win64/controller_step.o",
+    "file": "controller_step.c",
+    "output": "build/win64/controller_step.o"
+  },
+  {
+    "directory": "D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex",
+    "command": "C:\\ProgramData\\MATLAB\\SupportPackages\\R2026b\\3P.instrset\\mingw_w64.instrset\\bin\\gcc.exe -c -fexceptions -fno-omit-frame-pointer -m64 -DMATLAB_MEX_FILE  -DMATLAB_MEX_FILE -O2 -fwrapv -DNDEBUG -std=c99 -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\matlab\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\\interface\" -I \"D:\\Program Files\\MATLAB\\R2026b\\extern\\include\" -I \".\" -DMODEL=controller_step_mex -D__USE_MINGW_ANSI_STDIO=1 -msse2 -fno-predictive-commoning -Wno-stringop-overflow -Wno-maybe-uninitialized  safety_interlock.c -o build/win64/safety_interlock.o",
+    "file": "safety_interlock.c",
+    "output": "build/win64/safety_interlock.o"
+  },
+  {
+    "directory": "D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex",
+    "command": "C:\\ProgramData\\MATLAB\\SupportPackages\\R2026b\\3P.instrset\\mingw_w64.instrset\\bin\\gcc.exe -c -fexceptions -fno-omit-frame-pointer -m64 -DMATLAB_MEX_FILE  -DMATLAB_MEX_FILE -O2 -fwrapv -DNDEBUG -std=c99 -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\matlab\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\\interface\" -I \"D:\\Program Files\\MATLAB\\R2026b\\extern\\include\" -I \".\" -DMODEL=controller_step_mex -D__USE_MINGW_ANSI_STDIO=1 -msse2 -fno-predictive-commoning -Wno-stringop-overflow -Wno-maybe-uninitialized  interface/_coder_controller_step_api.c -o build/win64/_coder_controller_step_api.o",
+    "file": "interface/_coder_controller_step_api.c",
+    "output": "build/win64/_coder_controller_step_api.o"
+  },
+  {
+    "directory": "D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex",
+    "command": "C:\\ProgramData\\MATLAB\\SupportPackages\\R2026b\\3P.instrset\\mingw_w64.instrset\\bin\\gcc.exe -c -fexceptions -fno-omit-frame-pointer -m64 -DMATLAB_MEX_FILE  -DMATLAB_MEX_FILE -O2 -fwrapv -DNDEBUG -std=c99 -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\matlab\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\\interface\" -I \"D:\\Program Files\\MATLAB\\R2026b\\extern\\include\" -I \".\" -DMODEL=controller_step_mex -D__USE_MINGW_ANSI_STDIO=1 -msse2 -fno-predictive-commoning -Wno-stringop-overflow -Wno-maybe-uninitialized  interface/_coder_controller_step_mex.c -o build/win64/_coder_controller_step_mex.o",
+    "file": "interface/_coder_controller_step_mex.c",
+    "output": "build/win64/_coder_controller_step_mex.o"
+  },
+  {
+    "directory": "D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex",
+    "command": "C:\\ProgramData\\MATLAB\\SupportPackages\\R2026b\\3P.instrset\\mingw_w64.instrset\\bin\\gcc.exe -c -fexceptions -fno-omit-frame-pointer -m64 -DMATLAB_MEX_FILE  -DMATLAB_MEX_FILE -O2 -fwrapv -DNDEBUG -std=c99 -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\matlab\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\\interface\" -I \"D:\\Program Files\\MATLAB\\R2026b\\extern\\include\" -I \".\" -DMODEL=controller_step_mex -D__USE_MINGW_ANSI_STDIO=1 -msse2 -fno-predictive-commoning -Wno-stringop-overflow -Wno-maybe-uninitialized  interface/_coder_controller_step_info.c -o build/win64/_coder_controller_step_info.o",
+    "file": "interface/_coder_controller_step_info.c",
+    "output": "build/win64/_coder_controller_step_info.o"
+  },
+  {
+    "directory": "D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex",
+    "command": "C:\\ProgramData\\MATLAB\\SupportPackages\\R2026b\\3P.instrset\\mingw_w64.instrset\\bin\\gcc.exe -c -fexceptions -fno-omit-frame-pointer -m64 -DMATLAB_MEX_FILE  -DMATLAB_MEX_FILE -O2 -fwrapv -DNDEBUG -std=c99 -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\matlab\" -I \"D:\\Final Year Project\\Objective--4_software-in-loop\\Rajasthan\\export_r1\\codegen_mex\\interface\" -I \"D:\\Program Files\\MATLAB\\R2026b\\extern\\include\" -I \".\" -DMODEL=controller_step_mex -D__USE_MINGW_ANSI_STDIO=1 -msse2 -fno-predictive-commoning -Wno-stringop-overflow -Wno-maybe-uninitialized  \"D:/Program Files/MATLAB/R2026b/extern/version/c_mexapi_version.c\" -o build/win64/c_mexapi_version.o",
+    "file": "D:/Program Files/MATLAB/R2026b/extern/version/c_mexapi_version.c",
+    "output": "build/win64/c_mexapi_version.o"
+  }
+]

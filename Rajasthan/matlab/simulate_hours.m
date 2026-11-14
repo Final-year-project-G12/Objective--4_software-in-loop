@@ -1,4 +1,4 @@
-function L = simulate_hours(tw, W, P, policy_mode, noise_on, blackout, nSim)
+function L = simulate_hours(tw, W, P, policy_mode, noise_on, blackout, nSim, stuckGHI)
 %SIMULATE_HOURS  Closed-loop software-in-the-loop run, one step per hour.
 %
 % Same signal chain as the Simulink twin and the O4 interface spec:
@@ -14,9 +14,13 @@ function L = simulate_hours(tw, W, P, policy_mode, noise_on, blackout, nSim)
 %   noise_on    0 ideal sensors, 1 noisy sensors + 1 % random dropout
 %   blackout    [nSim x 1] logical, true = sensor frame stale that hour
 %   nSim        hours to simulate (default: all rows of W)
+%   stuckGHI    optional: the pyranometer reading is stuck at this value (e.g. 0 = dead sensor) for the whole run while the
+%               REAL irradiance still drives the plant; the 1-3 h forecast in the observation is a weather-feed value
+%               and is not affected. Default NaN = healthy sensor (no change to any existing result).
 m = size(W, 1);
 if nargin < 7 || isempty(nSim), nSim = m; end
 n = nSim;
+if nargin < 8 || isempty(stuckGHI), stuckGHI = NaN; end
 if nargin < 6 || isempty(blackout), blackout = false(n, 1); end
 
 T = tw.T0;  h = tw.h0;
@@ -49,6 +53,7 @@ for t = 1:n
     end
 
     [Im, Tam, sm, ok] = sensor_model(I, Ta, s, noise_on, idx);
+    if ~isnan(stuckGHI), Im = stuckGHI; end     % applied AFTER the noise draw, so the random stream is unchanged
     if blackout(t), ok = 0; end
     obs = build_obs(Im, Tam, sm, draw, hod, hours_since_draw * 60, fwd, P);
     [ap, q] = dqn_policy(obs, tw.W1, tw.b1, tw.W2, tw.b2, tw.W3, tw.b3, policy_mode);

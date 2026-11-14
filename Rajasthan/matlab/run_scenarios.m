@@ -15,9 +15,18 @@
 here = fileparts(mfilename('fullpath')); addpath(here);
 if ~exist('regime', 'var'), regime = 1; end          % 0, 1 or 2
 if ~exist('doAnim', 'var'), doAnim = true; end
+% deadPyr = true adds a SEVENTH scenario (pyranometer stuck at 0 W/m2, see below) and writes everything to
+% ../results_campaign/edge_cases_with_dead_pyranometer/ so the original export_r<k>/scenarios files stay untouched.
+if ~exist('deadPyr', 'var'), deadPyr = false; end
 YEAR = 2023;
 expDir = fullfile(here, '..', sprintf('export_r%d', regime));
-outDir = fullfile(expDir, 'scenarios'); if ~isfolder(outDir), mkdir(outDir); end
+outDir = fullfile(expDir, 'scenarios');
+sumName = 'scenario_summary.csv';
+if deadPyr
+    outDir = fullfile(here, '..', 'results_campaign', 'edge_cases_with_dead_pyranometer');
+    sumName = 'scenario_summary_with_dead_pyranometer.csv';
+end
+if ~isfolder(outDir), mkdir(outDir); end
 tw = load_twin_params(expDir, YEAR);
 Wall = tw.wx.signals.values(:, 1:4);            % [idx GHI Tamb hod]
 
@@ -50,8 +59,8 @@ iS = 4*24 + 1; iE = 8*24;                         % edge-case days 5-8
 inEv = false(nWin, 1); inEv(iS:iE) = true;
 ev = [inEv; false(3, 1)];                         % same mask on the padded window
 
-sc = struct('name', {}, 'title', {}, 'W', {}, 'P', {}, 'noise', {}, 'blackout', {});
-add = @(nm, ti, W, P, nz, bo) struct('name', nm, 'title', ti, 'W', W, 'P', P, 'noise', nz, 'blackout', bo);
+sc = struct('name', {}, 'title', {}, 'W', {}, 'P', {}, 'noise', {}, 'blackout', {}, 'stuck', {});
+add = @(nm, ti, W, P, nz, bo) struct('name', nm, 'title', ti, 'W', W, 'P', P, 'noise', nz, 'blackout', bo, 'stuck', NaN);
 nb = false(nWin, 1);
 
 sc(end+1) = add('clear', 'Clear sunny days (reference)', base, tw.P, 0, nb);
@@ -72,12 +81,19 @@ sc(end+1) = add('heat_wave', 'Heat wave (ambient +9 C, GHI x1.15)', W, tw.P, 0, 
 bo = nb; bo(iS:iS + 11) = true;
 sc(end+1) = add('sensor_fault', 'Noisy sensors + 12 h sensor blackout', base, tw.P, 1, bo);
 
+if deadPyr
+    % 7. Dead pyranometer: the controller's irradiance reading is stuck at 0 W/m2 for the whole 10-day run; the real irradiance
+    %    (clear April weather, as scenario 1) still drives the plant. Forecast fields of the observation are unaffected.
+    c7 = add('dead_pyranometer', 'Dead pyranometer (reads 0 W/m^2, real sun unchanged)', base, tw.P, 0, nb);
+    c7.stuck = 0;
+    sc(end+1) = c7;
+end
 rows = {}; res = struct();
 for s = 1:numel(sc)
     c = sc(s);
     try
-        rng(7); Ls = simulate_hours(tw, c.W, c.P, 0, c.noise, c.blackout, nWin);
-        rng(7); Lb = simulate_hours(tw, c.W, c.P, 1, c.noise, c.blackout, nWin);
+        rng(7); Ls = simulate_hours(tw, c.W, c.P, 0, c.noise, c.blackout, nWin, c.stuck);
+        rng(7); Lb = simulate_hours(tw, c.W, c.P, 1, c.noise, c.blackout, nWin, c.stuck);
         res.(c.name).DQN = Ls; res.(c.name).B0 = Lb;
         for pol = {'DQN', 'B0'}
             L = res.(c.name).(pol{1});
@@ -96,7 +112,7 @@ end
 Tsum = cell2table(rows, 'VariableNames', {'scenario', 'policy', 'delivered_kWh_event', 'unmet_kWh_event', 'shield_trips_event', ...
     'shield_hours_event', 'hard_violations_all', 'Tw_min_event_C', 'Tw_max_C', 'Tpcm_max_C', 'pcm_melt_end_event', ...
     'hours_water_ge45_event', 'idle_or_bypass_hours_event', 'failsafe_hours'});
-writetable(Tsum, fullfile(outDir, 'scenario_summary.csv'));
+writetable(Tsum, fullfile(outDir, sumName));
 disp(Tsum);
 
 % ---------------- 3. animations ----------------

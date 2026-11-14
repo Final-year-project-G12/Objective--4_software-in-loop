@@ -69,7 +69,7 @@
 
 The remaining differences are rounding noise from the two linear solvers. The Python mirror gives the same table with differences of exactly zero.
 
-**Added since:** the one-week Simulink check passes (100 % identical actions, 13.04 = 13.04 kWh). **Still to do:** `verify_codegen` (generated C), not run in this pass.
+**Added since:** the one-week Simulink check passes (100 % identical actions, 13.04 = 13.04 kWh). **Generated C:** `verify_codegen` passes for regime 1 (9 C files, 1163 lines, 100 % identical decisions over 8760 h).
 
 ### 1.6 How results were evaluated
 
@@ -90,7 +90,7 @@ For every scenario, the DQN and the always-charge baseline B0 run on the same we
 | Animations | Done for regime 1 (four 10-day videos, four shorter clips) |
 | Independent Python cross-check of all of the above | Done |
 | Simulink model `pcm_drl_twin_rj.slx` | Built and run for one week of regime 1: passes |
-| Generated C code of the controller | Not run in this pass |
+| Generated C code of the controller | Verified, regime 1: 100 % identical (MinGW64) |
 | Processor-in-the-loop on a target board | Not done; future work |
 | Retention test, PCM swap, simulation matrix, checks, figures, animations (plan v2) | Done for regime 1 (section 1.9) |
 | Comparison with a published tank experiment | Done (Amanowicz & Turski 2025): within 1.1-1.4 K with matched capsule geometry, section 1.9 |
@@ -145,7 +145,7 @@ For every scenario, the DQN and the always-charge baseline B0 run on the same we
 - Only the regime 1 controller differs from always-charge. For regimes 0 and 2 the twin confirms the released policy is B0 in practice.
 - The hard limits (75 °C water / 65 °C PCM) are never reached in any scenario or in the full-year runs.
 
-**Limits:** Simulink run for one week only and no generated C in this pass; animations for regime 1 only; emulated, not experimental; perfect 3-hour forecast; melt fraction and energy fields treated as perfect estimates; rain enters only as less sunlight and cooler air; the interlock has no debounce; 2023 is a validation year.
+**Limits:** Simulink run for one week only; generated C verified for regime 1 only; animations for regime 1 only; emulated, not experimental; perfect 3-hour forecast; melt fraction and energy fields treated as perfect estimates; rain enters only as less sunlight and cooler air; the interlock has no debounce; 2023 is a validation year.
 
 ---
 
@@ -176,12 +176,14 @@ Points to say in the viva:
 - **The earlier "capsule model too slow" finding was a geometry artefact.** The benchmark's 22 mm cuboid capsules were stood in for by one 83 mm sphere each, whose conduction path is 3.6 times too long. With spheres that keep the PCM mass and the surface/volume ratio the frozen constants (c = 5, F = 2) give RMSE 1.1-1.4 K and the printed temperature drops within 5 %. None of c, F or the film coefficient could remove the old 4.5-4.9 K bias; c fitted on the original mapping runs away to 40 and wrecks Tan 2009 and Dong 2022. Fitted on the matched mapping, c = 5.03: a null calibration. Tank loss: only that coefficient was fitted (water-only case).
 - **Single-capsule experiments still show the frozen model slower** (Tan 2009: 25 % melt at 71 against 40 min; Dong 2022: half melt at 78 against about 58 min), and the two disagree on how much to change c (about 10 against about 6). A campaign at c = 7.1 (bound, not a held-out result) gives hold times 0.4-1.7 h longer and window energy -12 to +2 kWh, with more guard-band hours: so the frozen hold times are, if anything, slightly short. Both campaigns are kept next to the default.
 - **Sub-step gate not met, and why.** 0.080 % for 150 to 75 s (gate 0.05 %, not relaxed): the melting hours contribute -0.005 of -0.731 kWh because melting hours already sub-step at 25 s; the sensible-heat hours carry it, and the water-only tank is worse (-0.66 %). Report it as a measured limitation of the implicit-Euler tank model at 150 s.
+- **Dead pyranometer (reads 0 W/m2, real sun unchanged):** the DQN is not safer or more efficient for it: it idles 228 h instead of 356, delivers 908.85 instead of 897.3 kWh and spends 701 guard-band hours instead of 430 (B0: 994, no hard-limit hours). The interlock does not trigger on it, because it has no irradiance plausibility rule; a plausibility check (reading 0 at noon with a clear forecast) is the obvious addition for a real device. 20 seeds on the 10-day window agree (11.31 ± 0.02 shield hours against 7.72 ± 0.13).
+- **Handoff and parameter check:** the export re-run is byte-identical in all three regimes; the twin's tank volume, collector area, PCM mass and flow equal the Objective 2 design (50 L, 1.5 m2, 13.3826 kg, 0.0492621 kg/s). 33.3 L/m2 stays a stated limitation against IS 12976:2023.
 - **Ranking:** the three PCMs differ by about 1 h in hold time; the twin ranks PureTemp 60 last on hold time but first on window energy (25 kWh ahead); three items are too few to support a ranking claim, and the order moves with the capsule constant.
 - **Retention figures from the literature are not ours.** Chen et al. 2025: 17.1 / 29.6 / 31.7 h above 30 °C on a 30 L/day RT35HC system with no controller. The "12 h without PCM" and "24-48 h with PCM plus AI" figures have no source in Chen or Singh. This folder: 51.9 h water-only and 61.0-62.4 h with PCM at 45 °C on 300 L/day, and the 30 °C column is at the cap everywhere.
 - **Objective 1 numbers:** the Monte-Carlo percentages in Objective 2's config and Objective 1 copy are 99.3 / 93.6 / 56.1; the plan's table (95.6 / 93.7 / 55.8) is from the later Objective 1 repository file (28 Oct 2026). Ranks and the cluster 1 shortlist are identical. The O2 `manifest.json` entry for that file is stale (935 bytes listed, 10 322 on disk).
 - **Three Rajasthan regimes** give similar gains (+129 to +140 kWh window, +8.3 to +9.8 h); this is not a three-state comparison, which needs the other twins' results.
 - **Two things found on the way:** a water-only tank latched a false hard-limit fault because the interlock compared its mean water temperature with the 65 °C PCM limit (fixed for that arm only); and the pump was drawn running whenever CHARGE was commanded, even without collector gain (fixed in the animation).
-- **Also done in the follow-up:** supercooling proxy (freezing point 2 K lower: hold time changes by under 1 h, 50 °C hold +0.5 to +1.0 h), pump energy from Objective 2's Ergun head (0.005 Wh per year, a lower bound). **Not done:** a cross-state F5 (needs the other two twins), generated C, option C1 (needs the Partial Differential Equation Toolbox).
+- **Also done in the follow-up:** supercooling proxy (freezing point 2 K lower: hold time changes by under 1 h, 50 °C hold +0.5 to +1.0 h), pump energy from Objective 2's Ergun head (0.005 Wh per year, a lower bound). **Not done:** a cross-state F5 (needs the other two twins), option C1 (needs the Partial Differential Equation Toolbox, not installed), a pyranometer stuck at a non-zero value.
 
 ## 2. Why MATLAB?
 

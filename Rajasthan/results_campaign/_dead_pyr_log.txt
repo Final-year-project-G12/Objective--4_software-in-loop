@@ -1,0 +1,41 @@
+[VALIDATE closed loop, 336 h] action agreement 100.000 %  max|dTw| 7.82e-14  max|dTpcm| 1.07e-13  shields 16 vs 16  -> PASS
+[scenario] clear            done  DQN delivered(event)=11.05 kWh  B0=11.28 kWh  DQN viol=0
+[scenario] no_sunlight      done  DQN delivered(event)=0.18 kWh  B0=0.18 kWh  DQN viol=0
+[scenario] rain_cloud       done  DQN delivered(event)=2.49 kWh  B0=2.49 kWh  DQN viol=0
+[scenario] low_temperature  done  DQN delivered(event)=10.78 kWh  B0=12.43 kWh  DQN viol=0
+[scenario] heat_wave        done  DQN delivered(event)=11.91 kWh  B0=12.55 kWh  DQN viol=0
+[scenario] sensor_fault     done  DQN delivered(event)=8.42 kWh  B0=8.61 kWh  DQN viol=0
+[scenario] dead_pyranometer done  DQN delivered(event)=11.18 kWh  B0=11.28 kWh  DQN viol=0
+          scenario          policy     delivered_kWh_event    unmet_kWh_event    shield_trips_event    shield_hours_event    hard_violations_all    Tw_min_event_C    Tw_max_C    Tpcm_max_C    pcm_melt_end_event    hours_water_ge45_event    idle_or_bypass_hours_event    failsafe_hours
+    ____________________    _______    ___________________    _______________    __________________    __________________    ___________________    ______________    ________    __________    __________________    ______________________    __________________________    ______________
+
+    {'clear'           }    {'DQN'}           11.048              15.505                2020                 7.8194                   0                 25.714          72.08       62.104              0                       36                           8                       0      
+    {'clear'           }    {'B0' }            11.28              15.272                6121                 18.799                   0                 25.718         72.103       62.261              0                       36                           0                       0      
+    {'no_sunlight'     }    {'DQN'}          0.18444              26.427                   0                      0                   0                 25.654         72.086       62.104              0                        0                           0                       0      
+    {'no_sunlight'     }    {'B0' }          0.18446              26.426                   0                      0                   0                 25.654         72.103       62.243              0                        0                           0                       0      
+    {'rain_cloud'      }    {'DQN'}           2.4864              24.209                   0                      0                   0                 25.233         72.088       62.141              0                        0                           0                       0      
+    {'rain_cloud'      }    {'B0' }           2.4864              24.209                   0                      0                   0                 25.233         72.103       62.243              0                        0                           0                       0      
+    {'low_temperature' }    {'DQN'}           10.781              26.997                   0                      0                   0                 17.336         71.489       61.044              0                       32                           8                       0      
+    {'low_temperature' }    {'B0' }           12.431              25.343                2772                 10.576                   0                 17.357         72.095       62.263              0                       32                           0                       0      
+    {'heat_wave'       }    {'DQN'}           11.911              14.624                 481                 3.3403                   0                  25.91         72.081       62.107              0                       36                          12                       0      
+    {'heat_wave'       }    {'B0' }           12.555              13.981                6647                 23.035                   0                 25.915         72.104       62.272              0                       36                           0                       0      
+    {'sensor_fault'    }    {'DQN'}            8.422              18.143                1374                 5.5903                   0                 25.714          72.08       62.218              0                       27                           6                      15      
+    {'sensor_fault'    }    {'B0' }           8.6128              17.951                4537                 13.993                   0                 25.718         72.104       62.261              0                       27                           0                      15      
+    {'dead_pyranometer'}    {'DQN'}           11.182               15.37                3679                 11.326                   0                 25.714         72.102       62.223              0                       36                           6                       0      
+    {'dead_pyranometer'}    {'B0' }            11.28              15.272                6121                 18.799                   0                 25.718         72.103       62.261              0                       36                           0                       0      
+
+ALL_DONE_MARKER
+    controller    pyranometer    E_del45_kWh    E_del45_window_kWh    guard_band_h    hours_over_hard_limit    interlock_guard_hours    interlock_failsafe_hours    charge_hours    idle_hours    bypass_hours
+    __________    ___________    ___________    __________________    ____________    _____________________    _____________________    ________________________    ____________    __________    ____________
+
+     {'B0' }      {'healthy'}      912.36             587.16             993.58                 0                       885                        0                    8760             0             0      
+     {'B0' }      {'dead'   }      912.36             587.16             993.58                 0                       885                        0                    8760             0             0      
+     {'DQN'}      {'healthy'}      897.26             572.07             429.98                 0                       335                        0                    8404           356             0      
+     {'DQN'}      {'dead'   }      908.85             583.65             701.06                 0                       567                        0                    8532           228             0      
+
+[dead pyranometer, year] DQN commands differ from the healthy run in 246 of 8760 h; IDLE hours 228 (healthy 356); interlock fail-safe hours 0; B0 max hourly difference 0 Wh
+[seeds] DQN healthy event delivered 11.03 +/- 0.02 kWh   shield 7.72 +/- 0.13 h   fail-safe hours 2.2   guard hours 17.4
+[seeds] DQN dead    event delivered 11.16 +/- 0.02 kWh   shield 11.31 +/- 0.02 h   fail-safe hours 2.2   guard hours 24.1
+[seeds] B0  healthy event delivered 11.26 +/- 0.02 kWh   shield 18.66 +/- 0.18 h   fail-safe hours 2.2   guard hours 35.2
+[seeds] B0  dead    event delivered 11.26 +/- 0.02 kWh   shield 18.66 +/- 0.18 h   fail-safe hours 2.2   guard hours 35.2
+[seeds] largest change in DQN fail-safe hours caused by the dead sensor (same seed): 0 h

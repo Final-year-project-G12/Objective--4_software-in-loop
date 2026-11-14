@@ -18,7 +18,7 @@ it was trained on. It is not experimental validation.
 | Animations | Done in MATLAB for regime 1: four 10-day videos and four `my_*.mp4` clips (`export_r1/scenarios/`). |
 | Same checks and scenarios in Python (`sil_python_mirror.py`) | Done (`export_r*/python_mirror/`). An independent cross-check; gives the same numbers. |
 | Simulink model `pcm_drl_twin_rj.slx` (`build_pcm_twin_model.m`, `run_twin.m`) | **Built and run once (regime 1, one week, 14 Nov 2026):** 100 % identical actions, delivered 13.04 = 13.04 kWh, 0.78 s per simulated hour (`export_r1/validation_simulink_168h.json`). The generated files (`.slx`, `.slxc`, `slprj/`, `twin_consts.mat`) were then deleted: `run_twin.m` and `validate_against_python(1, 2023, 168, true)` rebuild them. Block-diagram picture: `results_campaign/figures/B_simulink_block_diagram.png`. |
-| Generated C code of the controller (`verify_codegen.m`) | **Not run** in this pass (the plan does not ask for it). |
+| Generated C code of the controller (`verify_codegen.m`) | **Run 14 Nov 2026, regime 1: PASS.** 9 C files, 1163 lines, 100 % identical decisions against MATLAB and against Python over 8760 h (`export_r1/codegen_verification.json`, C in `export_r1/codegen_c/`). Used the installed MinGW64 compiler. |
 | Improvement plan v2: retention test, PCM swap, simulation matrix, tank-level benchmark, figures | **Done for regime 1** (section "Improvement plan v2" below). Files in `matlab/` and `results_campaign/`. |
 
 ## What is different from the Tamil Nadu twin
@@ -302,6 +302,35 @@ numbers as in the table above (delivered 954.983, 897.262, 970.320 kWh; top-node
 3.0e-13 °C; the older table reports the largest difference over all quantities). `export_r1/scenarios/scenario_summary.csv`
 is identical to the file before the edits. The base campaign was re-run after the pump metric was added: every shared numeric column is identical to the first run.
 
+## Follow-up items (14 Nov 2026): dead pyranometer, handoff export, parameter check, generated C, C1
+
+**Dead pyranometer (`run_dead_pyranometer.m`, `run_scenarios.m` with `deadPyr = true`, figure F9).** Definition (agreed, not in the plan): the controller's
+irradiance reading is 0 W/m2 for the whole run while the real sun drives the plant; the 1-3 h forecast in the observation is a weather-feed value and is not zeroed;
+B0 does not read the observation, so it is the control. Full year 2023, ideal other sensors (no seed): B0 912.36 kWh, window 587.16 kWh, 993.6 guard-band h (identical with a
+dead sensor); DQN healthy 897.3 / 572.1 kWh, 430.0 h; **DQN dead 908.85 kWh, window 583.65 kWh, 701.1 guard-band h**. The dead sensor changes the DQN's command in 246 of 8760 h
+and its IDLE hours drop from 356 to 228: it behaves more like B0. 20 seeds on the 10-day April window with noisy other sensors (mean ± 95 % CI): DQN event delivery 11.16 ± 0.02 kWh and
+11.31 ± 0.02 shield hours against 11.03 ± 0.02 and 7.72 ± 0.13 with a healthy sensor; B0 11.26 ± 0.02 kWh and 18.66 ± 0.18 h in both. **The interlock and fallback never trigger on
+the dead sensor:** fail-safe hours are 0 in the year runs and unchanged in all 20 seeds (largest difference 0 h), because `safety_interlock.m` has no irradiance plausibility rule;
+only the plant's own shield limits overheating, with zero hard-limit hours. Event-window row (clear April weather, sensor dead): DQN 11.18 kWh and 11.3 shield hours, B0 11.28 kWh and 18.8 h.
+The original `export_r1/scenarios/scenario_summary.csv` is unchanged (still six scenarios, identical to the committed file); the seven-scenario table is
+`results_campaign/edge_cases_with_dead_pyranometer/scenario_summary_with_dead_pyranometer.csv`, the year and seed tables are `results_campaign/dead_pyranometer_year.csv` and
+`dead_pyranometer_seeds.csv`. A pyranometer stuck at a non-zero value was not run.
+
+**Handoff export re-run.** `export_from_python.py --regime 0/1/2` was re-run into a scratch folder (`--out`) with the current Objective 2 and 3 files. `plant_params.json`,
+`weather_2023.csv`, `dqn_qnet_r<k>.json` and `reference_2023.csv` are byte-identical to the existing `export_r0/`, `export_r1/`, `export_r2/` files in all three regimes, and the DQN SHA-256
+matches `gen2_selected_dqn.json`. Nothing was replaced. Because the files are identical, `validate_against_python` on `export_r*` is the validation of the fresh export: delivered
+954.983, 897.262 and 970.320 kWh, all pass.
+
+**Parameter check (`build_campaign_config.py`).** The twin's values against Objective 2: tank volume 50 L = 50 L, tank volume rebuilt from node water + displaced capsule volume 50 L = 50 L,
+collector area 1.5 m2 = 1.5 m2, PCM mass 13.3826 kg = 13.3826 kg, flow 0.0492621 kg/s = 0.0492621 kg/s: five lines, all PASS. Tank volume and collector area come from
+`system_config_shared.yaml`; PCM mass and flow come from `results/g10_selection_r1.json` (the state config holds the shortlist, not the design). The script stops if any line fails and prints
+the standing limitation: 50 L / 1.5 m2 = 33.3 L/m2 is below the 40-100 L/m2 band of IS 12976:2023 (O2 decision D8).
+
+**Generated C.** `regime = 1; verify_codegen`: PASS (see the status table).
+
+**C1, the 3-D single-capsule check: not done.** It needs the Partial Differential Equation Toolbox; `ver` shows it is not installed, and nothing was installed. The held-out Tan 2009 /
+Dong 2022 check (above) is the capsule-level evidence.
+
 ## Edge cases (April 2023 weather, 4 days spin-up, 4 days event, 2 days recovery)
 
 Clear, no sunlight, rain/heavy cloud, low temperature, heat wave, and noisy sensors with a 12-hour
@@ -344,7 +373,7 @@ Findings worth stating in the report:
 
 ## Limits
 
-- The Simulink model was run for one week of regime 1 only; the generated C code (`verify_codegen.m`) was not run
+- The Simulink model was run for one week of regime 1 only. (Generated C: verified, see the status table.) Earlier text: not run
   in this pass. The builder's block layout is untidy (lines cross): a picture of the signal chain, not a polished figure.
 - Animations exist for regime 1 only. Regimes 0 and 2 would show the always-charge policy.
 - In the animation the state text reads CHARGE at night because that is the policy's command. The pump is now drawn
