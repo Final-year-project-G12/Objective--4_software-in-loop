@@ -361,6 +361,12 @@ The Rajasthan DQN and SAC were trained with a **perfect** 3-hour irradiance fore
 
 New files: `export_r<k>/clearsky_2023.csv`, `reference_smart_2023.csv` (regime 1), `reference_sac_smart_2023.csv`, `validation_smart_forecast_*.json`; `results_campaign/forecast_optimism_2023.csv`.
 
+## 70-hour heat-retention videos (15 Nov 2026), Tamil Nadu panel style
+
+`matlab/run_hold_videos.m` (code `animate_hold_video.m`) writes one video per controller, three tanks side by side (plain tank + B0, PCM + B0, PCM + DQN or SAC), 70 h long: 8 h of the real controlled afternoon (10:00-18:00), then 62 h with the sun off and no draw (the hold test). Each tank is drawn as its 10 real layers with capsule melt colour; panels below show top-layer and PCM temperature with the 45 C line, melt %, collector heat and the controller's CHARGE / IDLE / BYPASS shading. A counter under each tank counts the hours above 45 C since 18:00 and turns red when the top layer drops below.
+
+Files: `video/o4_hold70h_r1_DQN_2023.mp4`, `o4_hold70h_r1_SAC_2023.mp4`, `o4_hold70h_r0_SAC_2023.mp4`, `o4_hold70h_r2_SAC_2023.mp4`, stills `pictures/hold70h_*`, `video/hold70h_summary.csv`. The evening shown is the one of the 12 hold-test evenings whose controller hold is closest to the 12-evening mean (and inside the 62 h window), so it is representative: DQN r1 59.0 h (mean 61.0), SAC r1 59.5 h (56.2), SAC r0 49.2 h (47.5), SAC r2 53.7 h (55.0). The single evening differs from the mean by a few hours; the table means above are the figures to quote. Model values, sun off and no draw during the hold.
+
 ## Tamil Nadu parity pass 2 (15 Nov 2026): launchers, 20-seed intervals, shared-format table
 
 Everything new; no existing output changed (re-validation: delivered 954.983 / 897.262 / 970.320 kWh, regimes 0 / 1 / 2, 100 % identical actions; `export_r1/scenarios/scenario_summary.csv` untouched).

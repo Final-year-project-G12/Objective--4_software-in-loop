@@ -1,4 +1,4 @@
-function L = simulate_hours(tw, W, P, policy_mode, noise_on, blackout, nSim, stuckGHI, obsFault, clearsky)
+function L = simulate_hours(tw, W, P, policy_mode, noise_on, blackout, nSim, stuckGHI, obsFault, clearsky, init)
 %SIMULATE_HOURS  Closed-loop software-in-the-loop run, one step per hour.
 %
 % Same signal chain as the Simulink twin and the O4 interface spec:
@@ -22,7 +22,11 @@ function L = simulate_hours(tw, W, P, policy_mode, noise_on, blackout, nSim, stu
 %               phase 9 fault set, run_o3_sensor_faults.m); the interlock still sees the true measured temperatures. Default none.
 %   clearsky    optional [m x 1] clear-sky GHI (export_r<k>/clearsky_<year>.csv): the 1-3 h look-ahead of the observation is then Objective 3's
 %               smart persistence, Kc(t) * GHI_clear(t + h) (smart_kc.m), instead of the true future GHI. Default [] = the perfect forecast.
+%   init        optional struct with fields T0, h0 [10x1] (node water temperature / PCM enthalpy) and hsd0 (hours since the last draw): start
+%               from that state instead of the reset state (used by run_o4_showcase.m to re-simulate one day from the full-year state at its
+%               start). The latched hard-limit fault is not carried over (the caller checks it is not latched). Default [] = reset state.
 m = size(W, 1);
+if nargin < 11, init = []; end
 if nargin < 7 || isempty(nSim), nSim = m; end
 n = nSim;
 if nargin < 8 || isempty(stuckGHI), stuckGHI = NaN; end
@@ -33,15 +37,16 @@ if policy_mode == 2 && ~isfield(tw, 'sac'), error('simulate_hours: policy_mode 2
 if nargin < 6 || isempty(blackout), blackout = false(n, 1); end
 
 T = tw.T0;  h = tw.h0;
-s = pcm_derive_state(T, h, P);       % T_top T_bottom T_mean T_pcm f_melt E_stored E_rec45
 hours_since_draw = 24;
+if ~isempty(init), T = init.T0(:);  h = init.h0(:);  hours_since_draw = init.hsd0; end
+s = pcm_derive_state(T, h, P);       % T_top T_bottom T_mean T_pcm f_melt E_stored E_rec45
 clear safety_interlock               % reset the latched-fault memory
 
 names = {'Tw', 'Tbot', 'Tmean', 'Tpcm', 'f_melt', 'E_stored_kWh', 'E_rec45_kWh', ...
          'E_del_Wh', 'E_unmet_Wh', 'Q_coll_Wh', 'n_sw', 'n_sp', 'n_viol', 'shield_s', ...
          'Tw_max', 'Tpcm_max', 'a_policy', 'a_cmd', 'a_exec', 'interlock', ...
          'draw_kg', 'GHI', 'T_amb', 'hod', 'sensors_ok', ...
-         'Q_load_Wh', 'Q_loss_Wh', 'E_del50_Wh', 'E_unmet50_Wh'};
+         'Q_load_Wh', 'Q_loss_Wh', 'E_del50_Wh', 'E_unmet50_Wh', 'hsd'};
 for k = 1:numel(names), L.(names{k}) = zeros(n, 1); end
 L.Tn = zeros(n, 10);                 % node water temperature at the END of each hour [C]
 L.hn = zeros(n, 10);                 % node PCM enthalpy at the END of each hour [J/kg]
@@ -68,6 +73,7 @@ for t = 1:n
     [Im, Tam, sm, ok] = sensor_model(I, Ta, s, noise_on, idx);
     if ~isnan(stuckGHI), Im = stuckGHI; end     % applied AFTER the noise draw, so the random stream is unchanged
     if blackout(t), ok = 0; end
+    L.hsd(t) = hours_since_draw;                % hours since the last draw at the START of this hour
     obs = build_obs(Im, Tam, sm, draw, hod, hours_since_draw * 60, fwd, P);
     if ~isempty(obsFault), obs = min(max(obsFault(obs, t), -5), 5); end
     if policy_mode == 2
