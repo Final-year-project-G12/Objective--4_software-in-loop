@@ -1,0 +1,10 @@
+case,arm,charge_h,discharge_h,idle_h,idle_bypass_h,pcm_melting_h,pcm_releasing_h,delivered50_kWh,guard_h,Ttop_max_C
+day,"Plain tank (no PCM, always on)",13,4,7,0,0,0,3.76014045516379,3.04166666666667,72.6019479689519
+day,"PCM tank (no AI, always on)",13,5,6,0,5,3,4.27382059909414,4.88194444444444,72.0529645303183
+day,"PCM tank + AI (PPO)",11,7,6,3,4,3,4.12152997330188,0.138888888888889,72.004281017832
+heat_wave,"Plain tank (no PCM, always on)",12,5,7,0,0,0,4.01749115250468,3.75,72.962240633453
+heat_wave,"PCM tank (no AI, always on)",13,6,5,0,5,3,4.52325210731936,5.90277777777778,72.1704656636794
+heat_wave,"PCM tank + AI (PPO)",10,9,5,4,4,3,4.33280889707736,0,71.6312791305691
+no_sunlight,"Plain tank (no PCM, always on)",0,4,20,0,0,0,0.033065561617236,0,19.2605847230761
+no_sunlight,"PCM tank (no AI, always on)",0,4,20,0,0,0,0.0331097991722774,0,19.3138178325294
+no_sunlight,"PCM tank + AI (PPO)",0,4,20,2,0,0,0.0331097991696082,0,19.3138178324885
