@@ -33,8 +33,9 @@ if nargin < 1, which = 'all'; end
 if nargin < 2, fpH = 20; end            % video frames per simulated hour (20 = 1 s per hour at 20 fps)
 if nargin < 3 || isempty(ctrl), ctrl = 'DQN'; end
 exportDir = fullfile(here, '..', 'export_r1');
-vidDir = fullfile(here, '..', 'video', 'showcase');  if ~isfolder(vidDir), mkdir(vidDir); end
-figDir = fullfile(here, '..', 'export_r1', 'showcase'); if ~isfolder(figDir), mkdir(figDir); end
+sfx = ''; if strcmpi(ctrl, 'SAC'), sfx = '_sac'; end      % the SAC run gets its own folders so the DQN outputs are never overwritten
+vidDir = fullfile(here, '..', 'video', ['showcase' sfx]);  if ~isfolder(vidDir), mkdir(vidDir); end
+figDir = fullfile(here, '..', 'export_r1', ['showcase' sfx]); if ~isfolder(figDir), mkdir(figDir); end
 year = 2023; dayNo = 165;
 
 tw = load_twin_params(exportDir, year);
@@ -73,7 +74,7 @@ for s = 1:numel(scn)
 end
 if isfield(R, 'day') || strcmp(which, 'all') || strcmp(which, 'plots')
     write_tables(R, figDir);
-    plot_overall(Lyr, exportDir, figDir, R);
+    plot_overall(Lyr, exportDir, figDir, R, tw);
 end
 fprintf('[showcase] done. videos -> %s | figures/tables -> %s\n', vidDir, figDir);
 end
@@ -109,6 +110,8 @@ for a = 1:3
     S.phase(S.draw_kg >= 1) = 2;                    % 2 = DISCHARGE
     S.phase(charge) = 1;                            % 1 = CHARGE
     S.guard_h = S.shield_s / 3600;                  % hours the shield spent in its guard band (comparable load number)
+    S.collected_kWh = sum(S.Q_coll_Wh) / 1e3;       % heat the collector put into the tank this day
+    S.lost_kWh = sum(S.Q_loss_Wh) / 1e3;            % heat the tank lost to the surroundings this day
     S.shield = S.shield_s > 0;
     S.bypass = (S.a_exec == 2) | (S.interlock >= 2);
     S.Estored = S.E_stored_kWh;
@@ -134,7 +137,7 @@ end
 function print_day(D)
 for a = 1:3
     S = D.arm{a};
-    fprintf('arm%d: del %.2f kWh  unmet %.2f  guard %.1f h  C/D/I %d/%d/%d h  byp %d h | ', a, sum(S.E_del_Wh)/1e3, sum(S.E_unmet_Wh)/1e3, ...
+    fprintf('arm%d: del %.2f kWh  guard %.1f h  C/D/I %d/%d/%d h  byp %d h | ', a, sum(S.E_del_Wh)/1e3, ...
         sum(S.guard_h), sum(S.phase==1), sum(S.phase==2), sum(S.phase==3), sum(S.bypass));
 end
 fprintf('\n');
@@ -330,14 +333,18 @@ card = axes(fig, 'Position', [0.12 0.26 0.76 0.64]); axis(card, 'off'); hold(car
 patch(card, [0 100 100 0], [0 0 100 100], [1 1 1], 'EdgeColor', [0.1 0.2 0.33], 'LineWidth', 3, 'FaceAlpha', 1);
 text(card, 50, 93, 'Result of the day', 'FontSize', 20, 'FontWeight', 'bold', 'HorizontalAlignment', 'center', 'Color', [0.1 0.2 0.33]);
 text(card, 50, 85, ttl, 'FontSize', 11.5, 'HorizontalAlignment', 'center', 'Color', [0.3 0.3 0.3]);
-hdr = {'', 'Hot water delivered', 'Charge h', 'Discharge h', 'Idle h', 'Shield guard-band h', 'Peak C'};
-xs = [3 24 44 55 67 77 92]; ys = 74;
+hdr = {'', 'Hot water out', 'Heat collected', 'Charge h', 'Discharge h', 'Idle h', 'Guard-band h', 'Peak C'};
+xs = [3 21 36 51 60 71 79 93]; ys = 74;
+e_ = cellfun(@(S) sum(S.E_del_Wh)/1e3, D.arm); g_ = cellfun(@(S) sum(S.guard_h), D.arm);
+if g_(3) < g_(2) && e_(3) >= 0.95 * e_(2)
+    text(card, 50, 79.5, 'Headline: about the same hot water as PCM only, with less time at the safety limit', 'FontSize', 11, 'FontWeight', 'bold', 'HorizontalAlignment', 'center', 'Color', [0.7 0.1 0.1]);
+end
 for k = 1:numel(hdr), text(card, xs(k), ys, hdr{k}, 'FontSize', 11, 'FontWeight', 'bold', 'Color', [0.2 0.2 0.2]); end
 nm = {'Plain tank', 'PCM only (no AI)', 'AI + PCM'}; cc = {cl.plain, cl.pcm, cl.ai};
 for a = 1:3
     S = D.arm{a}; y = 62 - (a-1)*13;
     patch(card, [1 99 99 1], [y-5 y-5 y+5 y+5], cc{a}, 'FaceAlpha', 0.12, 'EdgeColor', 'none');
-    vals = {nm{a}, sprintf('%.2f kWh', sum(S.E_del_Wh)/1e3), sprintf('%d', sum(S.phase==1)), sprintf('%d', sum(S.phase==2)), ...
+    vals = {nm{a}, sprintf('%.2f kWh', sum(S.E_del_Wh)/1e3), sprintf('%.2f kWh', S.collected_kWh), sprintf('%d', sum(S.phase==1)), sprintf('%d', sum(S.phase==2)), ...
         sprintf('%d', sum(S.phase==3)), sprintf('%.1f', sum(S.guard_h)), sprintf('%.1f', max(S.Tw))};
     for k = 1:numel(vals), text(card, xs(k), y, vals{k}, 'FontSize', 12.5, 'FontWeight', 'bold', 'Color', cc{a} * 0.75); end
 end
@@ -351,7 +358,10 @@ end
 
 function [v1, v2, v3] = verdict(D)
 e = cellfun(@(S) sum(S.E_del_Wh)/1e3, D.arm); tr = cellfun(@(S) sum(S.guard_h), D.arm);
-v1 = sprintf('AI + PCM vs plain tank: %+.2f kWh hot water (%+.0f %%); the PCM tank holds more heat for the evening and night.', e(3)-e(1), 100*(e(3)-e(1))/max(e(1), 1e-9));
+v1 = sprintf('AI + PCM vs plain tank: %+.2f kWh hot water (%+.0f %%).', e(3)-e(1), 100*(e(3)-e(1))/max(e(1), 1e-9));
+if e(3) > e(1) * 1.02, v1 = [v1 ' The PCM tank holds more heat for the evening and night.'];
+elseif e(3) < e(1) * 0.98, v1 = [v1 ' With so little heat collected the PCM mass only soaks up heat, so no gain.'];
+else, v1 = [v1 ' About equal on this day.']; end
 if strcmp(D.name, 'rain_cloud')
     v2 = 'With almost no sun no system can collect much; all three arms are close on energy.';
 else
@@ -556,16 +566,16 @@ for f = fieldnames(R)'
     D = R.(f{1});
     for a = 1:3
         S = D.arm{a};
-        rows(end+1, :) = {f{1}, nm{a}, sum(S.phase==1), sum(S.phase==2), sum(S.phase==3), sum(S.bypass), sum(S.E_del_Wh)/1e3, sum(S.E_unmet_Wh)/1e3, ...
+        rows(end+1, :) = {f{1}, nm{a}, sum(S.phase==1), sum(S.phase==2), sum(S.phase==3), sum(S.bypass), sum(S.E_del_Wh)/1e3, S.collected_kWh, S.lost_kWh, ...
             sum(S.guard_h), max(S.Tw), max(S.Tpcm), 100*max(S.f_melt), sum(S.n_viol)}; %#ok<AGROW>
     end
 end
-T = cell2table(rows, 'VariableNames', {'scenario', 'system', 'charge_h', 'discharge_h', 'idle_h', 'bypass_h', 'delivered_kWh', 'unmet_kWh', ...
+T = cell2table(rows, 'VariableNames', {'scenario', 'system', 'charge_h', 'discharge_h', 'idle_h', 'bypass_h', 'delivered_kWh', 'collected_kWh', 'tank_loss_kWh', ...
     'shield_guard_band_h', 'peak_water_C', 'peak_pcm_C', 'peak_melt_pct', 'hard_violations'});
 writetable(T, fullfile(figDir, 'o4_showcase_day_table.csv')); disp(T);
 end
 
-function plot_overall(Lyr, exportDir, figDir, R)
+function plot_overall(Lyr, exportDir, figDir, R, tw)
 % simple annual comparison: three bars per metric, all from the logs / tables already on disk
 cl = colors(); cc = {cl.plain, cl.pcm, cl.ai}; nm = {'Plain tank', 'PCM only', 'AI + PCM'};
 del = zeros(3,1); trips = zeros(3,1); pump = zeros(3,1); over = zeros(3,1); unmet = zeros(3,1);
@@ -577,13 +587,31 @@ HT = readtable(fullfile(exportDir, 'hold_test.csv')); hold45 = zeros(3,1);
 arms = {'arm1_plain_B0', 'arm2_pcm_B0', 'arm3_pcm_DQN'};
 for a = 1:3, hold45(a) = mean(HT.tau_hold_h(strcmp(HT.arm, arms{a}))); end    % hold_test.csv is the DQN run (the SAC arm is not in it)
 fprintf('[showcase] annual: delivered %s | guard-band h %s | pump-hours %s | hours Tw>=70 %s | hold45 %s\n', mat2str(del',5), mat2str(trips',5), mat2str(pump'), mat2str(over'), mat2str(hold45',3));
-cov = 100 * del ./ (del + unmet);
-T = table(nm', del, unmet, cov, hold45, trips, pump, over, 'VariableNames', {'system', 'delivered_kWh_2023', 'unmet_kWh_2023', 'demand_coverage_pct', 'hold_at_45C_h_mean12', 'shield_guard_band_h', 'pump_run_hours', 'hours_water_ge_70C'});
+coll = zeros(3,1); lost = zeros(3,1); solar = sum(Lyr{1}.GHI) * tw.P(36) / 1000;     % incident sunlight on the collector [kWh]
+for a = 1:3, coll(a) = sum(Lyr{a}.Q_coll_Wh)/1e3; lost(a) = sum(Lyr{a}.Q_loss_Wh)/1e3; end
+eff = 100 * del / solar;
+T = table(nm', del, coll, lost, eff, hold45, trips, pump, over, 'VariableNames', {'system', 'delivered_kWh_2023', 'collected_kWh_2023', 'tank_loss_kWh_2023', 'delivered_pct_of_sunlight', 'hold_at_45C_h_mean12', 'shield_guard_band_h', 'pump_run_hours', 'hours_water_ge_70C'});
+% energy figure: where the sunlight goes (collected -> delivered or lost) and the overall efficiency
+figE = figure('Visible', 'off', 'Position', [50 50 1500 480], 'Color', 'w'); try, theme(figE, 'light'); catch, end
+tlE = tiledlayout(figE, 1, 5, 'TileSpacing', 'compact', 'Padding', 'compact');
+title(tlE, sprintf('Energy, full year 2023 (sunlight on the collector: %.0f kWh). AI + PCM turns %.1f %% of collected heat into hot water vs %.1f %% (PCM only), %.1f %% (plain tank)', ...
+    solar, 100*del(3)/coll(3), 100*del(2)/coll(2), 100*del(1)/coll(1)), 'FontWeight', 'bold', 'FontSize', 12);
+eV = {coll, del, lost, eff, 100*del./coll}; eT = {{'Heat collected, kWh', 'higher = more of the sun used'}, {'Hot-water energy delivered, kWh', 'higher is better'}, {'Tank heat loss, kWh', 'lower is better'}, {'Delivered as % of sunlight', 'higher is better'}, {'Delivered per kWh collected, %', 'higher is better'}};
+for k = 1:5
+    ax = nexttile(tlE); hold(ax, 'on'); b = bar(ax, diag(eV{k}), 'stacked');
+    for a = 1:3, b(a).FaceColor = cc{a}; end
+    set(ax, 'XTick', 1:3, 'XTickLabel', nm); xtickangle(ax, 20); box(ax, 'on'); grid(ax, 'on'); title(ax, eT{k}, 'FontSize', 10);
+    for a = 1:3, text(ax, a, eV{k}(a), num2str(round(eV{k}(a), 1)), 'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom', 'FontWeight', 'bold'); end
+    ylim(ax, [0 max(eV{k}) * 1.15]);
+end
+exportgraphics(figE, fullfile(figDir, 'o4_annual_energy.png'), 'Resolution', 130); close(figE);
 writetable(T, fullfile(figDir, 'o4_showcase_annual_table.csv'));
 fig = figure('Visible', 'off', 'Position', [50 50 1800 520], 'Color', 'w');
 try, theme(fig, 'light'); catch, end
 tl = tiledlayout(fig, 1, 5, 'TileSpacing', 'compact', 'Padding', 'compact');
-title(tl, 'Plain tank vs PCM only vs AI + PCM  (Rajasthan 50 L, full year 2023, same weather and demand)', 'FontWeight', 'bold', 'FontSize', 13);
+title(tl, {'Plain tank vs PCM only vs AI + PCM  (Rajasthan 50 L, full year 2023, same weather and demand)', ...
+    sprintf('AI + PCM: about the same hot water as PCM only (%.1f %% less), %.0f %% less time at the shield limit, %.0f %% fewer hours at 70 C or more, %.0f %% fewer pump hours', ...
+    100*(1 - del(3)/del(2)), 100*(1 - trips(3)/trips(2)), 100*(1 - over(3)/over(2)), 100*(1 - pump(3)/pump(2)))}, 'FontWeight', 'bold', 'FontSize', 12);
 vals = {del, hold45, trips, over, pump}; ttls = {{'Hot water delivered, kWh', 'higher is better'}, {'Hours the tank stays above 45 C after sunset', '(mean of 12 start days) higher is better'}, {'Shield guard-band hours', 'lower is better'}, {'Hours with water at 70 C or more', '(safety limit is 72 C) lower is better'}, {'Pump run-hours', 'lower = less pump energy and wear'}};
 for k = 1:5
     ax = nexttile(tl); hold(ax, 'on'); b = bar(ax, diag(vals{k}), 'stacked');
