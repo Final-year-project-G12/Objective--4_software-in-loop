@@ -21,8 +21,8 @@ extern "C" {
 #endif
 
 /* Function Declarations */
-extern void controller_step(const float obs[15], double Ttop_m, double Tpcm_m,
-                            double sensors_ok, const float W1[960],
+extern void controller_step(const float obs[19], double Ttop_m, double Tpcm_m,
+                            double sensors_ok, const float W1[1216],
                             const float b1[64], const float W2[4096],
                             const float b2[64], const float Wa[128],
                             const float ba[2], const double P[40],

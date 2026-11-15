@@ -35,8 +35,8 @@ extern "C" {
 #endif
 
 /* Function Declarations */
-void controller_step(const real32_T obs[15], real_T Ttop_m, real_T Tpcm_m,
-                     real_T sensors_ok, const real32_T W1[960],
+void controller_step(const real32_T obs[19], real_T Ttop_m, real_T Tpcm_m,
+                     real_T sensors_ok, const real32_T W1[1216],
                      const real32_T b1[64], const real32_T W2[4096],
                      const real32_T b2[64], const real32_T Wa[128],
                      const real32_T ba[2], const real_T P[40], real_T *action,

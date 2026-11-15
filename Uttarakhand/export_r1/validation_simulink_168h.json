@@ -1,0 +1,16 @@
+{
+  "hours": 168,
+  "action_agreement_pct": 100,
+  "max_abs_dT_top_C": 9.237055564881302e-14,
+  "max_abs_dT_pcm_C": 8.526512829121202e-14,
+  "delivered50_kWh_simulink": 16.48039747099679,
+  "delivered50_kWh_python": 16.4803974709968,
+  "delivered_rel_err_pct": 4.311441741684667e-14,
+  "over_limit_h": 0,
+  "sim_wall_s": 52.1354091,
+  "pass": true,
+  "regime": 1,
+  "year": 2023,
+  "model": "matlab/pcm_drl_twin.slx",
+  "agent": "smart-forecast PPO (19 inputs)"
+}

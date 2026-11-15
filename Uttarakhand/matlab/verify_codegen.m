@@ -16,7 +16,8 @@ tw = load_twin_params(expDir);
 
 W1 = single(tw.W1); b1 = single(tw.b1); W2 = single(tw.W2); b2 = single(tw.b2);
 Wa = single(tw.Wa); ba = single(tw.ba); P = tw.K.P(:);
-ex = {zeros(15, 1, 'single'), 0, 0, 1, W1, b1, W2, b2, Wa, ba, P};
+nobs = tw.n_obs;                                  % 15 (frozen V1) or 19 (smart-forecast V2)
+ex = {zeros(nobs, 1, 'single'), 0, 0, 1, W1, b1, W2, b2, Wa, ba, P};
 
 outC = fullfile(expDir, 'codegen_c');
 cfg = coder.config('lib'); cfg.GenerateReport = false; cfg.TargetLang = 'C';
@@ -31,8 +32,8 @@ codegen('-config', mcfg, 'controller_step', '-args', ex, '-o', 'controller_step_
 addpath(outM);
 
 ref = tw.ref; n = min(height(ref), 8760);
-O = zeros(15, n, 'single');
-for k = 1:15, O(k, :) = single(ref.(sprintf('obs%d', k - 1))(1:n)'); end
+O = zeros(nobs, n, 'single');
+for k = 1:nobs, O(k, :) = single(ref.(sprintf('obs%d', k - 1))(1:n)'); end
 Ttop = ref.raw0(1:n); Tpcm = ref.raw3(1:n);          % measured top-of-tank / estimated PCM temperature
 clear safety_interlock controller_step_mex
 a_m = zeros(n, 1); a_c = zeros(n, 1); s_m = zeros(n, 1); s_c = zeros(n, 1);
@@ -44,7 +45,7 @@ agree = 100 * mean(a_m == a_c & s_m == s_c);
 pyagree = 100 * mean(a_c == ref.action(1:n));
 fprintf('[codegen] generated-C vs MATLAB over %d hours: %.3f %% identical (action + interlock state)\n', n, agree);
 fprintf('[codegen] generated-C action vs Python reference action: %.3f %% identical\n', pyagree);
-cg = struct(); cg.regime = regime; cg.year = tw.year; cg.hours = n; cg.c_files = numel(files); cg.c_lines = nlines;
+cg = struct(); cg.regime = regime; cg.year = tw.year; cg.agent = tw.agent; cg.n_obs = nobs; cg.hours = n; cg.c_files = numel(files); cg.c_lines = nlines;
 cg.pct_identical_vs_matlab = agree; cg.pct_identical_vs_python = pyagree;
 fid = fopen(fullfile(expDir, 'codegen_verification.json'), 'w'); fwrite(fid, jsonencode(cg, 'PrettyPrint', true)); fclose(fid);
 disp('CODEGEN_DONE_MARKER');

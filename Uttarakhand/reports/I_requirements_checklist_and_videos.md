@@ -16,6 +16,8 @@
 | 10 | README, limitations | Done | `../README.md`, this file |
 | - | Checks (restart 0, closure, swap, zero input, exponential, sub-step) | All PASS except the sub-step gate (reported) | `results_campaign/energy_balance_report_r1.json`, report D |
 | - | 20-seed sensor-fault CIs | Done | `results_campaign/sensor_fault_seeds.csv`, report G_H |
+| - | Shared cross-state format, regimes 0, 1, 2 | Done | `results_campaign/shared_format_table_uttarakhand_2023.csv` |
+| - | Simulink week, generated C (current controller) | PASS | `export_r1/validation_simulink_168h.json`, `codegen_verification.json` |
 
 ## Cross-state table (`cross_state_table.py`; delivered to 45 C so all three states use one target)
 
@@ -42,7 +44,8 @@ the PCM tank beats the plain tank on delivery and hold, the learnt controller de
 
 - Software only: the twin reproduces the Objective 3 simulator (to 1e-13 C), not a real tank.
 - 2023 is an O3 validation year on which the PPO seed was selected: fidelity check, not an unbiased performance figure.
-- One seed of the PPO (the primary seed by O3's rule); one regime (r1) for the campaign; the 20-seed intervals cover
+- One seed of the PPO (the primary seed by O3's rule); the PCM swap, edge cases and checks are for regime 1 (three
+  arms and hold test for regimes 0, 1, 2 in `shared_format_table_uttarakhand_2023.csv`); the 20-seed intervals cover
   sensor noise only.
 - The forecast is the smart-persistence forecast from the pyranometer; next-hour demand is O2's fixed profile (perfect).
 - Pyranometer dependence: a faulty pyranometer corrupts both the GHI input and the forecast, and the interlock does not
@@ -53,4 +56,5 @@ the PCM tank beats the plain tank on delivery and hold, the learnt controller de
 - Sub-step gate not met (-0.059 % against 0.05 %), from the sensible-heat hours; reported, not relaxed.
 - The benchmark compares with a printed linear fit of a single experiment with a different PCM and capsule shape.
 - Pump energy: O2 models only the Ergun capsule bed (0.008 Pa, negligible); pipes and collector losses are not modelled.
-- Simulink week and generated C were not re-run for the smart-forecast agent (plan: not needed).
+- Simulink was checked for one week only (0.31 s per simulated hour); the generated C was compared with MATLAB and
+  Python, not run on a microcontroller (processor-in-the-loop is the next stage).

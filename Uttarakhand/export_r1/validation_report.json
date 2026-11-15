@@ -42,14 +42,23 @@
     "pass": true
   },
   "C_simulink": {
-    "skipped": true
+    "hours": 168,
+    "action_agreement_pct": 100,
+    "max_abs_dT_top_C": 9.2370555648813024E-14,
+    "max_abs_dT_pcm_C": 8.5265128291212022E-14,
+    "delivered50_kWh_simulink": 16.480397470996792,
+    "delivered50_kWh_python": 16.4803974709968,
+    "delivered_rel_err_pct": 4.3114417416846672E-14,
+    "over_limit_h": 0,
+    "sim_wall_s": 52.1354091,
+    "pass": true
   },
   "regime": 1,
   "year": 2023,
   "hours": 8760,
   "label": "SIMULATION-DERIVED - software-in-the-loop export",
   "matlab": "26.2.0.3433840 (R2026b) Update 1",
-  "generated": "2026-11-15T07:14:23",
+  "generated": "2026-11-15T08:47:37",
   "agent": "smart",
   "n_obs": 19,
   "overall_pass": true

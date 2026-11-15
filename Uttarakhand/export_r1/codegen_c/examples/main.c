@@ -40,7 +40,7 @@
 #include "controller_step_terminate.h"
 
 /* Function Declarations */
-static void argInit_15x1_real32_T(float result[15]);
+static void argInit_19x1_real32_T(float result[19]);
 
 static void argInit_2x1_real32_T(float result[2]);
 
@@ -48,7 +48,7 @@ static void argInit_2x64_real32_T(float result[128]);
 
 static void argInit_40x1_real_T(double result[40]);
 
-static void argInit_64x15_real32_T(float result[960]);
+static void argInit_64x19_real32_T(float result[1216]);
 
 static void argInit_64x1_real32_T(float result[64]);
 
@@ -59,11 +59,11 @@ static float argInit_real32_T(void);
 static double argInit_real_T(void);
 
 /* Function Definitions */
-static void argInit_15x1_real32_T(float result[15])
+static void argInit_19x1_real32_T(float result[19])
 {
   int idx0;
   /* Loop over the array to initialize each element. */
-  for (idx0 = 0; idx0 < 15; idx0++) {
+  for (idx0 = 0; idx0 < 19; idx0++) {
     /* Set the value of the array element.
 Change this value to the value that the application requires. */
     result[idx0] = argInit_real32_T();
@@ -103,11 +103,11 @@ Change this value to the value that the application requires. */
   }
 }
 
-static void argInit_64x15_real32_T(float result[960])
+static void argInit_64x19_real32_T(float result[1216])
 {
   int i;
   /* Loop over the array to initialize each element. */
-  for (i = 0; i < 960; i++) {
+  for (i = 0; i < 1216; i++) {
     /* Set the value of the array element.
 Change this value to the value that the application requires. */
     result[i] = argInit_real32_T();
@@ -170,10 +170,10 @@ void main_controller_step(void)
   double interlock_state;
   double margin;
   float fv2[4096];
-  float fv1[960];
+  float fv1[1216];
   float fv3[128];
   float b1_tmp[64];
-  float fv[15];
+  float fv[19];
   float fv4[2];
   /* Initialize function 'controller_step' input arguments. */
   /* Initialize function input argument 'obs'. */
@@ -187,8 +187,8 @@ void main_controller_step(void)
   /* Initialize function input argument 'ba'. */
   /* Initialize function input argument 'P'. */
   /* Call the entry-point 'controller_step'. */
-  argInit_15x1_real32_T(fv);
-  argInit_64x15_real32_T(fv1);
+  argInit_19x1_real32_T(fv);
+  argInit_64x19_real32_T(fv1);
   argInit_64x64_real32_T(fv2);
   argInit_2x64_real32_T(fv3);
   argInit_2x1_real32_T(fv4);

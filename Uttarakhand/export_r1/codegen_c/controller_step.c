@@ -16,11 +16,12 @@
 #include <math.h>
 
 /* Function Definitions */
-void controller_step(const float obs[15], double Ttop_m, double Tpcm_m,
-                     double sensors_ok, const float W1[960], const float b1[64],
-                     const float W2[4096], const float b2[64],
-                     const float Wa[128], const float ba[2], const double P[40],
-                     double *action, double *interlock_state, double *margin)
+void controller_step(const float obs[19], double Ttop_m, double Tpcm_m,
+                     double sensors_ok, const float W1[1216],
+                     const float b1[64], const float W2[4096],
+                     const float b2[64], const float Wa[128], const float ba[2],
+                     const double P[40], double *action,
+                     double *interlock_state, double *margin)
 {
   float z1[64];
   float z2[64];
@@ -59,7 +60,7 @@ void controller_step(const float obs[15], double Ttop_m, double Tpcm_m,
    */
   for (k = 0; k < 64; k++) {
     f = 0.0F;
-    for (i = 0; i < 15; i++) {
+    for (i = 0; i < 19; i++) {
       f += W1[k + (i << 6)] * obs[i];
     }
     z1[k] = tanhf(f + b1[k]);

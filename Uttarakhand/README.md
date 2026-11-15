@@ -64,7 +64,7 @@ from the measured GHI and the clear-sky GHI (`smart_forecast.m`), exactly as `o3
 | `matlab/ppo_policy.m`, `build_obs.m`, `smart_forecast.m`, `initial_record.m`, `sensor_model.m`, `safety_interlock.m` | Policy, observation, forecast, reset record, sensors, fail-safe. |
 | `matlab/simulate_hours.m` | Closed loop; options for pyranometer faults and campaign start states. |
 | `matlab/load_campaign.m`, `swap_pcm.m`, `twin_metrics.m`, `run_hold_test.m` | Campaign tanks, swap rule (check only), metric definitions, retention test. |
-| `matlab/three_arm_2023.m`, `one_day_cycle.m`, `hold_test.m`, `edge_scenarios.m`, `run_c_scenarios.m`, `run_sensor_faults.m`, `check_energy_balance.m`, `pcm_swap_study.m`, `benchmark_amanowicz.m`, `amanowicz_case.m`, `check_pump_drawing.m`, `animate_three_arm.m` | The joint-plan studies (one script per deliverable). |
+| `matlab/shared_format_table.m`, `three_arm_2023.m`, `one_day_cycle.m`, `hold_test.m`, `edge_scenarios.m`, `run_c_scenarios.m`, `run_sensor_faults.m`, `check_energy_balance.m`, `pcm_swap_study.m`, `benchmark_amanowicz.m`, `amanowicz_case.m`, `check_pump_drawing.m`, `animate_three_arm.m` | The joint-plan studies (one script per deliverable). |
 | `matlab/validate_against_python.m`, `run_scenarios.m`, `animate_system.m`, `make_my_video.m`, `build_pcm_twin_model.m`, `run_twin.m`, `controller_step.m`, `verify_codegen.m` | Validation, earlier scenario study, animations, Simulink, C code. |
 
 ## How to run
@@ -137,13 +137,35 @@ a 14-day closed-loop check against Python (PASS, 100 % identical actions, every 
 | Sensor fault | 14.70 / 15.70 | 15.79 / 16.72 | 15.73 / 16.80 |
 
 The first study (13 Nov, year 2010 read post-lock from O3's test years, frozen V1 PPO) is in git history (commit
-`2d9b48f`; the `*_2010.csv` files now in `export*/` were re-exported for the smart-forecast agent). Simulink one week (100 % identical actions, 0.46 s per
-simulated hour) and generated C (9 files, 100 % identical to MATLAB and Python) were run for that V1 policy and are not
-re-run for the smart-forecast agent (joint plan: not needed).
+`2d9b48f`; the `*_2010.csv` files now in `export*/` were re-exported for the smart-forecast agent).
+
+## Simulink twin and generated C (current controller, 2023)
+
+| Check (regime 1) | Result |
+|---|---|
+| Simulink twin `pcm_drl_twin.slx` (19-input smart PPO), one week, closed loop | 100 % identical actions, max \|dT_top\| 9e-14 C, delivered 16.48 = 16.48 kWh, PASS, 0.31 s per simulated hour (`export_r1/validation_simulink_168h.json`) |
+| Generated C of PPO + interlock (`export_r1/codegen_c`, 9 files, 1127 lines), 8760 h | 100 % identical to MATLAB (action + interlock state) and to Python's actions (`export_r1/codegen_verification.json`) |
+
+## Shared cross-state format (all three regimes)
+
+`shared_format_table.m` -> `results_campaign/shared_format_table_uttarakhand_2023.csv` (same columns as Rajasthan's
+`shared_format_table_rajasthan_2023.csv`): water-only B0, PCM + B0, PCM + PPO for regimes 0, 1, 2, year metrics and the
+12-start hold test.
+
+| Regime (PCM) | Arm | Delivered 45 C | Window 45 C | Shield h | Hold 45 C |
+|---|---|---|---|---|---|
+| r0 (PureTemp 58) | PCM-free / PCM + B0 / PCM + PPO | 955.5 / 1049.4 / 990.5 | 496.7 / 582.8 / 523.9 | 435.3 / 645.2 / 0.5 | 32.1 / 39.8 / 27.2 h |
+| r1 (PureTemp 58) | PCM-free / PCM + B0 / PCM + PPO | 1012.5 / 1101.9 / 1063.2 | 511.0 / 589.0 / 550.3 | 286.6 / 571.1 / 1.1 | 23.3 / 32.6 / 26.0 h |
+| r2 (savE OM55) | PCM-free / PCM + B0 / PCM + PPO | 1059.6 / 1141.4 / 1103.7 | 534.2 / 605.1 / 567.4 | 218.0 / 411.2 / 0.6 | 21.3 / 26.9 / 19.8 h |
+
+Same pattern in every regime: the PCM tank beats the plain tank on delivery and hold; the PPO almost removes shield
+operation but delivers 3.3-5.6 % less than B0 and holds less. In regimes 0 and 2 the PPO's hold at 45 C is below the
+plain tank's (27.2 vs 32.1 h, 19.8 vs 21.3 h).
 
 ## Limits
 
-- Software only; 2023 is a selection year; one PPO seed; one regime for the campaign.
+- Software only; 2023 is a selection year; one PPO seed; the PCM swap, edge cases, checks and benchmark are for
+  regime 1 (the three-arm table and hold test cover regimes 0, 1, 2).
 - PCM temperature, melt fraction and stored / recoverable energy are simulator states (estimator needed on a device).
 - The forecast comes from the pyranometer; next-hour demand is O2's fixed profile (perfect).
 - `T_mains` is out of distribution for any real mains change; no irradiance plausibility rule in the interlock.

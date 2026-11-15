@@ -1,9 +1,11 @@
 {
   "regime": 1,
-  "year": 2010,
+  "year": 2023,
+  "agent": "smart",
+  "n_obs": 19,
   "hours": 8760,
   "c_files": 9,
-  "c_lines": 1126,
+  "c_lines": 1127,
   "pct_identical_vs_matlab": 100,
   "pct_identical_vs_python": 100
 }

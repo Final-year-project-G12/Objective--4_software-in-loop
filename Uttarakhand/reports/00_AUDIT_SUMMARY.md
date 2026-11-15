@@ -22,7 +22,8 @@ kernel family).
 | 8 Cross-state table and figure | Done with the files on disk (Tamil Nadu's three-arm table is still its 2021 run) | I |
 | 9 One-day video with the pump fix | Done | F |
 | 10 README, limitations | Done | `../README.md`, I |
-| Simulink week, generated C (plan: "not needed") | Not re-run for the smart-forecast agent; the earlier runs were for the frozen V1 policy | I |
+| Simulink week, generated C (plan: "not needed", done anyway) | PASS for the smart-forecast PPO: Simulink 100 % identical actions; C 100 % identical to MATLAB and Python | `export_r1/validation_simulink_168h.json`, `codegen_verification.json` |
+| Shared cross-state format (Rajasthan's columns), regimes 0, 1, 2 | Done | `results_campaign/shared_format_table_uttarakhand_2023.csv` |
 
 ## Headline (2023, regime 1, 50 L / 1.5 m2, PureTemp 58, 12.45 kg PCM)
 
@@ -69,7 +70,5 @@ Zero hours over a hard limit (75 C water / 65 C PCM) in every arm, scenario and 
 
 ## Not done
 
-- Simulink week and generated C for the smart-forecast agent (the plan says not needed; earlier runs exist for the
-  frozen V1 policy, 2010).
 - Supercooling sensitivity (O1 lists supercooling -0.1 to -0.7 K for the three PCMs, i.e. none to model).
 - A 2023 three-arm table for Tamil Nadu (the cross-state table uses its 2021 run and says so).
