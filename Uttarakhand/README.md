@@ -57,13 +57,14 @@ from the measured GHI and the clear-sky GHI (`smart_forecast.m`), exactly as `o3
 | `export/`, `export_r1/`, `export_r2/` | Regimes 0 / 1 / 2: inputs (2023; plus 2010 inputs re-exported for the smart-forecast agent), validation reports, joint-plan tables (r1). |
 | `export_r1/scenarios_3arm/` | Nine edge cases × three arms (2023). `export*/scenarios/` = PPO vs B0 per regime, seven cases incl. `low_temp_mains_masked`, plus the `my_*.mp4` videos (2023). |
 | `results_campaign/` | Checks, sensor-fault seeds, pyranometer faults, PCM-swap figure, ranking check, benchmark, cross-state table. |
-| `video/` | One-day three-arm video with the pump fix. |
+| `video/`, `pictures/` | One-day three-arm video with the pump fix; four 3-D cutaway videos (day, clear, no sunlight, 72 h hold) with stills. |
 | `reports/` | 00 audit summary, A validation + three arms, B one-day, C edge cases, D checks + hold test, E PCM swap, F pump fix + video, G_H benchmark + sensor faults, I checklist + cross-state + limitations. |
 | `docs/plan_O4.md` | The joint plan and where each item lives for Uttarakhand. |
 | `matlab/pcm_plant_hour.m` | One hour of the O2 multinode kernel, line-for-line port (optional 45 °C delivery output and "hour length" for the benchmark; physics unchanged). |
 | `matlab/ppo_policy.m`, `build_obs.m`, `smart_forecast.m`, `initial_record.m`, `sensor_model.m`, `safety_interlock.m` | Policy, observation, forecast, reset record, sensors, fail-safe. |
 | `matlab/simulate_hours.m` | Closed loop; options for pyranometer faults and campaign start states. |
 | `matlab/load_campaign.m`, `swap_pcm.m`, `twin_metrics.m`, `run_hold_test.m` | Campaign tanks, swap rule (check only), metric definitions, retention test. |
+| `matlab/run_3d_videos.m`, `animate_tank3d.m` | 3-D cutaway videos (a 3-D view of the 1-D result). |
 | `matlab/shared_format_table.m`, `three_arm_2023.m`, `one_day_cycle.m`, `hold_test.m`, `edge_scenarios.m`, `run_c_scenarios.m`, `run_sensor_faults.m`, `check_energy_balance.m`, `pcm_swap_study.m`, `benchmark_amanowicz.m`, `amanowicz_case.m`, `check_pump_drawing.m`, `animate_three_arm.m` | The joint-plan studies (one script per deliverable). |
 | `matlab/validate_against_python.m`, `run_scenarios.m`, `animate_system.m`, `make_my_video.m`, `build_pcm_twin_model.m`, `run_twin.m`, `controller_step.m`, `verify_codegen.m` | Validation, earlier scenario study, animations, Simulink, C code. |
 
@@ -83,6 +84,7 @@ check_energy_balance(1)                           % restart, closure, swap, expo
 pcm_swap_study(1)                                 % deliverable 6 (about 3 min)
 benchmark_amanowicz(1)                            % deliverable 7 (seconds)
 check_pump_drawing(1)                             % deliverable 9: pump check + one-day video
+run_3d_videos                                     % 3-D cutaway videos: day, clear, no sunlight, 72 h hold (about 3 min)
 ```
 ```powershell
 python Uttarakhand\cross_state_table.py          # deliverable 8

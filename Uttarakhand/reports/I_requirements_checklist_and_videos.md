@@ -13,6 +13,7 @@
 | 7 | Benchmark error bar | Done | `results_campaign/benchmark_amanowicz*`, report G_H |
 | 8 | Cross-state table and figure | Done with the files on disk | `results_campaign/cross_state_table.csv/.png` (`cross_state_table.py`) |
 | 9 | One-day video with the pump fix | Done | `video/o4_three_arm_day105_2023.mp4`, report F |
+| - | 3-D cutaway videos (as Tamil Nadu / Rajasthan): day, clear, no sunlight, 72 h hold | Done | `video/o4_3d_*.mp4`, `pictures/3d_*.png`, report F |
 | 10 | README, limitations | Done | `../README.md`, this file |
 | - | Checks (restart 0, closure, swap, zero input, exponential, sub-step) | All PASS except the sub-step gate (reported) | `results_campaign/energy_balance_report_r1.json`, report D |
 | - | 20-seed sensor-fault CIs | Done | `results_campaign/sensor_fault_seeds.csv`, report G_H |

@@ -21,6 +21,7 @@ kernel family).
 | 20-seed sensor-fault confidence intervals | Done | G_H |
 | 8 Cross-state table and figure | Done with the files on disk (Tamil Nadu's three-arm table is still its 2021 run) | I |
 | 9 One-day video with the pump fix | Done | F |
+| 3-D cutaway videos (day, clear, no sunlight, 72 h hold), as Tamil Nadu / Rajasthan | Done | F |
 | 10 README, limitations | Done | `../README.md`, I |
 | Simulink week, generated C (plan: "not needed", done anyway) | PASS for the smart-forecast PPO: Simulink 100 % identical actions; C 100 % identical to MATLAB and Python | `export_r1/validation_simulink_168h.json`, `codegen_verification.json` |
 | Shared cross-state format (Rajasthan's columns), regimes 0, 1, 2 | Done | `results_campaign/shared_format_table_uttarakhand_2023.csv` |
