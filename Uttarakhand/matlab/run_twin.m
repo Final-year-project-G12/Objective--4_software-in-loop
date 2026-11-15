@@ -18,8 +18,9 @@ if nargin < 5, mdl = 'pcm_drl_twin'; end
 consts = fullfile(here, 'twin_consts.mat');
 rebuild = ~isfile(fullfile(here, [mdl '.slx'])) || ~isfile(consts);
 if ~rebuild
-    c = load(consts, 'regime_built');
-    rebuild = ~isfield(c, 'regime_built') || c.regime_built ~= tw.regime;
+    c = load(consts, 'regime_built', 'mu', 'W1');
+    rebuild = ~isfield(c, 'regime_built') || c.regime_built ~= tw.regime || ...
+        numel(c.mu) ~= tw.n_obs || ~isequal(single(c.W1), single(tw.W1));   % other policy exported since
 end
 if rebuild
     if bdIsLoaded(mdl), close_system(mdl, 0); end

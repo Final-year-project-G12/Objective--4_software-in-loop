@@ -1,31 +1,43 @@
 {
   "A_open_loop": {
-    "max_abs_dT_top_C": 1.5631940186722204E-13,
-    "max_abs_dT_bottom_C": 2.2026824808563106E-13,
-    "max_abs_dT_mean_C": 1.1368683772161603E-13,
-    "max_abs_dT_pcm_C": 2.8421709430404007E-13,
-    "max_abs_df_melt": 8.2711615334574162E-15,
-    "max_abs_dE_del50_Wh": 4.0927261579781771E-12,
-    "delivered50_kWh_matlab": 1100.8863767527271,
-    "delivered50_kWh_python": 1100.8863767527271,
-    "shield_h_matlab": 2.6319444444444446,
-    "shield_h_python": 2.6319444444444446,
+    "max_abs_dT_top_C": 2.3447910280083306E-13,
+    "max_abs_dT_bottom_C": 2.2737367544323206E-13,
+    "max_abs_dT_mean_C": 9.9475983006414026E-14,
+    "max_abs_dT_pcm_C": 1.4921397450962104E-13,
+    "max_abs_df_melt": 3.8025138593411612E-15,
+    "max_abs_dE_del50_Wh": 2.2737367544323206E-12,
+    "delivered50_kWh_matlab": 1077.7004172456673,
+    "delivered50_kWh_python": 1077.700417245667,
+    "shield_h_matlab": 0.47222222222222221,
+    "shield_h_python": 0.47222222222222221,
     "over_limit_h_matlab": 0,
     "over_limit_h_python": 0,
     "pass": true
   },
   "A_policy_on_python_obs": {
     "action_agreement_pct": 100,
-    "max_abs_dmargin": 5.245208740234375E-6
+    "max_abs_dmargin": 4.76837158203125E-6
+  },
+  "A_forecast": {
+    "max_abs_dGHI_ahead_Wm2": 0,
+    "max_abs_ddraw_next_kg": 0,
+    "daytime_hours": 4243,
+    "rRMSE_pct_h1": 8.3977786137826484,
+    "MAE_Wm2_h1": 16.675551104798842,
+    "rRMSE_pct_h2": 13.100392470795214,
+    "MAE_Wm2_h2": 24.595387440508652,
+    "rRMSE_pct_h3": 17.334999938742179,
+    "MAE_Wm2_h3": 28.814594696349296,
+    "pass": true
   },
   "B_closed_loop_matlab": {
     "action_agreement_pct": 100,
-    "max_abs_dT_top_C": 1.5631940186722204E-13,
-    "max_abs_dT_pcm_C": 2.8421709430404007E-13,
-    "delivered50_kWh_matlab": 1100.8863767527271,
-    "window_delivered50_kWh_matlab": 558.87014849742991,
-    "window_delivered50_kWh_python": 558.87014849742991,
-    "shield_h_matlab": 2.6319444444444446,
+    "max_abs_dT_top_C": 2.3447910280083306E-13,
+    "max_abs_dT_pcm_C": 1.4921397450962104E-13,
+    "delivered50_kWh_matlab": 1077.7004172456673,
+    "window_delivered50_kWh_matlab": 543.18277605810181,
+    "window_delivered50_kWh_python": 543.18277605810169,
+    "shield_h_matlab": 0.47222222222222221,
     "over_limit_h_matlab": 0,
     "pass": true
   },
@@ -33,10 +45,12 @@
     "skipped": true
   },
   "regime": 0,
-  "year": 2010,
+  "year": 2023,
   "hours": 8760,
-  "label": "SIMULATION-DERIVED - software-in-the-loop export - EXPLORATORY (O3 test year, post-lock)",
+  "label": "SIMULATION-DERIVED - software-in-the-loop export",
   "matlab": "26.2.0.3433840 (R2026b) Update 1",
-  "generated": "2026-11-13T09:58:58",
+  "generated": "2026-11-15T07:14:51",
+  "agent": "smart",
+  "n_obs": 19,
   "overall_pass": true
 }

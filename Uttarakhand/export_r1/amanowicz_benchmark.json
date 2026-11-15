@@ -1,0 +1,80 @@
+{
+  "reference": "Amanowicz & Turski, Energies 18(2) 345 (2025), printed linear fits eqs. 2-5",
+  "UA_apriori_W_K": 0.82072,
+  "UA_fitted_W_K": 1.5519618019600747,
+  "rows": [
+    {
+      "capsule_shape": "volume",
+      "loss_coefficient": "apriori",
+      "UA_W_K": 0.82072,
+      "case1_RMSE_K": 3.0859674026009367,
+      "case1_bias_K": 2.610182012542857,
+      "case1_drop_7200s_K": 7.4897447046038934,
+      "case2_RMSE_K": 8.419447580024185,
+      "case2_MAE_K": 7.9255235536057738,
+      "case2_bias_K": 7.9255235536057738,
+      "case2_drop_7200s_K": 20.302319301237311
+    },
+    {
+      "capsule_shape": "volume",
+      "loss_coefficient": "fitted",
+      "UA_W_K": 1.5519618019600747,
+      "case1_RMSE_K": 0.45690774341993773,
+      "case1_bias_K": -0.40790959142268718,
+      "case1_drop_7200s_K": 12.959999999999972,
+      "case2_RMSE_K": 5.7185321580367576,
+      "case2_MAE_K": 4.8622891443765441,
+      "case2_bias_K": 4.8622891443765441,
+      "case2_drop_7200s_K": 24.615165568836645
+    },
+    {
+      "capsule_shape": "area",
+      "loss_coefficient": "apriori",
+      "UA_W_K": 0.82072,
+      "case1_RMSE_K": 3.0859674026009367,
+      "case1_bias_K": 2.610182012542857,
+      "case1_drop_7200s_K": 7.4897447046038934,
+      "case2_RMSE_K": 7.9353744490883251,
+      "case2_MAE_K": 7.4256892954938687,
+      "case2_bias_K": 7.4256892954938687,
+      "case2_drop_7200s_K": 20.88816056884793
+    },
+    {
+      "capsule_shape": "area",
+      "loss_coefficient": "fitted",
+      "UA_W_K": 1.5519618019600747,
+      "case1_RMSE_K": 0.45690774341993773,
+      "case1_bias_K": -0.40790959142268718,
+      "case1_drop_7200s_K": 12.959999999999972,
+      "case2_RMSE_K": 5.3874403100350481,
+      "case2_MAE_K": 4.4845718468539,
+      "case2_bias_K": 4.4845718468539,
+      "case2_drop_7200s_K": 24.949666012073855
+    },
+    {
+      "capsule_shape": "sv",
+      "loss_coefficient": "apriori",
+      "UA_W_K": 0.82072,
+      "case1_RMSE_K": 3.0859674026009367,
+      "case1_bias_K": 2.610182012542857,
+      "case1_drop_7200s_K": 7.4897447046038934,
+      "case2_RMSE_K": 1.0603639623206764,
+      "case2_MAE_K": 0.828474476984141,
+      "case2_bias_K": 0.23701548914675186,
+      "case2_drop_7200s_K": 25.160723835023241
+    },
+    {
+      "capsule_shape": "sv",
+      "loss_coefficient": "fitted",
+      "UA_W_K": 1.5519618019600747,
+      "case1_RMSE_K": 0.45690774341993773,
+      "case1_bias_K": -0.40790959142268718,
+      "case1_drop_7200s_K": 12.959999999999972,
+      "case2_RMSE_K": 1.405528627534802,
+      "case2_MAE_K": 1.2371146729657305,
+      "case2_bias_K": -0.8931049148184439,
+      "case2_drop_7200s_K": 26.582692553454656
+    }
+  ],
+  "note": "frozen Objective 2 capsule constants; only the tank loss coefficient is fitted (water-only case); sv = mapping to use"
+}

@@ -57,14 +57,42 @@ fprintf('[A open-loop %d h] max|dT_top| %.3g C  max|dT_pcm| %.3g C  max|df| %.3g
     a.shield_h_matlab, a.shield_h_python, tf(a.pass));
 
 % ---------------- A'. policy on Python's own observations ----------------
-O = zeros(15, N);
-for k = 1:15, O(k, :) = ref.(sprintf('obs%d', k - 1))'; end
+no = tw.n_obs;
+O = zeros(no, N);
+for k = 1:no, O(k, :) = ref.(sprintf('obs%d', k - 1))'; end
 act = zeros(N, 1); mg = zeros(N, 1);
 for k = 1:N, [act(k), mg(k)] = ppo_policy(O(:, k), tw.W1, tw.b1, tw.W2, tw.b2, tw.Wa, tw.ba, 0); end
 rep.A_policy_on_python_obs.action_agreement_pct = 100 * mean(act == ref.action);
 rep.A_policy_on_python_obs.max_abs_dmargin = max(abs(mg - (ref.logit1 - ref.logit0)));
 fprintf('[A policy]  action agreement on Python obs = %.3f %%  max|d logit margin| = %.2e\n', ...
     rep.A_policy_on_python_obs.action_agreement_pct, rep.A_policy_on_python_obs.max_abs_dmargin);
+
+% ---------------- A''. smart-persistence forecast (V2 policy only) ----------------
+rep.A_forecast = struct('skipped', no ~= 19);
+if no == 19
+    kc = 1.0; F = zeros(N, 4);
+    for k = 1:N
+        [fc, kc] = smart_forecast(W(k, 2), W(k, 5), W(k, 6:8)', kc);
+        dn = 0; if W(k, 9) >= 0, dn = tw.K.demand24(round(W(k, 9)) + 1); end
+        F(k, :) = [fc', dn];
+    end
+    Rf = [ref.raw15, ref.raw16, ref.raw17, ref.raw18];
+    Fs = double(single(F));                       % Python stores the raw vector as float32
+    f.max_abs_dGHI_ahead_Wm2 = max(max(abs(Fs(:, 1:3) - Rf(:, 1:3))));
+    f.max_abs_ddraw_next_kg = max(abs(Fs(:, 4) - Rf(:, 4)));
+    day = W(1:N, 5) > 20;
+    f.daytime_hours = sum(day);
+    for hh = 1:3                                   % forecast skill vs the true GHI h hours later (daytime)
+        tr = [W(1 + hh:N, 2); zeros(hh, 1)];
+        e = F(day, hh) - tr(day);
+        f.(sprintf('rRMSE_pct_h%d', hh)) = 100 * sqrt(mean(e .^ 2)) / mean(tr(day));
+        f.(sprintf('MAE_Wm2_h%d', hh)) = mean(abs(e));
+    end
+    f.pass = f.max_abs_dGHI_ahead_Wm2 < 1e-3 && f.max_abs_ddraw_next_kg < 1e-6;
+    rep.A_forecast = f;
+    fprintf('[A forecast] max|dGHI_ahead| %.2e W/m2  max|d draw_next| %.2e kg  rRMSE +1/+2/+3 h = %.1f / %.1f / %.1f %%  -> %s\n', ...
+        f.max_abs_dGHI_ahead_Wm2, f.max_abs_ddraw_next_kg, f.rRMSE_pct_h1, f.rRMSE_pct_h2, f.rRMSE_pct_h3, tf(f.pass));
+end
 
 % ---------------- B. closed loop, plain MATLAB ----------------
 Lc = simulate_hours(tw, W(1:N, :), tw.K, 0, 0, []);
@@ -108,7 +136,9 @@ end
 
 rep.regime = regime; rep.year = tw.year; rep.hours = N; rep.label = tw.params.label;
 rep.matlab = version; rep.generated = datestr(now, 'yyyy-mm-ddTHH:MM:SS');
+rep.agent = tw.agent; rep.n_obs = no;
 rep.overall_pass = a.pass && b.pass && rep.A_policy_on_python_obs.action_agreement_pct == 100 && ...
+    (no ~= 19 || rep.A_forecast.pass) && ...
     (simHours <= 0 || (isfield(rep.C_simulink, 'pass') && rep.C_simulink.pass));
 fid = fopen(fullfile(exportDir, 'validation_report.json'), 'w');
 fwrite(fid, jsonencode(rep, 'PrettyPrint', true)); fclose(fid);

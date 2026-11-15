@@ -1,0 +1,8 @@
+{
+  "restart_replay_max_dT_C": 0,
+  "restart_replay_max_dh_Jkg": 0,
+  "restart_hold_max_dTtop_C": 0,
+  "restart_hold_max_dTnodes_C": 0,
+  "restart_hold_max_dEstored_kWh": 0,
+  "pass": true
+}

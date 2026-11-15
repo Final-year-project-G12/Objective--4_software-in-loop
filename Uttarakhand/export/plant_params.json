@@ -1,18 +1,50 @@
 {
- "label": "SIMULATION-DERIVED - software-in-the-loop export - EXPLORATORY (O3 test year, post-lock)",
+ "label": "SIMULATION-DERIVED - software-in-the-loop export",
  "source": "o3/stepper.py -> O2 tank_model_multinode._kernel (unchanged), arguments captured by o3/o2_bridge.py",
  "state": "uttarakhand",
  "regime_id": 0,
  "medoid": "UKP_0014",
- "year": 2010,
- "year_role": "test",
- "lock_run_id": "o3test_e6ea0abf636a",
- "design": {
-  "pcm": "PureTemp 58",
-  "N": 47,
-  "flow": 0.0194142016407325,
-  "fraction": 0.2633447211033612,
-  "arrangement": "staggered"
+ "year": 2023,
+ "year_role": "validate",
+ "lock_run_id": null,
+ "agent": {
+  "agent": "smart",
+  "description": "PPO, V2 observation (15 + 3 GHI look-ahead + next-hour draw = 19), smart-persistence forecast on the clear-sky index, trained with domain randomisation (O3 FINDINGS 9.6)",
+  "study_tag": "ppo_w2_3_w4_0.3_V2_fc_smart_DR",
+  "seed": 2,
+  "selection_rule": "o3/evaluate.py::lexicographic_best on validation seed rows, tie 1.0 kWh/yr",
+  "validation_seed_rows": [
+   {
+    "seed": 0.0,
+    "E_del_window_kWh": 541.9285880543135,
+    "overheat_h": 0.18055555555555555,
+    "hours_over_limit": 0.0,
+    "bypass_switches": 213.0
+   },
+   {
+    "seed": 1.0,
+    "E_del_window_kWh": 548.257344859836,
+    "overheat_h": 0.45601851851851843,
+    "hours_over_limit": 0.0,
+    "bypass_switches": 318.3333333333333
+   },
+   {
+    "seed": 2.0,
+    "E_del_window_kWh": 550.2497405699477,
+    "overheat_h": 0.5671296296296297,
+    "hours_over_limit": 0.0,
+    "bypass_switches": 232.33333333333334
+   }
+  ],
+  "best_checkpoint": "ckpt_350400.zip",
+  "weights": {
+   "w1": 1.0,
+   "w2": 3.0,
+   "w4": 0.3,
+   "w3": 27.688566503640015,
+   "E_norm_Wh": 122.8833475646959
+  },
+  "o3_config_sha256": "c1e2162b768410323d842458c81b54bf306e2780e32ccf06d75267044a1fffa5"
  },
  "selected_pcm": "PureTemp 58",
  "reset_scenario": "fully_solid",
@@ -190,6 +222,7 @@
   "fr_ul_W_m2K": 4.5,
   "I_cutoff_Wm2": 10.0
  },
+ "n_obs": 19,
  "obs_fields": [
   "T_water_top_C",
   "T_water_bottom_C",
@@ -205,8 +238,21 @@
   "store_energy_above_mains_kWh",
   "recoverable_energy_above_target_kWh",
   "minutes_since_last_draw",
-  "prev_action"
+  "prev_action",
+  "GHI_ahead_1h_Wm2",
+  "GHI_ahead_2h_Wm2",
+  "GHI_ahead_3h_Wm2",
+  "draw_next_hour_kg"
  ],
+ "obs_version": "V2",
+ "forecast_mode": "smart",
+ "kc_clip": [
+  0.0,
+  1.2
+ ],
+ "cs_day_Wm2": 20.0,
+ "kc_initial": 1.0,
+ "forecast": "GHI_hat(t+h) = Kc(t) * GHI_cs(t+h), Kc(t) = clip(GHI(t)/GHI_cs(t), 0, 1.2) while GHI_cs(t) > 20 W/m2, else held; 0 past the end of the year; draw_next = scheduled draw of the next hour (O2's fixed profile)",
  "initial_record": {
   "T_top": 30.0,
   "T_bottom": 30.0,

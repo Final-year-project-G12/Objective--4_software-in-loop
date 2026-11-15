@@ -1,0 +1,23 @@
+{
+  "arm1_plain_B0": {
+    "hours_old_rule_pump_on": 3813,
+    "hours_old_rule_pump_on_without_circulation_or_gain": 222,
+    "hours_new_rule_pump_on": 4125,
+    "violations_new_rule": 0,
+    "hours_loop_ran_part_of_hour": 892
+  },
+  "arm2_pcm_B0": {
+    "hours_old_rule_pump_on": 3936,
+    "hours_old_rule_pump_on_without_circulation_or_gain": 223,
+    "hours_new_rule_pump_on": 4124,
+    "violations_new_rule": 0,
+    "hours_loop_ran_part_of_hour": 787
+  },
+  "arm3_pcm_PPO": {
+    "hours_old_rule_pump_on": 4049,
+    "hours_old_rule_pump_on_without_circulation_or_gain": 223,
+    "hours_new_rule_pump_on": 3835,
+    "violations_new_rule": 0,
+    "hours_loop_ran_part_of_hour": 387
+  }
+}

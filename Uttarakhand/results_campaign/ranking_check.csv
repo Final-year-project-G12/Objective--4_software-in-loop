@@ -1,0 +1,9 @@
+controller,metric,o1_order,twin_rank_of_o1_order,spearman_vs_o1,spread
+B0,tau_hold45_mean_h,PureTemp 58 > n-Octacosane (C28) > PlusICE A58,[1 3 2],0.5,4.66999442424925
+B0,tau_hold50_mean_h,PureTemp 58 > n-Octacosane (C28) > PlusICE A58,[1 3 2],0.5,4.56202118038096
+B0,window50_kWh,PureTemp 58 > n-Octacosane (C28) > PlusICE A58,[1 3 2],0.5,54.2595526446873
+B0,delivered50_kWh,PureTemp 58 > n-Octacosane (C28) > PlusICE A58,[1 3 2],0.5,52.6474004059091
+PPO,tau_hold45_mean_h,PureTemp 58 > n-Octacosane (C28) > PlusICE A58,[2 3 1],-0.5,2.02948462933175
+PPO,tau_hold50_mean_h,PureTemp 58 > n-Octacosane (C28) > PlusICE A58,[2 3 1],-0.5,1.49764053519228
+PPO,window50_kWh,PureTemp 58 > n-Octacosane (C28) > PlusICE A58,[1 3 2],0.5,37.2107779248454
+PPO,delivered50_kWh,PureTemp 58 > n-Octacosane (C28) > PlusICE A58,[1 3 2],0.5,35.5941654933981

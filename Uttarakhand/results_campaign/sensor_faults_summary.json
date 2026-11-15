@@ -1,0 +1,158 @@
+{
+  "sensor_fault_20_seeds": {
+    "PPO": {
+      "E_del50_event_mean": 15.60588151364739,
+      "E_del50_event_ci95": 0.065219431796200461,
+      "shield_h_mean": 5.2385416666666664,
+      "shield_h_ci95": 0.03467352669997837,
+      "failsafe_h_mean": 14.15,
+      "failsafe_h_min": 12,
+      "failsafe_h_max": 19,
+      "hours_over_limit_max": 0
+    },
+    "B0": {
+      "E_del50_event_mean": 16.716851446947491,
+      "E_del50_event_ci95": 0,
+      "shield_h_mean": 20.090277777777775,
+      "shield_h_ci95": 1.7058963343824221E-15,
+      "failsafe_h_mean": 14.15,
+      "failsafe_h_min": 12,
+      "failsafe_h_max": 19,
+      "hours_over_limit_max": 0
+    }
+  },
+  "year_PPO_action_changed_hours": {
+    "dead_0": 397,
+    "stuck_500": 2203,
+    "stuck_1000": 2645
+  },
+  "year_B0_max_hourly_change_Wh": 0,
+  "pyranometer_20_seeds_PPO": {
+    "healthy": {
+      "E_del50_event_mean": 15.20817250962185,
+      "ci95": 0.073861856089221,
+      "shield_h_mean": 0.057986111111111113,
+      "shield_ci95": 0.034673526699978384,
+      "failsafe_h_mean": 2.2
+    },
+    "dead_0": {
+      "E_del50_event_mean": 16.46072150691176,
+      "ci95": 5.5567461956596418E-14,
+      "shield_h_mean": 17.951388888888893,
+      "shield_ci95": 1.7058963343824221E-15,
+      "failsafe_h_mean": 2.2
+    },
+    "stuck_500": {
+      "E_del50_event_mean": 15.860818676502934,
+      "ci95": 0.013007864151667013,
+      "shield_h_mean": 1.7375000000000007,
+      "shield_ci95": 0.011627777777777782,
+      "failsafe_h_mean": 2.2
+    },
+    "stuck_1000": {
+      "E_del50_event_mean": 14.826244806895451,
+      "ci95": 0.01617234406938324,
+      "shield_h_mean": 0.0045138888888888885,
+      "shield_ci95": 0.0094475694444444442,
+      "failsafe_h_mean": 2.2
+    }
+  },
+  "year": [
+    {
+      "controller": "B0",
+      "pyranometer": "healthy",
+      "E_del50_kWh": 1184.3958046117257,
+      "E_del50_window_kWh": 607.31591675859386,
+      "E_del45_kWh": 1101.8811919231662,
+      "guard_band_h": 571.10416666666663,
+      "hours_over_hard_limit": 0,
+      "interlock_guard_hours": 351,
+      "interlock_failsafe_hours": 0,
+      "bypass_hours": 0
+    },
+    {
+      "controller": "B0",
+      "pyranometer": "dead_0",
+      "E_del50_kWh": 1184.3958046117257,
+      "E_del50_window_kWh": 607.31591675859386,
+      "E_del45_kWh": 1101.8811919231662,
+      "guard_band_h": 571.10416666666663,
+      "hours_over_hard_limit": 0,
+      "interlock_guard_hours": 351,
+      "interlock_failsafe_hours": 0,
+      "bypass_hours": 0
+    },
+    {
+      "controller": "B0",
+      "pyranometer": "stuck_500",
+      "E_del50_kWh": 1184.3958046117257,
+      "E_del50_window_kWh": 607.31591675859386,
+      "E_del45_kWh": 1101.8811919231662,
+      "guard_band_h": 571.10416666666663,
+      "hours_over_hard_limit": 0,
+      "interlock_guard_hours": 351,
+      "interlock_failsafe_hours": 0,
+      "bypass_hours": 0
+    },
+    {
+      "controller": "B0",
+      "pyranometer": "stuck_1000",
+      "E_del50_kWh": 1184.3958046117257,
+      "E_del50_window_kWh": 607.31591675859386,
+      "E_del45_kWh": 1101.8811919231662,
+      "guard_band_h": 571.10416666666663,
+      "hours_over_hard_limit": 0,
+      "interlock_guard_hours": 351,
+      "interlock_failsafe_hours": 0,
+      "bypass_hours": 0
+    },
+    {
+      "controller": "PPO",
+      "pyranometer": "healthy",
+      "E_del50_kWh": 1142.3893735093748,
+      "E_del50_window_kWh": 565.314293035479,
+      "E_del45_kWh": 1063.1905305670364,
+      "guard_band_h": 1.0902777777777777,
+      "hours_over_hard_limit": 0,
+      "interlock_guard_hours": 5,
+      "interlock_failsafe_hours": 0,
+      "bypass_hours": 918
+    },
+    {
+      "controller": "PPO",
+      "pyranometer": "dead_0",
+      "E_del50_kWh": 1179.035012924091,
+      "E_del50_window_kWh": 601.95583014359454,
+      "E_del45_kWh": 1097.0736258455611,
+      "guard_band_h": 535.71527777777783,
+      "hours_over_hard_limit": 0,
+      "interlock_guard_hours": 286,
+      "interlock_failsafe_hours": 0,
+      "bypass_hours": 737
+    },
+    {
+      "controller": "PPO",
+      "pyranometer": "stuck_500",
+      "E_del50_kWh": 1142.8042169204004,
+      "E_del50_window_kWh": 565.7290677375837,
+      "E_del45_kWh": 1063.7052757538843,
+      "guard_band_h": 29,
+      "hours_over_hard_limit": 0,
+      "interlock_guard_hours": 56,
+      "interlock_failsafe_hours": 0,
+      "bypass_hours": 2793
+    },
+    {
+      "controller": "PPO",
+      "pyranometer": "stuck_1000",
+      "E_del50_kWh": 1078.8572424272309,
+      "E_del50_window_kWh": 501.82213315748027,
+      "E_del45_kWh": 1004.0612312215183,
+      "guard_band_h": 0,
+      "hours_over_hard_limit": 0,
+      "interlock_guard_hours": 0,
+      "interlock_failsafe_hours": 0,
+      "bypass_hours": 3391
+    }
+  ]
+}

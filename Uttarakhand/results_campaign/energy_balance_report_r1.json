@@ -1,0 +1,105 @@
+{
+  "restart_replay_max_dT_C": 0,
+  "restart_replay_max_dh_Jkg": 0,
+  "restart_replay_pass": true,
+  "restart_hold_max_dTtop_C": 0,
+  "restart_hold_max_dTnodes_C": 0,
+  "restart_hold_max_dEstored_kWh": 0,
+  "restart_hold_start_row": 3613,
+  "restart_hold_f_at_start": 1,
+  "restart_hold_pass": true,
+  "closure_B0_total_residual_pct": 1.3318448996571319E-12,
+  "closure_B0_max_hourly_residual_Wh": 6.0367710830178112E-11,
+  "closure_B0_Q_coll_kWh": 814.54325541512355,
+  "closure_B0_pass": true,
+  "closure_PPO_total_residual_pct": 1.6403779365590016E-12,
+  "closure_PPO_max_hourly_residual_Wh": 5.9621640957630007E-11,
+  "closure_PPO_Q_coll_kWh": 756.03734218657462,
+  "closure_PPO_pass": true,
+  "latent": {
+    "pcm1": {
+      "name": "PureTemp 58",
+      "PCM_mass_kg": 12.454130698630383,
+      "latent_total_kJ": 2802.1794071918362,
+      "max_rel_dP_vs_O2": 0,
+      "max_rel_dh0_vs_O2": 0,
+      "band_err": 0,
+      "melt_frac_roundtrip_err": 2.2204460492503131E-16
+    },
+    "pcm2": {
+      "name": "n-Octacosane (C28)",
+      "PCM_mass_kg": 12.733998804217583,
+      "latent_total_kJ": 3221.7016974670487,
+      "max_rel_dP_vs_O2": 2.7755575615628914E-17,
+      "max_rel_dh0_vs_O2": 0,
+      "band_err": 0,
+      "melt_frac_roundtrip_err": 1.1102230246251565E-16
+    },
+    "pcm3": {
+      "name": "PlusICE A58",
+      "PCM_mass_kg": 12.733998804217583,
+      "latent_total_kJ": 2737.8097429067802,
+      "max_rel_dP_vs_O2": 2.7755575615628914E-17,
+      "max_rel_dh0_vs_O2": 0,
+      "band_err": 0,
+      "melt_frac_roundtrip_err": 1.1102230246251565E-16
+    }
+  },
+  "latent_pass": true,
+  "exp_hold_max_dev_vs_discrete_K": 1.4217960142559605E-11,
+  "exp_hold_max_dev_vs_exact_K": 0.0032349749658422411,
+  "exp_hold_real_loss_vector_dev_K": 0.0936165135414484,
+  "exp_hold_time_constant_h": 92.1269671630572,
+  "exp_hold_pass": true,
+  "zero_input_max_drift_C": 1.8545165403338615E-12,
+  "zero_input_max_dh_Jkg": 9.1677065938711166E-10,
+  "zero_input_pass": true,
+  "substep": {
+    "pcm_150s_to_75s": {
+      "total_change_pct": -0.058988080935663476,
+      "total_change_kWh": -0.69865235582375207,
+      "melting_hours": 2235,
+      "other_hours": 6525,
+      "diff_melting_hours_kWh": -0.15889745416014864,
+      "diff_other_hours_kWh": -0.53975490166360263,
+      "diff_pump_on_hours_kWh": -0.41450690198500162,
+      "gate_pct": 0.05,
+      "gate_met": false
+    },
+    "pcm_75s_to_37p5s": {
+      "total_change_pct": -0.027371315914775179,
+      "total_change_kWh": -0.32399348701864689,
+      "melting_hours": 2225,
+      "other_hours": 6535,
+      "diff_melting_hours_kWh": -0.056753298322921593,
+      "diff_other_hours_kWh": -0.26724018869572458,
+      "diff_pump_on_hours_kWh": -0.20628730891700139,
+      "gate_pct": 0.05,
+      "gate_met": true
+    },
+    "plain_150s_to_75s": {
+      "total_change_pct": -0.40902916898420372,
+      "total_change_kWh": -4.5087943467036711,
+      "melting_hours": 0,
+      "other_hours": 8760,
+      "diff_melting_hours_kWh": 0,
+      "diff_other_hours_kWh": -4.5087943467036711,
+      "diff_pump_on_hours_kWh": -0.66800699418106224,
+      "gate_pct": 0.05,
+      "gate_met": false
+    },
+    "plain_75s_to_37p5s": {
+      "total_change_pct": -0.21916547835658354,
+      "total_change_kWh": -2.4060146132017408,
+      "melting_hours": 0,
+      "other_hours": 8760,
+      "diff_melting_hours_kWh": 0,
+      "diff_other_hours_kWh": -2.4060146132017408,
+      "diff_pump_on_hours_kWh": -0.34035954263097623,
+      "gate_pct": 0.05,
+      "gate_met": false
+    }
+  },
+  "substep_pass": false,
+  "overall_pass": true
+}

@@ -62,7 +62,10 @@ L = simulate_hours(tw, W, K, pm, noise, bo);
 % keep only the requested days
 sel = (o.days(1) - 1) * 24 + 1 : o.days(2) * 24;
 F = fieldnames(L); Lt = struct();
-for i = 1:numel(F), Lt.(F{i}) = L.(F{i})(sel, :); end
+for i = 1:numel(F)
+    v = L.(F{i});
+    if size(v, 1) == size(W, 1), Lt.(F{i}) = v(sel, :); end      % hourly series only (skip the start record)
+end
 
 if isempty(o.out)
     o.out = fullfile(outDir, sprintf('my_%s_%s.mp4', o.scenario, lower(o.policy)));

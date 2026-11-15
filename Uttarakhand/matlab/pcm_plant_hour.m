@@ -1,4 +1,4 @@
-function [T, h, rec, sc] = pcm_plant_hour(GHI, T_amb, hod, action, T, h, K)
+function [T, h, rec, sc, ex] = pcm_plant_hour(GHI, T_amb, hod, action, T, h, K)
 %PCM_PLANT_HOUR  One hour of the Uttarakhand PCM solar water heater (frozen O2 physics).
 %
 % Line-for-line port of O2's compiled multinode kernel
@@ -38,6 +38,13 @@ function [T, h, rec, sc] = pcm_plant_hour(GHI, T_amb, hod, action, T, h, K)
 %          4 water-shield sub-step count, 5 PCM-shield count, 6 over-limit
 %          sub-step count, 7 s the collector loop actually ran (twin extra,
 %          not a kernel output), 8 collector heat [J]
+%   ex     [2 x 1] (optional, twin extra, does not change the physics):
+%          1 energy delivered up to 45 C [Wh], 2 unmet energy below 45 C [Wh]
+%          (joint O4 plan: delivery is reported at 45 and 50 C in both states)
+%
+% Optional field K.hour_s (default 3600): length of one call in seconds. Only
+% the tank-level benchmark (amanowicz_case.m) uses it, to read the curve every
+% 300 s; the draw is then spread over that length.
 %#codegen
 
 P = K.P; m_w = K.m_w(:); n_caps = K.n_caps(:); loss_ua = K.loss_ua(:);
@@ -86,16 +93,19 @@ m_w_tot = 0;
 for i = 1:N, m_w_tot = m_w_tot + m_w(i); end
 
 sc = zeros(8, 1);
-nsteps = round(3600 / dt);
+hour_s = 3600.0;
+if isfield(K, 'hour_s'), hour_s = K.hour_s; end
+nsteps = round(hour_s / dt);
 
 % ---- the hour ----
 tam = T_amb;
 circ_allowed = circ_in > 0.5;
 hour_mass = K.demand24(hod + 1);
-mdot_d = hour_mass / 3600.0;
+mdot_d = hour_mass / hour_s;
 step_draw = hour_mass / nsteps;
 hq_c = 0; hq_l = 0; hq_p = 0; hq_loss = 0; hq_un = 0; hq_ln = 0;
 h_draw = 0; h_vol = 0; h_edel = 0;
+T45 = 45.0; h_edel45 = 0; hq_un45 = 0;
 t_top_min = 1e9; t_top_max = -1e9; t_p_max = -1e9;
 f_min = 1e9; f_max = -1e9;
 
@@ -175,6 +185,7 @@ for st = 1:nsteps
         q_load_net = mdot_d * cp * (t_top - mains);
         q_load = max(q_load_net, 0.0);
         if mdot_d > 0, q_un = mdot_d * cp * max(target - t_top, 0.0); else, q_un = 0.0; end
+        if mdot_d > 0, q_un45 = mdot_d * cp * max(T45 - t_top, 0.0); else, q_un45 = 0.0; end
         q_loss = 0.0;
         for i = 1:N, q_loss = q_loss + loss_ua(i) * (Tn(i) - tam); end
         q_pcm_sum = 0.0;
@@ -207,11 +218,13 @@ for st = 1:nsteps
         hq_p = hq_p + q_pcm_sum * dts;
         hq_loss = hq_loss + q_loss * dts;
         hq_un = hq_un + q_un * dts;
+        hq_un45 = hq_un45 + q_un45 * dts;
         dm = step_draw / n_sub;
         if dm > 0
             h_draw = h_draw + dm;
             if t_top >= target, h_vol = h_vol + dm; end
             h_edel = h_edel + dm * cp * max(min(t_top, target) - mains, 0.0);
+            h_edel45 = h_edel45 + dm * cp * max(min(t_top, T45) - mains, 0.0);
         end
         t_top_min = min(t_top_min, t_top);
         t_top_max = max(t_top_max, t_top);
@@ -256,6 +269,7 @@ if has_pcm, tpm = t_p_max; else, tpm = t_mean; end
 rec = [T(N); t_mean; tp_mean; fm; hq_c / 3600.0; hq_l / 3600.0; hq_p / 3600.0; hq_loss / 3600.0; ...
        hq_un / 3600.0; h_draw; h_vol; h_edel / 3600.0; t_top_min; t_top_max; tpm; f_min; f_max; ...
        e_rel / 3.6e6; e_rec / 3.6e6; T(1); hq_ln / 3600.0];
+ex = [h_edel45 / 3600.0; hq_un45 / 3600.0];
 end
 
 % ======================================================================

@@ -42,8 +42,18 @@ tw.window_hours = pp.window_hours(:);
 W = readmatrix(fullfile(exportDir, sprintf('weather_%d.csv', year)));
 tw.N = size(W, 1);
 tw.wx.time = (0:tw.N - 1)' * 3600;
-tw.wx.signals.values = W(:, 1:4);
-tw.wx.signals.dimensions = 4;
+% Columns 5-9 serve the V2 (smart forecast) observation and are computed over the
+% FULL year, so a scenario window cut from it still sees the real look-ahead at
+% its last hours: [GHI_cs(t), GHI_cs(t+1), GHI_cs(t+2), GHI_cs(t+3), hod(t+1)],
+% NaN / -1 past the end of the year (Python: forecast 0, draw_next 0).
+n = tw.N;
+if size(W, 2) >= 5, cs = W(:, 5); else, cs = zeros(n, 1); end
+LA = nan(n, 4);
+for k = 1:3, LA(1:n - k, k) = cs(1 + k:n); end
+LA(1:n - 1, 4) = W(2:n, 4); LA(n, 4) = -1;
+tw.wx.signals.values = [W(:, 1:4), cs, LA];
+tw.wx.signals.dimensions = 9;
+tw.has_clearsky = size(W, 2) >= 5;
 
 % PPO actor + frozen normalisation
 A = jsondecode(fileread(fullfile(exportDir, 'ppo_actor.json')));
@@ -52,6 +62,11 @@ tw.W1 = A.W1;  tw.b1 = A.b1(:);
 tw.W2 = A.W2;  tw.b2 = A.b2(:);
 tw.Wa = A.Wa;  tw.ba = A.ba(:);
 if isvector(tw.Wa), tw.Wa = reshape(tw.Wa, 2, []); end
+tw.n_obs = numel(tw.mu);                       % 15 = frozen V1 PPO, 19 = PPO + smart forecast (V2)
+if isfield(A, 'agent'), tw.agent = A.agent; else, tw.agent = 'frozen'; end
+if tw.n_obs == 19 && ~tw.has_clearsky
+    error('twin:noClearSky', 'V2 policy needs GHI_clearsky_Wm2 in weather_%d.csv - re-run export_from_python.py', year);
+end
 
 refFile = fullfile(exportDir, sprintf('reference_%d.csv', year));
 if isfile(refFile)

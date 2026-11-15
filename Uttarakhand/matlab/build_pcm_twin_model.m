@@ -9,7 +9,9 @@ function mdl = build_pcm_twin_model(mdl, regime)
 % Signal flow (1 h discrete step, matches the RL environment):
 %
 %   Weather (From Workspace) -> Sensors + estimator (noise, dropout)
-%        -> Observation (15 fields, frozen normalisation) -> RL policy (PPO MLP)
+%        -> Observation (smart-persistence GHI forecast + 19 fields for the
+%           recommended V2 agent, or 15 for the frozen V1 PPO; frozen
+%           normalisation) -> RL policy (PPO MLP)
 %        -> Safety interlock -> Collector-loop pump -> O2 multinode PCM tank
 %        (10 nodes; state fed back through a unit delay) -> scopes + logging
 %
@@ -28,6 +30,7 @@ slx  = fullfile(here, [mdl '.slx']);
 tw   = load_twin_params(twin_export_dir(regime));
 N    = tw.K.N;
 NX   = 2 * N + 10;
+NO   = tw.n_obs;                                  % 19 = PPO + smart forecast (V2), 15 = frozen V1 PPO
 
 if bdIsLoaded(mdl), close_system(mdl, 0); end
 if isfile(slx), delete(slx); end
@@ -49,7 +52,7 @@ TS = '3600';
 pos = @(c, r, w, h) [40 + 230 * c, 40 + 110 * r, 40 + 230 * c + w, 40 + 110 * r + h];
 sizes = containers.Map( ...
     {'Sensors + estimator', 'Observation', 'RL Agent (PPO policy)', 'Safety interlock', 'Collector-loop pump', 'PCM tank (O2 multinode)'}, ...
-    {[11 11], [13 15], [16 2], [10 2], [1 2], [5 + 2*N, NX + 29]});
+    {[11 11], [18 NO], [NO + 1, 2], [10 2], [1 2], [5 + 2*N, NX + 29]});
 MF = @(nm, scr, c, r) add_mf(mdl, nm, scr, pos(c, r, 170, 70), sizes(nm));
 
 add_block('simulink/Sources/Constant', [mdl '/noise_on'],    'Value', 'noise_on',    'SampleTime', TS, 'Position', [300, 280, 360, 300]);
@@ -59,11 +62,12 @@ add_block('simulink/Sources/Constant', [mdl '/policy_mode'], 'Value', 'policy_mo
 add_block('simulink/Sources/From Workspace', [mdl '/Weather'], ...
     'VariableName', 'wx', 'SampleTime', TS, 'Interpolate', 'off', ...
     'OutputAfterFinalValue', 'Holding final value', 'Position', pos(0, 0, 120, 40));
-add_block('simulink/Signal Routing/Demux', [mdl '/WxDemux'], 'Outputs', '[1 1 1 1]', 'Position', [300, 20, 305, 120]);
+add_block('simulink/Signal Routing/Demux', [mdl '/WxDemux'], 'Outputs', '[1 1 1 1 5]', 'Position', [300, 20, 305, 120]);
 add_line(mdl, 'Weather/1', 'WxDemux/1');
 add_block('simulink/Sinks/Terminator', [mdl '/IdxTerm'], 'Position', [340, 20, 350, 30]);
 add_line(mdl, 'WxDemux/1', 'IdxTerm/1');
-% WxDemux: 1 hour_idx, 2 GHI, 3 T_amb, 4 local_hour
+% WxDemux: 1 hour_idx, 2 GHI, 3 T_amb, 4 local_hour,
+%          5 look-ahead [GHI_cs(t); GHI_cs(t+1..t+3); hod(t+1)] for the smart forecast
 
 % ---------------- state memory ----------------
 add_block('simulink/Discrete/Unit Delay', [mdl '/StateMem'], 'InitialCondition', 'x0', ...
@@ -89,23 +93,34 @@ add_line(mdl, 'Sensors + estimator/1', 'SensorsDemux/1');
 % SensorsDemux: 1 GHI_m, 2 Tamb_m, 3 rec_m (8), 4 sensors_ok
 
 % ---------------- observation ----------------
-add_block('simulink/Signal Routing/Mux', [mdl '/ObsMux'], 'Inputs', '6', 'Position', [880, 150, 885, 330]);
+add_block('simulink/Signal Routing/Mux', [mdl '/ObsMux'], 'Inputs', '7', 'Position', [880, 150, 885, 330]);
+% Observation block = smart-persistence forecast (clear-sky index Kc is the
+% block's persistent state, 1.0 at model start) + observation builder.
 MF('Observation', ['function y = f(u)' newline ...
     'C = coder.load(''twin_consts.mat'');' newline ...
-    'y = double(build_obs(u(1:8), u(9), u(10), round(u(11)), C.P(3), u(12), u(13), C.mu, C.sd));'], 3, 1);
+    'persistent kc' newline ...
+    'if isempty(kc), kc = 1.0; end' newline ...
+    'ext4 = zeros(4, 1);' newline ...
+    'if numel(C.mu) == 19' newline ...
+    '    [fc, kc] = smart_forecast(u(9), u(14), u(15:17), kc);' newline ...
+    '    dn = 0; if u(18) >= 0, dn = C.demand24(round(u(18)) + 1); end' newline ...
+    '    ext4 = [fc; dn];' newline ...
+    'end' newline ...
+    'y = double(build_obs(u(1:8), u(9), u(10), round(u(11)), C.P(3), u(12), u(13), C.mu, C.sd, ext4));'], 3, 1);
 add_line(mdl, 'SensorsDemux/3', 'ObsMux/1');
 add_line(mdl, 'SensorsDemux/1', 'ObsMux/2');
 add_line(mdl, 'SensorsDemux/2', 'ObsMux/3');
 add_line(mdl, 'WxDemux/4',      'ObsMux/4');
 add_line(mdl, 'StateDemux/4',   'ObsMux/5');
 add_line(mdl, 'StateDemux/5',   'ObsMux/6');
+add_line(mdl, 'WxDemux/5',      'ObsMux/7');
 add_line(mdl, 'ObsMux/1', 'Observation/1');
 
 % ---------------- RL policy (PPO) ----------------
 add_block('simulink/Signal Routing/Mux', [mdl '/AgentMux'], 'Inputs', '2', 'Position', [1180, 150, 1185, 200]);
 MF('RL Agent (PPO policy)', ['function y = f(u)' newline ...
     'C = coder.load(''twin_consts.mat'');' newline ...
-    '[a, m] = ppo_policy(u(1:15), C.W1, C.b1, C.W2, C.b2, C.Wa, C.ba, u(16));' newline ...
+    sprintf('[a, m] = ppo_policy(u(1:%d), C.W1, C.b1, C.W2, C.b2, C.Wa, C.ba, u(%d));', NO, NO + 1) newline ...
     'y = [a; m];'], 4, 1);
 add_line(mdl, 'Observation/1', 'AgentMux/1');
 add_line(mdl, 'policy_mode/1', 'AgentMux/2');
@@ -189,7 +204,7 @@ add_block('simulink/Sinks/Terminator', [mdl '/ScTerm'], 'Position', [1960, 560, 
 add_line(mdl, 'PlantDemux/3', 'ScTerm/1');
 
 save_system(mdl, slx);
-fprintf('[build] saved %s (Uttarakhand regime %d, %d nodes)\n', slx, regime, N);
+fprintf('[build] saved %s (Uttarakhand regime %d, %d nodes, %d-input %s PPO)\n', slx, regime, N, NO, tw.agent);
 end
 
 % ----------------------------------------------------------------------
