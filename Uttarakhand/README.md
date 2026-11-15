@@ -58,6 +58,7 @@ from the measured GHI and the clear-sky GHI (`smart_forecast.m`), exactly as `o3
 | `export_r1/scenarios_3arm/` | Nine edge cases × three arms (2023). `export*/scenarios/` = PPO vs B0 per regime, seven cases incl. `low_temp_mains_masked`, plus the `my_*.mp4` videos (2023). |
 | `results_campaign/` | Checks, sensor-fault seeds, pyranometer faults, PCM-swap figure, ranking check, benchmark, cross-state table. |
 | `video/`, `pictures/` | One-day three-arm video with the pump fix; four 3-D cutaway videos (day, clear, no sunlight, 72 h hold) with stills. |
+| `video/o4_story_*.mp4`, `pictures/story_*` | Story videos (`matlab/run_story_videos.m`): O1-O4 on screen, clock, three arms, charge / discharge / idle hours per day; normal day 105 + edge cases heat wave and no sunlight; `export_r1/story_modes_2023.csv`. |
 | `reports/` | 00 audit summary, A validation + three arms, B one-day, C edge cases, D checks + hold test, E PCM swap, F pump fix + video, G_H benchmark + sensor faults, I checklist + cross-state + limitations. |
 | `docs/plan_O4.md` | The joint plan and where each item lives for Uttarakhand. |
 | `matlab/pcm_plant_hour.m` | One hour of the O2 multinode kernel, line-for-line port (optional 45 °C delivery output and "hour length" for the benchmark; physics unchanged). |
@@ -84,6 +85,7 @@ check_energy_balance(1)                           % restart, closure, swap, expo
 pcm_swap_study(1)                                 % deliverable 6 (about 3 min)
 benchmark_amanowicz(1)                            % deliverable 7 (seconds)
 check_pump_drawing(1)                             % deliverable 9: pump check + one-day video
+run_story_videos                                  % story videos: O1-O4, charge / discharge / idle, day + 2 edge cases
 run_3d_videos                                     % 3-D cutaway videos: day, clear, no sunlight, 72 h hold (about 3 min)
 ```
 ```powershell
